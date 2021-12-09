@@ -12,13 +12,15 @@ def sample_trajectory(env, policy, device, max_path_length, render=False, render
     # initialize env for the beginning of a new rollout
     env.eval()
     ob = env.reset()
+
     
     # init vars
     obs, acs, rewards, next_obs, terminals, image_obs = [], [], [], [], [], []
     steps = 0
     done = False
-    
+    success = 0
     while True:
+        
         # use the most recent ob to decide what to do
         obs.append(ob)
         
@@ -48,6 +50,8 @@ def sample_trajectory(env, policy, device, max_path_length, render=False, render
             # image_obs.append(env.render(mode='rgb_array'))
             image = env.get_image(400,400,None)
             image_obs.append(image)
+        
+        success = max(success, info["success"])
 
         # end the rollout if the rollout ended
         rollout_done = True if (done or steps>=max_path_length) else False
@@ -56,11 +60,11 @@ def sample_trajectory(env, policy, device, max_path_length, render=False, render
         if rollout_done:
             break
         
-    print("success: ", info["success"])
+    print("success: ", success)
     if len(image_obs)>0:
         imageio.mimsave("expert.gif", image_obs)
 
-    return Path(obs, image_obs, acs, rewards, next_obs, terminals)
+    return Path(obs, image_obs, acs, rewards, next_obs, terminals, success)
 
 
 def sample_trajectories(env, policy, device, min_timesteps_per_batch, max_path_length, render=False, render_mode=('rgb_array'), eval=False):
@@ -94,7 +98,7 @@ def sample_n_trajectories(env, policy, ntraj, device, max_path_length, render=Fa
     return paths
 
 
-def Path(obs, image_obs, acs, rewards, next_obs, terminals):
+def Path(obs, image_obs, acs, rewards, next_obs, terminals, success):
     """
         Take info (separate arrays) from a single rollout
         and return it in a single dictionary
@@ -107,7 +111,8 @@ def Path(obs, image_obs, acs, rewards, next_obs, terminals):
             "reward" : np.array(rewards, dtype=np.float32),
             "action" : np.array(acs, dtype=np.float32),
             "next_observation": np.array(next_obs, dtype=np.float32),
-            "terminal": np.array(terminals, dtype=np.float32)}
+            "terminal": np.array(terminals, dtype=np.float32),
+            "success":np.array(success, dtype=np.float32)}
 
 
 def convert_listofrollouts(paths, concat_rew=True):

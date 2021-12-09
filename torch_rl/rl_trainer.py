@@ -62,6 +62,8 @@ class RL_Trainer(object):
         self.total_envsteps = 0
         self.start_time = time.time()
         loss_curve = []
+        expert_success_curve = []
+        agent_success_curve = []
 
         for itr in range(n_iter):
             print("\n\n********** Iteration %i ************"%itr)
@@ -131,14 +133,18 @@ class RL_Trainer(object):
             
             for log in training_logs:
                 loss_curve.append(log["Training Loss"])
+                
+            for path in paths:
+                expert_success_curve.append(path["success"])
 
             # log/save
             if self.log_video or self.log_metrics:
 
                 # perform logging
                 print('\nBeginning logging procedure...')
-                self.perform_logging(
+                success = self.perform_logging(
                     itr, paths, eval_policy, train_video_paths, training_logs)
+                agent_success_curve += success
 
                 if self.args['save_params']:
                     print('\nSaving agent params')
@@ -161,9 +167,56 @@ class RL_Trainer(object):
             os.makedirs("./fig")
         fig.savefig("./fig/BC_Loss_lr_"+str(self.args['learning_rate']*10000)+".png")
         fig.clf()
+        
+        # plot overall loss curve
+        sns.set_theme(style="darkgrid")
+        sns.set_palette(palette="gist_earth")
 
+        iteration = range(len(loss_curve)-1)
+        print(loss_curve[0])
+        data = pd.DataFrame(loss_curve[1:], iteration)
+        ax=sns.lineplot(data=data)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("Loss")
+        ax.set_title("BC--Loss Curve")
+        
+        fig = ax.get_figure()
+        if not os.path.isdir("./fig"):
+            os.makedirs("./fig")
+        fig.savefig("./fig/BC_Loss_lr_"+str(self.args['learning_rate']*10000)+".png")
+        fig.clf()
+        
+        print(expert_success_curve)
+        print(agent_success_curve)
+        
+        # plot expert success curve
+        iteration = range(1, len(expert_success_curve)+1)
+        data = pd.DataFrame(expert_success_curve, iteration)
+        ax=sns.lineplot(data=data)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("expert success")
+        ax.set_title("BC--Expert Success Curve")
+        
+        fig = ax.get_figure()
+        if not os.path.isdir("./fig"):
+            os.makedirs("./fig")
+        fig.savefig("./fig/" + self.args["task_name"] + "_expert_success_curve.png")
+        fig.clf()
 
-    ## QUESTION !!!  
+        # plot agent success curve
+        iteration = range(1,len(agent_success_curve)+1)
+        data = pd.DataFrame(agent_success_curve, iteration)
+        ax=sns.lineplot(data=data)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("agent success")
+        ax.set_title("BC--Agent Success Curve")
+        
+        fig = ax.get_figure()
+        if not os.path.isdir("./fig"):
+            os.makedirs("./fig")
+        fig.savefig("./fig/" + self.args["task_name"] + "_agent_success_curve.png")
+        fig.clf()
+ 
     def collect_training_trajectories(
             self,
             itr,
@@ -191,7 +244,7 @@ class RL_Trainer(object):
         
         # We use expert_policy to generate training data
         paths, envsteps_this_batch = sample_trajectories(self.env_info.env, expert_policy, self.args["device"], 
-                                                         batch_size, self.args['ep_len'])
+                                                         batch_size, self.args['ep_len'], render=True)
         
 
         # collect more rollouts with the same policy, to be saved as videos in tensorboard
@@ -230,8 +283,8 @@ class RL_Trainer(object):
         # TODO relabel collected obsevations (from our policy) with labels from an expert policy
         # HINT: query the policy (using the get_action function) with paths[i]["observation"]
         # and replace paths[i]["action"] with these expert labels
-        for i in len(paths):
-            expert_label = expert_policy.get_action(paths[i]["observation"])
+        for i in range(len(paths)):
+            expert_label = expert_policy.get_action(torch.Tensor(paths[i]["observation"]), self.args["device"])
             paths[i]["action"] = expert_label
             
         return paths
@@ -244,6 +297,7 @@ class RL_Trainer(object):
         eval_policy.eval()
         eval_paths, eval_envsteps_this_batch = sample_trajectories(self.env_info.env, eval_policy, self.args["device"], self.args['eval_batch_size'], self.args['ep_len'], eval=True)
 
+        
         # save eval rollouts as videos in tensorboard event file
         if self.log_video and train_video_paths != None:
             print('\nCollecting video rollouts eval')
@@ -297,3 +351,8 @@ class RL_Trainer(object):
             print('Done logging...\n\n')
 
             self.logger.flush()
+            
+        success = []
+        for path in eval_paths:
+            success.append(path["success"])
+        return success
