@@ -116,7 +116,8 @@ class RL_Trainer(object):
                 itr,
                 expert_policy,
                 collect_policy,
-                self.args['batch_size']
+                self.args['batch_size'],
+                relabel_with_expert
             )  # HW1: implement this function below
             paths, envsteps_this_batch, train_video_paths = training_returns
             self.total_envsteps += envsteps_this_batch
@@ -223,6 +224,7 @@ class RL_Trainer(object):
             expert_policy,
             collect_policy,
             batch_size,
+            do_dagger,
     ):
         """
         :param itr:
@@ -242,9 +244,19 @@ class RL_Trainer(object):
         # HINT2: you want each of these collected rollouts to be of length self.params['ep_len']
         print("\nCollecting data to be used for training...")
         
-        # We use expert_policy to generate training data
-        paths, envsteps_this_batch = sample_trajectories(self.env_info.env, expert_policy, self.args["device"], 
+        if do_dagger:
+            if itr == 0:
+                # We use expert_policy to generate training data
+                paths, envsteps_this_batch = sample_trajectories(self.env_info.env, expert_policy, self.args["device"], 
                                                          batch_size, self.args['ep_len'], render=True)
+            else:
+                # use agent to collect data, and then corrected by the expert policy later on
+                paths, envsteps_this_batch = sample_trajectories(self.env_info.env, collect_policy, self.args["device"], 
+                                                         batch_size, self.args['ep_len'], render=True, run_agent = True)
+        else:
+            # We use expert_policy to generate training data
+            paths, envsteps_this_batch = sample_trajectories(self.env_info.env, expert_policy, self.args["device"], 
+                                                            batch_size, self.args['ep_len'], render=True)
         
 
         # collect more rollouts with the same policy, to be saved as videos in tensorboard
@@ -253,7 +265,7 @@ class RL_Trainer(object):
         if self.log_video:
             print('\nCollecting train rollouts to be used for saving videos...')
             ## TODO look in utils and implement sample_n_trajectories
-            train_video_paths = sample_n_trajectories(self.env_info.env, collect_policy, MAX_NVIDEO, self.args["device"], MAX_VIDEO_LEN, True)
+            train_video_paths = sample_n_trajectories(self.env_info.env, collect_policy, MAX_NVIDEO, self.args["device"], MAX_VIDEO_LEN, run_agent = True)
 
         return paths, envsteps_this_batch, train_video_paths
 
@@ -284,8 +296,11 @@ class RL_Trainer(object):
         # HINT: query the policy (using the get_action function) with paths[i]["observation"]
         # and replace paths[i]["action"] with these expert labels
         for i in range(len(paths)):
-            expert_label = expert_policy.get_action(torch.Tensor(paths[i]["observation"]), self.args["device"])
-            paths[i]["action"] = expert_label
+            new_acts = []
+            for ob in paths[i]["observation"]:
+                expert_act= expert_policy.get_action(torch.Tensor(ob), self.args["device"])
+                new_acts.append(expert_act)
+            paths[i]["action"] = new_acts
             
         return paths
 
@@ -294,8 +309,8 @@ class RL_Trainer(object):
 
         # collect eval trajectories, for logging
         print("\nCollecting data for eval...")
-        eval_policy.eval()
-        eval_paths, eval_envsteps_this_batch = sample_trajectories(self.env_info.env, eval_policy, self.args["device"], self.args['eval_batch_size'], self.args['ep_len'], eval=True)
+        eval_policy.eval() # frozen before
+        eval_paths, eval_envsteps_this_batch = sample_trajectories(self.env_info.env, eval_policy, self.args["device"], self.args['eval_batch_size'], self.args['ep_len'], run_agent=True)
 
         
         # save eval rollouts as videos in tensorboard event file

@@ -282,7 +282,7 @@ class BootstrappedNet(Net):
     # TODO: understand this part!
     def forward(self, x, idx):
         base_shape = x.shape[:-1]
-
+    
         # print("base shape: ", base_shape) # [batch_size, 1]
         out = super().forward(x)
         out_shape = base_shape + torch.Size([self.origin_output_shape, self.head_num])
@@ -293,7 +293,6 @@ class BootstrappedNet(Net):
         out = out.reshape(out_shape)
         idx = idx.view(view_idx_shape)
         idx = idx.expand(expand_idx_shape)
-
         out = out.gather(-1, idx).squeeze(-1)
         return out
 

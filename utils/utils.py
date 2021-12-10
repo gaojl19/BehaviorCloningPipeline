@@ -7,7 +7,8 @@ import imageio
 ############################################
 ############################################
 
-def sample_trajectory(env, policy, device, max_path_length, render=False, render_mode=('rgb_array'), eval=False):
+# the policy gradient should be frozen before sending into this function
+def sample_trajectory(env, policy, device, max_path_length, render=False, render_mode=('rgb_array'), run_agent=False):
     
     # initialize env for the beginning of a new rollout
     env.eval()
@@ -25,7 +26,7 @@ def sample_trajectory(env, policy, device, max_path_length, render=False, render
         obs.append(ob)
         
         # query the policy's get_action function
-        if not eval:
+        if not run_agent:
             act = policy.get_action(torch.Tensor(ob).to(device).unsqueeze(0), device)
             print("expert:",act)
         
@@ -67,7 +68,7 @@ def sample_trajectory(env, policy, device, max_path_length, render=False, render
     return Path(obs, image_obs, acs, rewards, next_obs, terminals, success)
 
 
-def sample_trajectories(env, policy, device, min_timesteps_per_batch, max_path_length, render=False, render_mode=('rgb_array'), eval=False):
+def sample_trajectories(env, policy, device, min_timesteps_per_batch, max_path_length, render=False, render_mode=('rgb_array'), run_agent=False):
     """
         Collect rollouts until we have collected min_timesteps_per_batch steps.
         
@@ -78,13 +79,13 @@ def sample_trajectories(env, policy, device, min_timesteps_per_batch, max_path_l
     timesteps_this_batch = 0
     paths = []
     while timesteps_this_batch < min_timesteps_per_batch:
-        new_path = sample_trajectory(env=env, policy=policy, device=device, max_path_length=max_path_length, render=render, render_mode=render_mode, eval=eval)
+        new_path = sample_trajectory(env=env, policy=policy, device=device, max_path_length=max_path_length, render=render, render_mode=render_mode, run_agent=run_agent)
         paths.append(new_path)
         timesteps_this_batch += get_pathlength(new_path)
 
     return paths, timesteps_this_batch
 
-def sample_n_trajectories(env, policy, ntraj, device, max_path_length, render=False, render_mode=('rgb_array'), eval=False):
+def sample_n_trajectories(env, policy, ntraj, device, max_path_length, render=False, render_mode=('rgb_array'), run_agent=False):
     """
         Collect ntraj rollouts.
         
@@ -93,7 +94,7 @@ def sample_n_trajectories(env, policy, ntraj, device, max_path_length, render=Fa
     paths = []
 
     for i in range(ntraj):
-        paths.append(sample_trajectory(env=env, policy=policy, device=device, max_path_length=max_path_length, render=render, render_mode=render_mode, eval=eval))
+        paths.append(sample_trajectory(env=env, policy=policy, device=device, max_path_length=max_path_length, render=render, render_mode=render_mode, run_agent=run_agent))
 
     return paths
 

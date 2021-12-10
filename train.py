@@ -38,6 +38,11 @@ class BC_Trainer(object):
             TASK_ENV_DICT = get_params("metaworld_utils/MT10_task_env.json")
             cls_dicts = {args["task_name"]: EASY_MODE_CLS_DICT[args["task_name"]]}
             cls_args = {args["task_name"]: EASY_MODE_ARGS_KWARGS[args["task_name"]]}
+            
+            if args["random_init"] == True:
+                cls_args[args["task_name"]]['kwargs']['random_init']=True
+            print(cls_args)
+            
 
         elif args["task_env"] == "MT50_task_env":
             TASK_ENV_DICT = get_params("metaworld_utils/MT50_task_env.json")
@@ -137,6 +142,7 @@ def main():
     parser.add_argument('--eval_worker_nums', type=int, default=2,help='eval worker nums')
     parser.add_argument("--config", type=str,   default=None, help="config file", )
     parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
+    parser.add_argument("--random_init", type=bool, default=False, help="whether use random init when collecting data & evaluating", )
     parser.add_argument("--device", type=int, default=0, help="gpu secification", )
 
     # tensorboard
@@ -156,6 +162,7 @@ def main():
     # CREATE DIRECTORY FOR LOGGING
     if args.do_dagger:
         logdir_prefix = 'DAgger_'
+        print("do dagger")
         assert args.n_iter>1, ('DAGGER needs more than 1 iteration (n_iter>1) of training, to iteratively query the expert and train (after 1st warmstarting from behavior cloning).')
     else:
         logdir_prefix = 'Base_'
