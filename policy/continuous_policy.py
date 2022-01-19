@@ -289,6 +289,9 @@ class ModularGuassianGatedCascadeCondContPolicy(networks.ModularGatedCascadeCond
             x = x[0]
 
         mean, log_std = x.chunk(2, dim=-1)
+        # print("x shape:", x.shape)
+        # print("mean shape:", mean.shape)
+        # print("embedding shape: ", embedding_input.shape)
 
         log_std = torch.clamp(log_std, LOG_SIG_MIN, LOG_SIG_MAX)
         std = torch.exp(log_std)

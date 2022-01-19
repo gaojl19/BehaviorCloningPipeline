@@ -70,7 +70,7 @@ class TanhNormal(Distribution):
                  torch.ones(self.normal_std.size())
              ).sample().to(self.normal_mean.device)
          )
-        
+
         if return_pretanh_value:
             return torch.tanh(z), z
         else:

@@ -1,0 +1,10 @@
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/reach-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/reach-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/push-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/push-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/pick-place-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/pick-place-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/ped-insert-side-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/ped-insert-side-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/door-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/door-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/drawer-close-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/drawer-close-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/drawer-open-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/drawer-open-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/window-close-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/window-close-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/window-open-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/window-open-v1.pth
+scp scdt.stanford.edu:/viscam/u/jialugao/Multi-Task-RL/log/MT10_Single_Task/button-press-topdown-v1/Fixed/257/model/model_pf_best.pth ./policy/expert/MT10/button-press-topdown-v1.pth

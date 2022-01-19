@@ -152,9 +152,17 @@ def generate_single_task_env(env_id, kwargs):
 
 
 def generate_mt_env(cls_dict, args_kwargs, **kwargs):
+    # cnt = 0
+    # for key in cls_dict.keys():
+    #     print(key)
+    #     cnt += 1
+        
+    # print(cls_dict)
     copy_kwargs = kwargs.copy()
     if "random_init" in copy_kwargs:
         del copy_kwargs["random_init"]
+    print(copy_kwargs)
+  
     env = MTEnv(
         task_env_cls_dict=cls_dict,
         task_args_kwargs=args_kwargs,
@@ -173,13 +181,14 @@ def generate_mt_env(cls_dict, args_kwargs, **kwargs):
 
 
 def generate_single_mt_env(task_cls, task_args, env_rank, num_tasks,
-                           max_obs_dim, env_params, meta_env_params):
+                           max_obs_dim, env_params, meta_env_params, env_name = None):
 
     env = task_cls(*task_args['args'], **task_args["kwargs"])
     env.discretize_goal_space(env.goal.copy())
     if "sampled_index" in meta_env_params:
         del meta_env_params["sampled_index"]
-    env = AugObs(env, env_rank, num_tasks, max_obs_dim, meta_env_params)
+    if env_name == 'mt10' or env_name == 'mt50':
+        env = AugObs(env, env_rank, num_tasks, max_obs_dim, meta_env_params)
     env = wrap_continuous_env(env, **env_params)
 
     act_space = env.action_space
@@ -190,11 +199,15 @@ def generate_single_mt_env(task_cls, task_args, env_rank, num_tasks,
 
 def generate_mt10_env(mt_param):
     from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS
-
+    
     if "random_init" in mt_param:
         for key in EASY_MODE_ARGS_KWARGS:
-            EASY_MODE_ARGS_KWARGS[key]["kwargs"]["random_init"]=True
-
+            EASY_MODE_ARGS_KWARGS[key]["kwargs"]["random_init"] = mt_param['random_init']
+    
+    # if 'obs_type' in mt_param:
+    #     for key in EASY_MODE_ARGS_KWARGS:
+    #         EASY_MODE_ARGS_KWARGS[key]["kwargs"]["obs_type"] = mt_param['obs_type']
+            
     return generate_mt_env(EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS, **mt_param), \
         EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS
 
@@ -210,7 +223,7 @@ def generate_mt50_env(mt_param):
 
     if "random_init" in mt_param:
         for key in args_kwargs:
-            args_kwargs[key]["kwargs"]["random_init"]=mt_param["random_init"]
+            args_kwargs[key]["kwargs"]["random_init"] = mt_param["random_init"]
 
     return generate_mt_env(cls_dict, args_kwargs, **mt_param), \
         cls_dict, args_kwargs
@@ -224,7 +237,9 @@ def get_meta_env(env_id, env_param, mt_param, return_dicts=True):
     elif env_id == "mt50":
         env, cls_dicts, args_kwargs = generate_mt50_env(mt_param)
     else:
-        env = generate_single_task_env(env_id, mt_param)
+        env = env_id(**mt_param)
+        env = SingleWrapper(env)
+        # env = generate_single_task_env(env_id, mt_param)
 
     env = wrap_continuous_env(env, **env_param)
 
