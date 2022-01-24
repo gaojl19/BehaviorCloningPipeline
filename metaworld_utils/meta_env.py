@@ -81,6 +81,7 @@ class MTEnv(MultiClassMultiTaskEnv):
 
     @property
     def observation_space(self):
+        print("obs type: ", self._obs_type)
         if self._obs_type == 'plain':
             return self._task_envs[self.observation_space_index].observation_space
         else:
@@ -187,6 +188,8 @@ def generate_single_mt_env(task_cls, task_args, env_rank, num_tasks,
     env.discretize_goal_space(env.goal.copy())
     if "sampled_index" in meta_env_params:
         del meta_env_params["sampled_index"]
+        
+    # TODO: check if this is right
     if env_name == 'mt10' or env_name == 'mt50':
         env = AugObs(env, env_rank, num_tasks, max_obs_dim, meta_env_params)
     env = wrap_continuous_env(env, **env_params)

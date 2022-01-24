@@ -63,6 +63,7 @@ class BC_Trainer(object):
         
         discrete = isinstance(self.env.action_space, gym.spaces.Discrete)
         self.args['agent_params']['discrete'] = discrete
+        
         # Observation and action sizes
         ob_dim = self.env.observation_space.shape[0]
         ac_dim = self.env.action_space.n if discrete else self.env.action_space.shape[0]
@@ -104,7 +105,8 @@ class BC_Trainer(object):
                 params['expert_net']['base_type']=MLPBase
                 
                 file_path = self.args['expert_policy_file'] + name + ".pth"
-                expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
                 
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
@@ -116,8 +118,9 @@ class BC_Trainer(object):
                 params['expert_net']['base_type']=MLPBase
                 
                 file_path = self.args['expert_policy_file'] + name + ".pth"
-                expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
-                
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
         

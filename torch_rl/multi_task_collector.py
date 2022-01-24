@@ -70,9 +70,8 @@ class MT10SingleCollector():
         info = {}
         success = 0
         for task in self.task_collector.keys():
-            prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, prefix)
+            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
             paths.append(new_path)
             timesteps_this_batch += timesteps
             info[task + "_success_rate"] = new_path["success"]
@@ -117,32 +116,46 @@ class MT50SingleCollector():
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
             
-            self.task_collector[task] = SingleCollector(
-                env=env, 
-                env_cls=cls_dicts, 
-                env_args=env_args,
-                env_info=env_info,
-                expert_policy=expert_dict[task],
-                device=device,
-                max_path_length=self.max_path_length,
-                min_timesteps_per_batch=self.min_timesteps_per_batch,
-                embedding_input=embedding_input)
+            if task in expert_dict.keys():
+                self.task_collector[task] = SingleCollector(
+                    env=env, 
+                    env_cls=cls_dicts, 
+                    env_args=env_args,
+                    env_info=env_info,
+                    expert_policy=expert_dict[task],
+                    device=device,
+                    max_path_length=self.max_path_length,
+                    min_timesteps_per_batch=self.min_timesteps_per_batch,
+                    embedding_input=embedding_input)
                 
     
     def sample_expert(self, render, render_mode, log, log_prefix):
         '''
             serialized sample from 50 environment
         '''
-        # TODO: can use multi-processing to speed up
         paths = []
         timesteps_this_batch = 0
+        info = {}
+        success = 0
         for task in self.task_collector.keys():
-            prefix = log_prefix + "/" + task + "/"
+            # prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            new_paths, timesteps = collector.sample_expert(render, render_mode, log, prefix)
-            paths += new_paths
+            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
+            
+            # modify observations
+            new_path["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path["observation"]]
+            new_path["next_observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path["next_observation"]]
+            # for ob in new_path["observation"]:
+            #     print(ob)
+            
+            paths.append(new_path)
             timesteps_this_batch += timesteps
-        return paths, timesteps_this_batch
+            info[task + "_success_rate"] = new_path["success"]
+            success += new_path["success"]
+        
+        info["mean_success_rate"] = success / len(self.task_collector )
+        print(info)
+        return paths, timesteps_this_batch, info
     
     
 class MTEnvCollector():
@@ -162,9 +175,9 @@ class MTEnvCollector():
         # multi-processing
         self.manager = mp.Manager()
     
-    def sample_agent(self, log_prefix, agent_policy, render):
+    def sample_agent(self, log_prefix, agent_policy, input_shape, render):
         
-        self.build_Multi_task_env(agent_policy=agent_policy, render=render)
+        self.build_Multi_task_env(agent_policy=agent_policy, input_shape=input_shape, render=render)
         active_task_counts = 0
         tasks_result = []
         mean_success_rate = 0
@@ -206,7 +219,7 @@ class MTEnvCollector():
     
     
 
-    def build_Multi_task_env(self, agent_policy, render=False):
+    def build_Multi_task_env(self, agent_policy, input_shape, render=False):
     
         self.eval_workers = []
         self.eval_worker_nums = self.env.num_tasks
@@ -255,7 +268,8 @@ class MTEnvCollector():
                           max_frame=self.params["general_setting"]["max_episode_frames"],
                           task_name=task,
                           shared_dict=self.shared_dict,
-                          render=render)
+                          render=render,
+                          input_shape=input_shape)
             
             self.results.append(result)
             # eval_p = mp.Process(
@@ -267,7 +281,7 @@ class MTEnvCollector():
             # self.eval_workers.append(eval_p)
             
     
-    def evaluate(self, agent_policy, env_info, eval_episode, max_frame, task_name, shared_dict, render):
+    def evaluate(self, agent_policy, env_info, eval_episode, max_frame, task_name, shared_dict, render, input_shape):
         
         # pf = copy.deepcopy(agent_policy).to(env_info.device)
         # pf.eval()
@@ -324,7 +338,11 @@ class MTEnvCollector():
                         embedding_input = embedding_input.unsqueeze(0).to(env_info.device)
                         
                         # mask out the last 3 dimensions
-                        eval_ob = eval_ob[:9]
+                        # eval_ob = eval_ob[:9]
+                        if len(eval_ob) != input_shape:
+                            # print("original ob: ", eval_ob, end= "\t")
+                            eval_ob = eval_ob[:input_shape]
+                            # print("new ob: ", eval_ob)
                         act = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0), embedding_input)
                     else:
                         act = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0))

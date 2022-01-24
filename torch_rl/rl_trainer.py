@@ -88,7 +88,6 @@ class RL_Trainer(object):
                 env_cls=env_cls,
                 env_args=env_args,
                 env_info=self.env_info,
-                agent_policy=self.agent.actor.policy,
                 args=args,
                 params=params,
                 example_embedding=example_embedding
@@ -126,7 +125,12 @@ class RL_Trainer(object):
         
         
         # build log dir
-        plot_prefix = "./fig/"+ self.env_name + "/"
+        plot_prefix = "./fig/"+ self.env_name
+        if self.params["meta_env"]["random_init"] == False:
+            plot_prefix += "_fixed/"
+        else:
+            plot_prefix += "_random/"
+        
         if not os.path.isdir(plot_prefix):
             os.makedirs(plot_prefix)
         
@@ -152,8 +156,9 @@ class RL_Trainer(object):
         loss_curve = []
         expert_success_curve = []
         agent_success_curve = []
-    
+
         
+        ################### Train ####################
         for itr in range(n_iter):
             print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
             
@@ -161,27 +166,17 @@ class RL_Trainer(object):
             train_start_time = time.time()
             
             # collect trajectories, to be used for training
-            render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
-            training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=False, log_prefix = self.plot_prefix)
-            # training_returns = self.collect_training_trajectories(
-            #     itr,
-            #     env_name,
-            #     expert_policy,
-            #     collect_policy,
-            #     self.args['batch_size'],
-            #     relabel_with_expert
-            # )  # HW1: implement this function below
+            if itr == 0:
+                render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
+                training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=False, log_prefix = self.plot_prefix)
             
-            paths, envsteps_this_batch, infos = training_returns
-            self.total_envsteps += envsteps_this_batch
+                paths, envsteps_this_batch, infos = training_returns
+                self.total_envsteps += envsteps_this_batch
 
-            # DAgger: relabel the collected obs with actions from a provided expert policy
-            # if relabel_with_expert and itr>=start_relabel_with_expert:
-            #     paths = self.do_relabel_with_expert(expert_policy, paths)
+                # add collected data to replay buffer
+                self.agent.add_to_replay_buffer(paths)
 
-            # add collected data to replay buffer
-            self.agent.add_to_replay_buffer(paths)
-
+            
             # train agent (using sampled data from replay buffer)
             training_logs = self.train_agent()  # HW1: implement this function below
             
@@ -205,14 +200,14 @@ class RL_Trainer(object):
             
             eval_start_time = time.time()
             
-            # EVALUATION
+            ############## Evaluation #############
             # render = self.params["general_setting"]["eval_render"] if itr == n_iter-1 else False
             render = False
             if self.mt_flag == False:
                 eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
                 agent_success_curve.append(eval_success_rate)
             else:
-                eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, render=render)
+                eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
                 for name in eval_infos.keys():
                     if name == "mean_success_rate":
                         agent_success_curve.append(eval_infos["mean_success_rate"])
@@ -224,10 +219,23 @@ class RL_Trainer(object):
             print("evaluation time: ", eval_time)
             print("epoch time: ", time.time() - start)
             
+    
+        ################## Test #################
+        print("------------------Test Results ------------------")
+        render = False
+        if self.mt_flag == False:
+            eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
+            print("mean_success_rate: ", eval_success_rate)
+        else:
+            eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
+            for name in eval_infos.keys():
+                if name == "mean_success_rate":
+                    continue
+                else:
+                    print(name, "_success_rate: ",  eval_infos[name])
+            print("mean_success_rate: ", eval_infos["mean_success_rate"])
         
-        
-        
-        # PLOT CURVE
+        ############### PLOT CURVE ###############
         # plot overall loss curve
         iteration = range(len(loss_curve)-1)
         data = pd.DataFrame(loss_curve[1:], iteration)

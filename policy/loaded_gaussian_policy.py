@@ -17,6 +17,7 @@ class LoadedGaussianPolicy(BasePolicy):
             head_num=env.num_tasks,
             **params['net'] )
         else:
+            print(env.observation_space.shape[0])
             self.pf = MultiHeadGuassianContPolicy (
             input_shape = env.observation_space.shape[0], 
             output_shape = 2 * env.action_space.shape[0],
