@@ -104,6 +104,7 @@ class BC_Trainer(object):
                 expert_env.seed(args["seed"])
                 params['expert_net']['base_type']=MLPBase
                 
+                
                 file_path = self.args['expert_policy_file'] + name + ".pth"
                 if os.path.exists(file_path):
                     expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
@@ -120,7 +121,6 @@ class BC_Trainer(object):
                 file_path = self.args['expert_policy_file'] + name + ".pth"
                 if os.path.exists(file_path):
                     expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
-
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
         
@@ -136,7 +136,6 @@ class BC_Trainer(object):
             expert_dict=expert_dict, 
             example_embedding=example_embedding
         )
-        
 
     
     def run_training_loop(self):
@@ -158,9 +157,10 @@ def main():
     parser.add_argument('--do_dagger', action='store_true')
     parser.add_argument('--ep_len', type=int)
 
-    parser.add_argument('--num_agent_train_steps_per_iter', type=int, default=1000)  # number of gradient steps for training policy (per iter in n_iter)
+    parser.add_argument('--gradient_steps', type=int, default=1)  # number of gradient steps for training policy (per iter in n_iter)
     parser.add_argument('--n_iter', '-n', type=int, default=1)
     parser.add_argument('--render_interval', type=int, default=1)
+    parser.add_argument('--eval_interval', type=int, default=1)
 
     parser.add_argument('--batch_size', type=int, default=64)  # training data collected (in the env) during each iteration
     parser.add_argument('--eval_batch_size', type=int,

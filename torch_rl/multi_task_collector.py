@@ -72,10 +72,10 @@ class MT10SingleCollector():
         for task in self.task_collector.keys():
             collector = self.task_collector[task]
             new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
-            paths.append(new_path)
+            paths += new_path
             timesteps_this_batch += timesteps
-            info[task + "_success_rate"] = new_path["success"]
-            success += new_path["success"]
+            info[task + "_success_rate"] = new_path[0]["success"]
+            success += new_path[0]["success"]
         
         info["mean_success_rate"] = success / len(self.task_collector )
         print(info)
@@ -143,15 +143,16 @@ class MT50SingleCollector():
             new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
             
             # modify observations
-            new_path["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path["observation"]]
-            new_path["next_observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path["next_observation"]]
+            new_path[0]["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["observation"]]
+            new_path[0]["next_observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["next_observation"]]
+            
             # for ob in new_path["observation"]:
             #     print(ob)
             
-            paths.append(new_path)
+            paths += new_path
             timesteps_this_batch += timesteps
-            info[task + "_success_rate"] = new_path["success"]
-            success += new_path["success"]
+            info[task + "_success_rate"] = new_path[0]["success"]
+            success += new_path[0]["success"]
         
         info["mean_success_rate"] = success / len(self.task_collector )
         print(info)

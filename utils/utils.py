@@ -29,7 +29,7 @@ def convert_listofrollouts(paths, concat_rew=True):
         and return separate arrays,
         where each array is a concatenation of that array from across the rollouts
     """
-    
+
     observations = np.concatenate([path["observation"] for path in paths])
     actions = np.concatenate([path["action"] for path in paths])
     if concat_rew:
@@ -40,9 +40,10 @@ def convert_listofrollouts(paths, concat_rew=True):
     terminals = np.concatenate([path["terminal"] for path in paths])
     
     
-    if paths[0]["embedding_input"]!= None:
+    if len(paths[0]["embedding_input"][0])!= 0:
         embeddings_input= np.concatenate([path["embedding_input"] for path in paths])
         return observations, actions, rewards, next_observations, terminals, embeddings_input
+    # single task doesn't need task embedding
     else:
         return observations, actions, rewards, next_observations, terminals
 

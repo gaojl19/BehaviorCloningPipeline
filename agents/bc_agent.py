@@ -21,7 +21,7 @@ class MLPAgent(BaseAgent):
             n_layers = self.agent_params['n_layers'],
             hidden_shape = self.agent_params['size']
         )
-        
+
         # update
         self.loss = nn.MSELoss()
         self.learning_rate = self.agent_params['learning_rate']

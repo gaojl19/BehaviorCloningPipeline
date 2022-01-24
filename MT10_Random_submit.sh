@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --partition=viscam --qos=normal
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+
+#SBATCH -- gres=gpu:1
+
+echo "SLURM_JOBID="$SLURM_JOBID
+echo "working directory="$SLURM_SUBMIT_DIR
+
+srun python3 train_soft_module.py         --expert_policy_file policy/expert/MT10_Random/ 	    --exp_name mt10_random         --n_iter 200         --render_interval 100         --learning_rate 1e-4 	    --video_log_freq -1         --ep_len 200         --batch_size 64         --train_batch_size 32         --config config/soft_module_random_mt10.json         --id MT10_Single_Task         --seed 32         --worker_nums 1         --eval_worker_nums 1         --task_env MT10_task_env         --no_cuda
+    
+echo "Done"

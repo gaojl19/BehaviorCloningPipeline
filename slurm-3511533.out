@@ -1,0 +1,402 @@
+/var/lib/slurm/slurmd/job3511533/slurm_script: line 9: batch_scripts/MT50_batch/seed.sh: No such file or directory
+SLURM_JOBID=3511533
+working directory=/viscam/u/jialugao/Imitation-SoftModule
+########################
+logging outputs to  /viscam/u/jialugao/Imitation-SoftModule/data/Base_bc_reach_drawer-open-v1_2640.000123-01-2022_22-52-02
+########################
+{'expert_policy_file': '../Multi-Task-RL/log/MT50_Single_Task/drawer-open-v1/Fixed/238/model/model_pf_best.pth', 'exp_name': 'bc_reach', 'do_dagger': False, 'ep_len': 200, 'gradient_steps': 1, 'n_iter': 10000, 'render_interval': 1, 'eval_interval': 200, 'batch_size': 64, 'eval_batch_size': 32, 'train_batch_size': 32, 'n_layers': 2, 'size': 400, 'learning_rate': 0.0001, 'video_log_freq': -1, 'scalar_log_freq': 1, 'no_gpu': False, 'which_gpu': 0, 'max_replay_buffer_size': 1000000, 'save_params': False, 'seed': 32, 'worker_nums': 1, 'eval_worker_nums': 1, 'config': 'config/BC.json', 'no_cuda': True, 'random_init': False, 'device': 'cpu', 'id': 'MT50_Single_Task', 'task_name': 'drawer-open-v1', 'task_env': 'MT50_task_env', 'cuda': False, 'log_dir': '/viscam/u/jialugao/Imitation-SoftModule/data/Base_bc_reach_drawer-open-v1_2640.000123-01-2022_22-52-02', 'agent_class': <class 'agents.bc_agent.MLPAgent'>, 'agent_params': {'n_layers': 2, 'size': 400, 'learning_rate': 0.0001, 'max_replay_buffer_size': 1000000, 'discrete': False, 'ac_dim': 4, 'ob_dim': 9}}
+{'env_name': 'single_task', 'env': {'reward_scale': 1, 'obs_norm': False}, 'meta_env': {'obs_type': 'with_goal', 'random_init': False}, 'replay_buffer': {'size': 1000000.0}, 'net': {'hidden_shapes': [400, 400], 'append_hidden_shapes': [400], 'base_type': <class 'networks.base.MLPBase'>}, 'general_setting': {'discount': 0.99, 'pretrain_epochs': 20, 'num_epochs': 7500, 'epoch_frames': 200, 'max_episode_frames': 200, 'batch_size': 1280, 'min_pool': 10000, 'target_hard_update_period': 1000, 'use_soft_update': True, 'tau': 0.005, 'opt_times': 200, 'eval_episodes': 100, 'train_render': False, 'eval_render': False, 'env': <NormAct<RewardShift<SingleWrapperNone>>>, 'logger': <utils.logger.Logger object at 0x7ffa8d816ed0>, 'device': device(type='cpu')}, 'sac': {'plr': 0.0003, 'qlr': 0.0003, 'reparameterization': True, 'automatic_entropy_tuning': True, 'policy_std_reg_weight': 0, 'policy_mean_reg_weight': 0}}
+Loading expert policy from... ../Multi-Task-RL/log/MT50_Single_Task/drawer-open-v1/Fixed/238/model/model_pf_best.pth
+Done restoring expert policy...
+<NormAct<RewardShift<SawyerDrawerOpenEnv instance>>>
+<NormAct<RewardShift<SawyerDrawerOpenEnv instance>>>
+
+
+-------------------------------- Iteration 0 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+expert_success: 1.0
+
+
+
+-------------------------------- Iteration 0 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.18418478965759277
+evaluation time:  11.147078514099121
+epoch time:  11.331296443939209
+
+
+-------------------------------- Iteration 200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015332698822021484
+evaluation time:  11.366119384765625
+epoch time:  11.367681741714478
+
+
+-------------------------------- Iteration 400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.002038717269897461
+evaluation time:  11.821162939071655
+epoch time:  11.823221206665039
+
+
+-------------------------------- Iteration 600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0017232894897460938
+evaluation time:  11.591464281082153
+epoch time:  11.593209505081177
+
+
+-------------------------------- Iteration 800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.001462697982788086
+evaluation time:  11.884165287017822
+epoch time:  11.885657548904419
+
+
+-------------------------------- Iteration 1000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015294551849365234
+evaluation time:  10.82585334777832
+epoch time:  10.82741093635559
+
+
+-------------------------------- Iteration 1200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0018105506896972656
+evaluation time:  12.030036687850952
+epoch time:  12.031922340393066
+
+
+-------------------------------- Iteration 1400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0018131732940673828
+evaluation time:  10.9243745803833
+epoch time:  10.926225900650024
+
+
+-------------------------------- Iteration 1600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0017995834350585938
+evaluation time:  11.824377059936523
+epoch time:  11.826198816299438
+
+
+-------------------------------- Iteration 1800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015377998352050781
+evaluation time:  12.614741086959839
+epoch time:  12.61630892753601
+
+
+-------------------------------- Iteration 2000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.00180816650390625
+evaluation time:  11.169768810272217
+epoch time:  11.171658992767334
+
+
+-------------------------------- Iteration 2200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0016078948974609375
+evaluation time:  13.828702449798584
+epoch time:  13.830340147018433
+
+
+-------------------------------- Iteration 2400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0016887187957763672
+evaluation time:  13.902419805526733
+epoch time:  13.904135942459106
+
+
+-------------------------------- Iteration 2600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0014719963073730469
+evaluation time:  11.104054927825928
+epoch time:  11.10555362701416
+
+
+-------------------------------- Iteration 2800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0016150474548339844
+evaluation time:  15.026745080947876
+epoch time:  15.02840781211853
+
+
+-------------------------------- Iteration 3000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015048980712890625
+evaluation time:  15.333044528961182
+epoch time:  15.33457350730896
+
+
+-------------------------------- Iteration 3200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0018126964569091797
+evaluation time:  13.929152965545654
+epoch time:  13.930995225906372
+
+
+-------------------------------- Iteration 3400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015435218811035156
+evaluation time:  14.123537540435791
+epoch time:  14.125099658966064
+
+
+-------------------------------- Iteration 3600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0017981529235839844
+evaluation time:  13.210364818572998
+epoch time:  13.212181091308594
+
+
+-------------------------------- Iteration 3800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015637874603271484
+evaluation time:  14.213622808456421
+epoch time:  14.215205669403076
+
+
+-------------------------------- Iteration 4000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015435218811035156
+evaluation time:  13.832944393157959
+epoch time:  13.834507703781128
+
+
+-------------------------------- Iteration 4200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0018126964569091797
+evaluation time:  14.311137676239014
+epoch time:  14.31297755241394
+
+
+-------------------------------- Iteration 4400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0015347003936767578
+evaluation time:  14.131117105484009
+epoch time:  14.132665872573853
+
+
+-------------------------------- Iteration 4600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0017843246459960938
+evaluation time:  14.035411834716797
+epoch time:  14.037209749221802
+
+
+-------------------------------- Iteration 4800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0017726421356201172
+evaluation time:  13.802525758743286
+epoch time:  13.804323434829712
+
+
+-------------------------------- Iteration 5000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.001558542251586914
+evaluation time:  14.26838994026184
+epoch time:  14.269962072372437
+
+
+-------------------------------- Iteration 5200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.001809835433959961
+evaluation time:  11.694101095199585
+epoch time:  11.695932865142822
+
+
+-------------------------------- Iteration 5400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.001550436019897461
+evaluation time:  12.206470012664795
+epoch time:  12.208048105239868
+
+
+-------------------------------- Iteration 5600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0018496513366699219
+evaluation time:  14.479071378707886
+epoch time:  14.48094391822815
+
+
+-------------------------------- Iteration 5800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.001596212387084961
+evaluation time:  13.747913837432861
+epoch time:  13.74953556060791
+
+
+-------------------------------- Iteration 6000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015494823455810547
+evaluation time:  11.860208511352539
+epoch time:  11.861788511276245
+
+
+-------------------------------- Iteration 6200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0018038749694824219
+evaluation time:  13.607134342193604
+epoch time:  13.608954429626465
+
+
+-------------------------------- Iteration 6400 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 1.0
+
+training time:  0.0015382766723632812
+evaluation time:  13.74362325668335
+epoch time:  13.74517560005188
+
+
+-------------------------------- Iteration 6600 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0014753341674804688
+evaluation time:  12.034477710723877
+epoch time:  12.035990715026855
+
+
+-------------------------------- Iteration 6800 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0015327930450439453
+evaluation time:  13.43400263786316
+epoch time:  13.43555235862732
+
+
+-------------------------------- Iteration 7000 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.00189208984375
+evaluation time:  12.044822454452515
+epoch time:  12.046732664108276
+
+
+-------------------------------- Iteration 7200 -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+training time:  0.0017726421356201172
+evaluation time:  13.151607990264893
+epoch time:  13.15340781211853
+
+
+-------------------------------- Training stopped due to early stopping -------------------------------- 
+min loss:  0.09816943
+
+
+-------------------------------- Test Results -------------------------------- 
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04      ]
+agent_success: 0
+
+mean_success_rate:  0.0
+Done

@@ -1,0 +1,922 @@
+SLURM_JOBID=3505451
+working directory=/viscam/u/jialugao/Imitation-SoftModule
+{'obs_type': 'with_goal'}
+{'expert_policy_file': 'policy/expert/MT10_Random/', 'exp_name': 'mt10_random', 'do_dagger': False, 'ep_len': 200, 'num_agent_train_steps_per_iter': 1000, 'n_iter': 100, 'render_interval': 100, 'batch_size': 64, 'eval_batch_size': 32, 'train_batch_size': 32, 'n_layers': 2, 'size': 400, 'learning_rate': 0.0001, 'video_log_freq': -1, 'scalar_log_freq': 1, 'no_gpu': False, 'which_gpu': 0, 'max_replay_buffer_size': 1000000, 'save_params': False, 'seed': 32, 'worker_nums': 1, 'eval_worker_nums': 1, 'config': 'config/soft_module_random_mt10.json', 'no_cuda': True, 'random_init': False, 'device': 'cpu', 'id': 'MT10_Single_Task', 'task_name': None, 'task_env': 'MT10_task_env', 'cuda': False, 'agent_class': <class 'agents.bc_agent.SoftModuleAgent'>, 'agent_params': {'n_layers': 2, 'size': 400, 'learning_rate': 0.0001, 'max_replay_buffer_size': 1000000, 'discrete': False, 'ac_dim': 4, 'ob_dim': 9}}
+{'env_name': 'mt10', 'env': {'reward_scale': 1, 'obs_norm': False}, 'meta_env': {'obs_type': 'with_goal', 'random_init': True}, 'replay_buffer': {'size': 1000000.0}, 'expert_net': {'hidden_shapes': [400, 400], 'append_hidden_shapes': [400]}, 'net': {'hidden_shapes': [400, 400], 'em_hidden_shapes': [400], 'num_layers': 2, 'num_modules': 2, 'module_hidden': 256, 'num_gating_layers': 2, 'gating_hidden': 256, 'add_bn': False, 'pre_softmax': False, 'base_type': <class 'networks.base.MLPBase'>}, 'general_setting': {'discount': 0.99, 'pretrain_epochs': 20, 'num_epochs': 7500, 'epoch_frames': 200, 'max_episode_frames': 200, 'batch_size': 1280, 'min_pool': 10000, 'target_hard_update_period': 1000, 'use_soft_update': True, 'tau': 0.005, 'opt_times': 200, 'eval_episodes': 3, 'train_render': False, 'eval_render': True, 'env': <NormAct<RewardShift<MTEnv instance>>>, 'device': device(type='cpu')}, 'sac': {'plr': 0.0003, 'qlr': 0.0003, 'reparameterization': True, 'automatic_entropy_tuning': True, 'policy_std_reg_weight': 0, 'policy_mean_reg_weight': 0}}
+Loading expert policy from... policy/expert/MT10_Random/
+Done restoring expert policy...
+<NormAct<RewardShift<SawyerReachPushPickPlaceEnv instance>>>
+<NormAct<RewardShift<SawyerReachPushPickPlaceEnv instance>>>
+<NormAct<RewardShift<SawyerReachPushPickPlaceEnv instance>>>
+<NormAct<RewardShift<SawyerDoorEnv instance>>>
+<NormAct<RewardShift<SawyerDrawerOpenEnv instance>>>
+<NormAct<RewardShift<SawyerDrawerCloseEnv instance>>>
+<NormAct<RewardShift<SawyerButtonPressTopdownEnv instance>>>
+<NormAct<RewardShift<SawyerPegInsertionSideEnv instance>>>
+<NormAct<RewardShift<SawyerWindowOpenEnv instance>>>
+<NormAct<RewardShift<SawyerWindowCloseEnv instance>>>
+/viscam/u/jialugao/.anaconda3/envs/metaworldEnv/lib/python3.7/site-packages/gym/logger.py:30: UserWarning: [33mWARN: Could not seed environment <MTEnv instance>[0m
+  warnings.warn(colorize('%s: %s'%('WARN', msg % args), 'yellow'))
+
+
+-------------------------------- Iteration 0 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  14.605676889419556
+evaluation time:  17.368547201156616
+epoch time:  31.974254846572876
+
+
+-------------------------------- Iteration 1 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  15.988676309585571
+evaluation time:  17.339153289794922
+epoch time:  33.32785677909851
+
+
+-------------------------------- Iteration 2 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  15.485648155212402
+evaluation time:  17.483298540115356
+epoch time:  32.96897745132446
+
+
+-------------------------------- Iteration 3 -------------------------------- 
+{'reach-v1_success_rate': array(0., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.1}
+
+Training agent using sampled data from replay buffer...
+training time:  15.537049055099487
+evaluation time:  17.531238555908203
+epoch time:  33.068321228027344
+
+
+-------------------------------- Iteration 4 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.5}
+
+Training agent using sampled data from replay buffer...
+training time:  16.277997970581055
+evaluation time:  18.016662120819092
+epoch time:  34.294684171676636
+
+
+-------------------------------- Iteration 5 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  16.060051441192627
+evaluation time:  17.813806772232056
+epoch time:  33.87388825416565
+
+
+-------------------------------- Iteration 6 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  16.050381422042847
+evaluation time:  17.981672048568726
+epoch time:  34.03208589553833
+
+
+-------------------------------- Iteration 7 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  15.783081531524658
+evaluation time:  17.991863250732422
+epoch time:  33.77497100830078
+
+
+-------------------------------- Iteration 8 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  15.956743478775024
+evaluation time:  17.78634524345398
+epoch time:  33.743117570877075
+
+
+-------------------------------- Iteration 9 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.085088968276978
+evaluation time:  17.763808012008667
+epoch time:  33.848928689956665
+
+
+-------------------------------- Iteration 10 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  15.729285955429077
+evaluation time:  17.721854209899902
+epoch time:  33.45115828514099
+
+
+-------------------------------- Iteration 11 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.033361434936523
+evaluation time:  17.85867738723755
+epoch time:  33.89207124710083
+
+
+-------------------------------- Iteration 12 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.101375341415405
+evaluation time:  17.566203117370605
+epoch time:  33.66759538650513
+
+
+-------------------------------- Iteration 13 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.219590187072754
+evaluation time:  17.921889781951904
+epoch time:  34.141499519348145
+
+
+-------------------------------- Iteration 14 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  15.582879781723022
+evaluation time:  17.37629008293152
+epoch time:  32.95918869972229
+
+
+-------------------------------- Iteration 15 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  15.9708993434906
+evaluation time:  17.710158586502075
+epoch time:  33.68109655380249
+
+
+-------------------------------- Iteration 16 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.085362672805786
+evaluation time:  17.80046057701111
+epoch time:  33.8858482837677
+
+
+-------------------------------- Iteration 17 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.10273814201355
+evaluation time:  17.628092527389526
+epoch time:  33.73088216781616
+
+
+-------------------------------- Iteration 18 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.203720331192017
+evaluation time:  17.764301776885986
+epoch time:  33.96805238723755
+
+
+-------------------------------- Iteration 19 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  15.775954484939575
+evaluation time:  17.31070327758789
+epoch time:  33.086673736572266
+
+
+-------------------------------- Iteration 20 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  15.637538194656372
+evaluation time:  17.339947938919067
+epoch time:  32.97750520706177
+
+
+-------------------------------- Iteration 21 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.008296012878418
+evaluation time:  17.174945831298828
+epoch time:  33.18326187133789
+
+
+-------------------------------- Iteration 22 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  16.33754801750183
+evaluation time:  17.407878398895264
+epoch time:  33.74546480178833
+
+
+-------------------------------- Iteration 23 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  15.683934688568115
+evaluation time:  17.427653312683105
+epoch time:  33.11161184310913
+
+
+-------------------------------- Iteration 24 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  16.05678129196167
+evaluation time:  17.474979400634766
+epoch time:  33.531777143478394
+
+
+-------------------------------- Iteration 25 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.24834132194519
+evaluation time:  17.10094165802002
+epoch time:  33.349313735961914
+
+
+-------------------------------- Iteration 26 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.5}
+
+Training agent using sampled data from replay buffer...
+training time:  16.693955421447754
+evaluation time:  17.801974534988403
+epoch time:  34.4959454536438
+
+
+-------------------------------- Iteration 27 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.836177110671997
+evaluation time:  17.631248474121094
+epoch time:  34.46748685836792
+
+
+-------------------------------- Iteration 28 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.776490926742554
+evaluation time:  17.735852241516113
+epoch time:  34.51237106323242
+
+
+-------------------------------- Iteration 29 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.48984146118164
+evaluation time:  17.575409412384033
+epoch time:  34.065279960632324
+
+
+-------------------------------- Iteration 30 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.68874955177307
+evaluation time:  17.84891390800476
+epoch time:  34.537694215774536
+
+
+-------------------------------- Iteration 31 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.92295742034912
+evaluation time:  17.761616230010986
+epoch time:  34.684590578079224
+
+
+-------------------------------- Iteration 32 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.784396648406982
+evaluation time:  17.60615563392639
+epoch time:  34.39058184623718
+
+
+-------------------------------- Iteration 33 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.138386249542236
+evaluation time:  17.710339069366455
+epoch time:  34.84874176979065
+
+
+-------------------------------- Iteration 34 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  16.867082357406616
+evaluation time:  17.615741729736328
+epoch time:  34.48285889625549
+
+
+-------------------------------- Iteration 35 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.5}
+
+Training agent using sampled data from replay buffer...
+training time:  16.507099866867065
+evaluation time:  17.207731246948242
+epoch time:  33.714858055114746
+
+
+-------------------------------- Iteration 36 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  16.81748080253601
+evaluation time:  17.428921937942505
+epoch time:  34.24641942977905
+
+
+-------------------------------- Iteration 37 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.5}
+
+Training agent using sampled data from replay buffer...
+training time:  16.812161922454834
+evaluation time:  17.68369460105896
+epoch time:  34.495920181274414
+
+
+-------------------------------- Iteration 38 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(1., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.6}
+
+Training agent using sampled data from replay buffer...
+training time:  17.05020523071289
+evaluation time:  17.353121042251587
+epoch time:  34.403342962265015
+
+
+-------------------------------- Iteration 39 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  16.970685243606567
+evaluation time:  17.589165925979614
+epoch time:  34.55989933013916
+
+
+-------------------------------- Iteration 40 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.285956144332886
+evaluation time:  17.832676649093628
+epoch time:  35.11865043640137
+
+
+-------------------------------- Iteration 41 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.13820219039917
+evaluation time:  17.541222095489502
+epoch time:  34.67944359779358
+
+
+-------------------------------- Iteration 42 -------------------------------- 
+{'reach-v1_success_rate': array(0., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.167181491851807
+evaluation time:  17.18407154083252
+epoch time:  34.35128879547119
+
+
+-------------------------------- Iteration 43 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  16.903659105300903
+evaluation time:  17.38822340965271
+epoch time:  34.29189991950989
+
+
+-------------------------------- Iteration 44 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.1}
+
+Training agent using sampled data from replay buffer...
+training time:  17.23858070373535
+evaluation time:  17.754714727401733
+epoch time:  34.993313789367676
+
+
+-------------------------------- Iteration 45 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.57016897201538
+evaluation time:  17.54807186126709
+epoch time:  35.118261098861694
+
+
+-------------------------------- Iteration 46 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.478569984436035
+evaluation time:  17.632944107055664
+epoch time:  35.11154222488403
+
+
+-------------------------------- Iteration 47 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.5808527469635
+evaluation time:  17.69296622276306
+epoch time:  35.27387738227844
+
+
+-------------------------------- Iteration 48 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.253796815872192
+evaluation time:  17.239307403564453
+epoch time:  34.49311900138855
+
+
+-------------------------------- Iteration 49 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.52067494392395
+evaluation time:  17.337772607803345
+epoch time:  34.85847806930542
+
+
+-------------------------------- Iteration 50 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.4448139667511
+evaluation time:  17.55346703529358
+epoch time:  34.998300313949585
+
+
+-------------------------------- Iteration 51 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.593319177627563
+evaluation time:  17.72241711616516
+epoch time:  35.31576442718506
+
+
+-------------------------------- Iteration 52 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  17.31635308265686
+evaluation time:  17.19995141029358
+epoch time:  34.51632881164551
+
+
+-------------------------------- Iteration 53 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  17.636263847351074
+evaluation time:  17.3868305683136
+epoch time:  35.02311563491821
+
+
+-------------------------------- Iteration 54 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  17.802628993988037
+evaluation time:  17.470350742340088
+epoch time:  35.27299761772156
+
+
+-------------------------------- Iteration 55 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  18.0243980884552
+evaluation time:  17.287649631500244
+epoch time:  35.31206297874451
+
+
+-------------------------------- Iteration 56 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.6}
+
+Training agent using sampled data from replay buffer...
+training time:  18.094258785247803
+evaluation time:  17.541985034942627
+epoch time:  35.636276960372925
+
+
+-------------------------------- Iteration 57 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  18.52495312690735
+evaluation time:  17.07020378112793
+epoch time:  35.59520864486694
+
+
+-------------------------------- Iteration 58 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  18.363573789596558
+evaluation time:  17.46170163154602
+epoch time:  35.82530093193054
+
+
+-------------------------------- Iteration 59 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  19.47873020172119
+evaluation time:  17.44699740409851
+epoch time:  36.92575740814209
+
+
+-------------------------------- Iteration 60 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  19.182445287704468
+evaluation time:  17.605803966522217
+epoch time:  36.78826546669006
+
+
+-------------------------------- Iteration 61 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  19.77849769592285
+evaluation time:  17.575896501541138
+epoch time:  37.354424476623535
+
+
+-------------------------------- Iteration 62 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  19.918863534927368
+evaluation time:  17.567273378372192
+epoch time:  37.4861626625061
+
+
+-------------------------------- Iteration 63 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  19.89646553993225
+evaluation time:  17.50587034225464
+epoch time:  37.40235781669617
+
+
+-------------------------------- Iteration 64 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.17722487449646
+evaluation time:  17.766862869262695
+epoch time:  37.94412136077881
+
+
+-------------------------------- Iteration 65 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.3703134059906
+evaluation time:  17.57331681251526
+epoch time:  37.94364619255066
+
+
+-------------------------------- Iteration 66 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.194451808929443
+evaluation time:  17.768027782440186
+epoch time:  37.962512493133545
+
+
+-------------------------------- Iteration 67 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.64333200454712
+evaluation time:  17.730453968048096
+epoch time:  38.37385892868042
+
+
+-------------------------------- Iteration 68 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.47651720046997
+evaluation time:  17.791972160339355
+epoch time:  38.26850652694702
+
+
+-------------------------------- Iteration 69 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.841694116592407
+evaluation time:  17.603360176086426
+epoch time:  38.445075273513794
+
+
+-------------------------------- Iteration 70 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.312440633773804
+evaluation time:  17.296542406082153
+epoch time:  37.60900807380676
+
+
+-------------------------------- Iteration 71 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  20.323731660842896
+evaluation time:  17.699171543121338
+epoch time:  38.02291989326477
+
+
+-------------------------------- Iteration 72 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.319324493408203
+evaluation time:  17.069815397262573
+epoch time:  37.38917064666748
+
+
+-------------------------------- Iteration 73 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.478440284729004
+evaluation time:  17.80442452430725
+epoch time:  38.282880544662476
+
+
+-------------------------------- Iteration 74 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.84209895133972
+evaluation time:  17.53601050376892
+epoch time:  38.378133058547974
+
+
+-------------------------------- Iteration 75 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.891202449798584
+evaluation time:  17.69041347503662
+epoch time:  38.58164668083191
+
+
+-------------------------------- Iteration 76 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  20.785967588424683
+evaluation time:  17.423137426376343
+epoch time:  38.20912170410156
+
+
+-------------------------------- Iteration 77 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  20.812157154083252
+evaluation time:  17.790616989135742
+epoch time:  38.60283398628235
+
+
+-------------------------------- Iteration 78 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.1}
+
+Training agent using sampled data from replay buffer...
+training time:  20.889400243759155
+evaluation time:  17.71733069419861
+epoch time:  38.606762170791626
+
+
+-------------------------------- Iteration 79 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.97161626815796
+evaluation time:  17.70732831954956
+epoch time:  38.67896056175232
+
+
+-------------------------------- Iteration 80 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  21.16986346244812
+evaluation time:  17.854618549346924
+epoch time:  39.02451682090759
+
+
+-------------------------------- Iteration 81 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  21.05508279800415
+evaluation time:  17.88417959213257
+epoch time:  38.939287424087524
+
+
+-------------------------------- Iteration 82 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.991826057434082
+evaluation time:  17.790051221847534
+epoch time:  38.78189492225647
+
+
+-------------------------------- Iteration 83 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.93285608291626
+evaluation time:  17.406571865081787
+epoch time:  38.33945918083191
+
+
+-------------------------------- Iteration 84 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.542935848236084
+evaluation time:  17.2283833026886
+epoch time:  37.77134346961975
+
+
+-------------------------------- Iteration 85 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  20.695385456085205
+evaluation time:  17.50108003616333
+epoch time:  38.19648599624634
+
+
+-------------------------------- Iteration 86 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  20.60152769088745
+evaluation time:  17.48885679244995
+epoch time:  38.090411901474
+
+
+-------------------------------- Iteration 87 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  21.21633219718933
+evaluation time:  17.447983503341675
+epoch time:  38.66436314582825
+
+
+-------------------------------- Iteration 88 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  21.305851936340332
+evaluation time:  17.53582239151001
+epoch time:  38.84170746803284
+
+
+-------------------------------- Iteration 89 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(1., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  21.46245503425598
+evaluation time:  17.98591136932373
+epoch time:  39.448392152786255
+
+
+-------------------------------- Iteration 90 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.1}
+
+Training agent using sampled data from replay buffer...
+training time:  21.84491276741028
+evaluation time:  17.36023736000061
+epoch time:  39.20516657829285
+
+
+-------------------------------- Iteration 91 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  21.084237098693848
+evaluation time:  17.529189825057983
+epoch time:  38.61345934867859
+
+
+-------------------------------- Iteration 92 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  21.51875400543213
+evaluation time:  17.489480018615723
+epoch time:  39.008262634277344
+
+
+-------------------------------- Iteration 93 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(1., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.6}
+
+Training agent using sampled data from replay buffer...
+training time:  21.889299392700195
+evaluation time:  18.021811485290527
+epoch time:  39.91112756729126
+
+
+-------------------------------- Iteration 94 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(0., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.2}
+
+Training agent using sampled data from replay buffer...
+training time:  21.873904943466187
+evaluation time:  17.730748891830444
+epoch time:  39.60468554496765
+
+
+-------------------------------- Iteration 95 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(1., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.5}
+
+Training agent using sampled data from replay buffer...
+training time:  21.857953310012817
+evaluation time:  17.450620651245117
+epoch time:  39.308602809906006
+
+
+-------------------------------- Iteration 96 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  22.038728713989258
+evaluation time:  17.808501720428467
+epoch time:  39.84724569320679
+
+
+-------------------------------- Iteration 97 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(1., dtype=float32), 'drawer-open-v1_success_rate': array(0., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(0., dtype=float32), 'mean_success_rate': 0.3}
+
+Training agent using sampled data from replay buffer...
+training time:  21.923274755477905
+evaluation time:  17.597928285598755
+epoch time:  39.521260023117065
+
+
+-------------------------------- Iteration 98 -------------------------------- 
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(0., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.4}
+
+Training agent using sampled data from replay buffer...
+training time:  21.894066095352173
+evaluation time:  16.24428939819336
+epoch time:  38.13838005065918
+
+
+-------------------------------- Iteration 99 -------------------------------- 
+<string>:6: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+<string>:6: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+{'reach-v1_success_rate': array(1., dtype=float32), 'push-v1_success_rate': array(1., dtype=float32), 'pick-place-v1_success_rate': array(0., dtype=float32), 'door-v1_success_rate': array(0., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'drawer-close-v1_success_rate': array(0., dtype=float32), 'button-press-topdown-v1_success_rate': array(1., dtype=float32), 'ped-insert-side-v1_success_rate': array(0., dtype=float32), 'window-open-v1_success_rate': array(0., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 0.5}
+
+Training agent using sampled data from replay buffer...
+training time:  19.526739358901978
+evaluation time:  15.715884685516357
+epoch time:  35.24263954162598
+Done
