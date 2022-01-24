@@ -8,7 +8,7 @@ from utils.utils import *
 from metaworld_utils.meta_env import generate_single_mt_env
 
 class SingleCollector():
-    def __init__(self, env, env_cls, env_args, env_info, expert_policy, device, max_path_length, min_timesteps_per_batch, embedding_input = []):
+    def __init__(self, env, env_cls, env_args, env_info, expert_policy, device, max_path_length, min_timesteps_per_batch, embedding_input = [], input_shape = None):
         self.env = copy.deepcopy(env)
         self.env_cls = copy.deepcopy(env_cls)
         self.env_args = copy.deepcopy(env_args)
@@ -18,6 +18,7 @@ class SingleCollector():
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch
         self.embedding_input = embedding_input
+        self.input_shape = input_shape
         
         self.env_info.env_cls = generate_single_mt_env
         tasks = list(self.env_cls.keys())
@@ -52,7 +53,8 @@ class SingleCollector():
         path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix)
         timesteps_this_batch = len(path)
         info = None
-        return path, timesteps_this_batch, info
+        # print(self.env_info.env, path["observation"].shape)
+        return [path], timesteps_this_batch, info
     
     
     def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix):
@@ -83,7 +85,7 @@ class SingleCollector():
         while True:
             
             # use the most recent ob to decide what to do
-            # ob = ob[:9]
+            ob = ob[:self.input_shape]
             obs.append(ob)
             embedding_input.append(self.embedding_input)
             
@@ -95,12 +97,13 @@ class SingleCollector():
             else:
                 act = policy.get_action(torch.Tensor(ob).to(self.device).unsqueeze(0)).detach().cpu().numpy()
                 act = np.squeeze(act)
-                log_info += "agent:" + str(act) + "\n"
+                # log_info += "agent:" + str(act) + "\n"
                 
             acs.append(act)
             
             # take that action and record results
             ob, r, done, info = env.step(act)
+            ob = ob[:self.input_shape]
             
             # record result of taking that action
             steps += 1
@@ -121,8 +124,13 @@ class SingleCollector():
 
             if rollout_done:
                 break
+        
+        if not run_agent:
+            log_info += "expert_success: " + str(success) + "\n"
+            log_info += "path_length: " + str(len(acs)) + "\n"
+        else:
+            log_info += "agent_success: " + str(success) + "\n"
             
-        log_info += "success: " + str(success) + "\n"
         if len(image_obs)>0:
             if run_agent == True:
                 imageio.mimsave(log_prefix + "agent.gif", image_obs)

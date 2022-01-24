@@ -187,8 +187,7 @@ def generate_single_mt_env(task_cls, task_args, env_rank, num_tasks,
     env.discretize_goal_space(env.goal.copy())
     if "sampled_index" in meta_env_params:
         del meta_env_params["sampled_index"]
-    if env_name == 'mt10' or env_name == 'mt50':
-        env = AugObs(env, env_rank, num_tasks, max_obs_dim, meta_env_params)
+    env = AugObs(env, env_rank, num_tasks, max_obs_dim, meta_env_params)
     env = wrap_continuous_env(env, **env_params)
 
     act_space = env.action_space

@@ -1,0 +1,10 @@
+cp ../../Multi-Task-RL/log/MT10_Single_Task/reach-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/reach-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/push-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/push-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/pick-place-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/pick-place-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/door-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/door-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/drawer-open-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/drawer-open-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/drawer-close-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/drawer-close-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/button-press-topdown-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/button-press-topdown-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/ped-insert-side-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/ped-insert-side-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/window-open-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/window-open-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/window-close-v1/Fixed/257/model/model_pf_best.pth ../policy/expert/MT10_Fixed/window-close-v1.pth

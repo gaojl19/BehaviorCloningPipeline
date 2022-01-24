@@ -16,7 +16,7 @@ class MLPPolicy(nn.Module):
         else:
             self.last_activation_func = None
         input_shape = np.prod(input_shape)
-
+        self.input_shape = input_shape
         self.output_shape = output_shape
         
         for i in range(n_layers):

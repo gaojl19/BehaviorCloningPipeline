@@ -1,0 +1,10 @@
+cp ../../Multi-Task-RL/log/MT10_Single_Task/reach-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/reach-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/push-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/push-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/pick-place-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/pick-place-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/door-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/door-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/drawer-open-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/drawer-open-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/drawer-close-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/drawer-close-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/button-press-topdown-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/button-press-topdown-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/ped-insert-side-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/ped-insert-side-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/window-open-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/window-open-v1.pth
+cp ../../Multi-Task-RL/log/MT10_Single_Task/window-close-v1/Random/257/model/model_pf_best.pth ../policy/expert/MT10_Random/window-close-v1.pth
