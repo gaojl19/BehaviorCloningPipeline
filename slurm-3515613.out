@@ -1,3 +1,0 @@
-/var/lib/slurm/slurmd/job3515613/slurm_script: line 9: batch_scripts/MT50_batch/seed.sh: No such file or directory
-SLURM_JOBID=3515613
-working directory=/viscam/u/jialugao/Imitation-SoftModule

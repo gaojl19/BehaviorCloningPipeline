@@ -166,8 +166,12 @@ def main():
     
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
-    if not args.cuda:
+    print("no cuda: ", args.cuda)
+    print("gpu available: ", torch.cuda.is_available())
+    if args.no_cuda:
         args.device = "cpu"
+    # if not args.cuda:
+    #     args.device = "cpu"
     params = get_params(args.config)
     
     # CREATE DIRECTORY FOR LOGGING
