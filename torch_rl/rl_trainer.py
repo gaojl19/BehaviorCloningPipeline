@@ -220,7 +220,7 @@ class RL_Trainer(object):
                 print("evaluation time: ", eval_time)
                 print("epoch time: ", time.time() - start)
             
-            if min_loss < 0.1:
+            if min_loss < 0.005:
                 print("\n\n-------------------------------- Training stopped due to early stopping -------------------------------- ")
                 print("min loss: ", min_loss)
                 break
