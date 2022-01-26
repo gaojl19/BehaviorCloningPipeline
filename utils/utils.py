@@ -23,7 +23,7 @@ def Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_i
             "embedding_input": embedding_input}
 
 
-def convert_listofrollouts(paths, concat_rew=True):
+def convert_listofrollouts(paths, concat_rew=True, embedding=True):
     """
         Take a list of rollout dictionaries
         and return separate arrays,
@@ -40,7 +40,7 @@ def convert_listofrollouts(paths, concat_rew=True):
     terminals = np.concatenate([path["terminal"] for path in paths])
     
     
-    if len(paths[0]["embedding_input"][0])!= 0:
+    if embedding:
         embeddings_input= np.concatenate([path["embedding_input"] for path in paths])
         return observations, actions, rewards, next_observations, terminals, embeddings_input
     # single task doesn't need task embedding

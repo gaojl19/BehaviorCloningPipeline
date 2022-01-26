@@ -5,11 +5,12 @@ import numpy as np
 import gym
 
 from torch_rl.rl_trainer import RL_Trainer
-from agents.bc_agent import MLPAgent
+from agents.bc_agent import MLPAgent, SoftModuleAgent
 from policy.loaded_gaussian_policy import LoadedGaussianPolicy
 from utils.args import get_params
 from utils.logger import Logger
 from networks.base import MLPBase
+import random
 
 
 from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS
@@ -29,89 +30,116 @@ class BC_Trainer(object):
             }
 
         self.args = args
-        self.args['agent_class'] = MLPAgent ## HW1: you will modify this
+        
+        # for baseline
+        self.args['agent_class'] = MLPAgent
         self.args['agent_params'] = agent_params
         
         # BUILD ENV
         self.device = torch.device("cuda:{}".format(args["device"]) if args["cuda"] else "cpu")
+        env, cls_dicts, cls_args = get_meta_env( params['env_name'], params['env'], params['meta_env'])
         
-        if args["task_env"] == "MT10_task_env":
-            cls_dicts = {args["task_name"]: EASY_MODE_CLS_DICT[args["task_name"]]}
-            cls_args = {args["task_name"]: EASY_MODE_ARGS_KWARGS[args["task_name"]]}
-            env_name =  EASY_MODE_CLS_DICT[args["task_name"]]
-            
-            # overwrite if random_init=True, else use default setting
-            if args["random_init"] == True:
-                cls_args[args["task_name"]]['kwargs']['random_init']=True
-            print(cls_args)
-            
-
-        elif args["task_env"] == "MT50_task_env":
-            if args["task_name"] in HARD_MODE_CLS_DICT['train'].keys():     # 45 tasks
-                cls_dicts = {args["task_name"]: HARD_MODE_CLS_DICT['train'][args["task_name"]]}
-                cls_args = {args["task_name"]: HARD_MODE_ARGS_KWARGS['train'][args["task_name"]]}
-                env_name =  HARD_MODE_CLS_DICT['train'][args["task_name"]]
-            else:
-                cls_dicts = {args["task_name"]: HARD_MODE_CLS_DICT['test'][args["task_name"]]}
-                cls_args = {args["task_name"]: HARD_MODE_ARGS_KWARGS['test'][args["task_name"]]}
-                env_name =  HARD_MODE_CLS_DICT['test'][args["task_name"]]
-
-        else:
-            raise NotImplementedError
-    
-    
-        # set cls_args['kwargs']['obs_type'] = params['meta_env']['obs_type']
-        # also here you could set random init
-        cls_args[args["task_name"]]['kwargs']['obs_type'] = params['meta_env']['obs_type']
-        cls_args[args["task_name"]]['kwargs']['random_init'] = params['meta_env']['random_init']
-    
-        # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
-        self.env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
-
-        self.env.seed(args["seed"])
-        torch.manual_seed(args["seed"])
-        np.random.seed(args["seed"])
-        if args["cuda"]:
+        self.env = env
+        self.env.seed(args['seed'])
+        torch.manual_seed(args['seed'])
+        np.random.seed(args['seed'])
+        random.seed(args['seed'])
+        if args['cuda']:
             torch.backends.cudnn.deterministic=True
-
-        self.experiment_name = os.path.split( os.path.splitext( args["config"] )[0] )[-1] if args["id"] is None \
-            else args["id"]
-        self.logger = Logger(args['log_dir'])
+    
 
         params['general_setting']['env'] = self.env
-        params['general_setting']['logger'] = self.logger
         params['general_setting']['device'] = self.device
-        params['net']['base_type']=MLPBase
-        
+
+        params['net']['base_type'] = MLPBase
+
+        import torch.multiprocessing as mp
+        mp.set_start_method('spawn', force=True)
+
+        example_embedding = self.env.active_task_one_hot 
         discrete = isinstance(self.env.action_space, gym.spaces.Discrete)
         self.args['agent_params']['discrete'] = discrete
+        
         # Observation and action sizes
         ob_dim = self.env.observation_space.shape[0]
         ac_dim = self.env.action_space.n if discrete else self.env.action_space.shape[0]
         self.args['agent_params']['ac_dim'] = ac_dim
         self.args['agent_params']['ob_dim'] = ob_dim
         
+        device = torch.device("cuda:{}".format(args['device']) if args['cuda'] else "cpu")
+
         # self.args['ep_len'] = self.args['ep_len']
         print(self.args)
         print(params)
         self.params = params
         
+        self.agent_task_curve={}
+        self.expert_task_curve={}
+
         # LOAD EXPERT POLICY
         print('Loading expert policy from...', self.args['expert_policy_file'])
-        self.loaded_expert_policy = LoadedGaussianPolicy(env=self.env, params=params, policy_path=args["expert_policy_file"])
-        expert_dict = {self.args["task_name"]: self.loaded_expert_policy}
+        expert_dict = {}
+        if self.params["env_name"] == "mt10":
+            for name, env_name in EASY_MODE_CLS_DICT.items():
+                # add necessary env args
+                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+                expert_env.seed(args["seed"])
+                params['expert_net']['base_type']=MLPBase
+                
+                file_path = self.args['expert_policy_file'] + name + ".pth"
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                
+                self.expert_task_curve[name + "_success_rate"] = []
+                self.agent_task_curve[name + "_success_rate"] = []
+                
+        elif self.params["env_name"] == "mt50":
+            # load MT50 train environment
+            for name, env_name in HARD_MODE_CLS_DICT["train"].items():
+                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+                expert_env.seed(args["seed"])
+                params['expert_net']['base_type']=MLPBase
+                
+                
+                file_path = self.args['expert_policy_file'] + name + ".pth"
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                
+                self.expert_task_curve[name + "_success_rate"] = []
+                self.agent_task_curve[name + "_success_rate"] = []
+            
+            # load MT50 test environment
+            for name, env_name in HARD_MODE_CLS_DICT["test"].items():
+                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+                expert_env.seed(args["seed"])
+                params['expert_net']['base_type']=MLPBase
+                
+                file_path = self.args['expert_policy_file'] + name + ".pth"
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                self.expert_task_curve[name + "_success_rate"] = []
+                self.agent_task_curve[name + "_success_rate"] = []
+        
         print('Done restoring expert policy...')
-
-    
+        
         # RL TRAINER
-        self.rl_trainer = RL_Trainer(env = self.env, env_cls = cls_dicts, env_args = [params["env"], cls_args, params["meta_env"]], args = self.args, params = params, expert_dict=expert_dict) ## HW1: you will modify this
-        
-        
+        self.rl_trainer = RL_Trainer(
+            env = self.env,
+            env_cls = cls_dicts, 
+            env_args = [params["env"], cls_args, params["meta_env"]], 
+            args = self.args, 
+            params = params, 
+            expert_dict=expert_dict, 
+            example_embedding=example_embedding
+        )
+
     
     def run_training_loop(self):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
-            baseline=False
+            baseline=True,
+            expert_task_curve=self.expert_task_curve,
+            agent_task_curve=self.agent_task_curve
         )
 
 
@@ -166,35 +194,12 @@ def main():
     
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
-    print("no cuda: ", args.no_cuda)
-    print("gpu available: ", torch.cuda.is_available())
     if not args.cuda:
         args.device = "cpu"
     params = get_params(args.config)
     
-    # CREATE DIRECTORY FOR LOGGING
-    if args.do_dagger:
-        logdir_prefix = 'DAgger_'
-        print("do dagger")
-        assert args.n_iter>1, ('DAGGER needs more than 1 iteration (n_iter>1) of training, to iteratively query the expert and train (after 1st warmstarting from behavior cloning).')
-    else:
-        logdir_prefix = 'Base_'
-        # assert args.n_iter==1, ('Vanilla behavior cloning collects expert data just once (n_iter=1)')
-
-    
-    # directory for logging
-    data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-    if not (os.path.exists(data_path)):
-        os.makedirs(data_path)
-    logdir = logdir_prefix + args.exp_name + '_' + args.task_name + '_' + str(args.n_layers) + str(args.batch_size) + str(args.learning_rate) + time.strftime("%d-%m-%Y_%H-%M-%S")
-    logdir = os.path.join(data_path, logdir)
-    
      # convert args to dictionary
     args = vars(args)
-    
-    args['log_dir'] = logdir
-    if not(os.path.exists(logdir)):
-        os.makedirs(logdir)
 
 
     # RUN TRAINING

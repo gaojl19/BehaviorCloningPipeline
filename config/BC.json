@@ -33,7 +33,7 @@
 
         "eval_episodes" : 100,
         "train_render": false,
-        "eval_render": false
+        "eval_render": true
     },
     "sac":{
         

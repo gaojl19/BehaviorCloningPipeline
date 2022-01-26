@@ -26,7 +26,7 @@ class LoadedGaussianPolicy(BasePolicy):
         
         self.pf.load_state_dict(torch.load(policy_path, map_location='cpu'))
         self.pf.eval()
-        print(self.pf.state_dict()["base.fc0.weight"])
+        # print(self.pf.state_dict()["base.fc0.weight"])
 
 
     def forward(self, obs, idx=torch.LongTensor([0])):

@@ -48,7 +48,10 @@ class RL_Trainer(object):
         else:
             self.agent = agent_class(self.env, self.args['agent_params'])
         
-        self.input_shape = self.agent.actor.input_shape
+        # Notes:
+        # expert has input shape of 9
+        # agent will have input shape of 12(Augmented observation)
+        # self.input_shape = 
         
         # MT10
         if self.params["env_name"] == "mt10":
@@ -60,7 +63,8 @@ class RL_Trainer(object):
                 device=params['general_setting']['device'],
                 max_path_length=self.args["ep_len"],
                 min_timesteps_per_batch=self.args['batch_size'],
-                params=params
+                params=params,
+                input_shape = self.input_shape
             )
             self.agent_env = MTEnvCollector(
                 env=self.env,
@@ -82,7 +86,8 @@ class RL_Trainer(object):
                 device=params['general_setting']['device'],
                 max_path_length=self.args["ep_len"],
                 min_timesteps_per_batch=self.args['batch_size'],
-                params=params
+                params=params,
+                input_shape = self.input_shape
             )
             self.agent_env = MTEnvCollector(
                 env=self.env,
@@ -126,7 +131,7 @@ class RL_Trainer(object):
         self.plot_prefix = plot_prefix
     
     
-    def run_training_loop(self, n_iter, relabel_with_expert=False, expert_task_curve={}, agent_task_curve={}):
+    def run_training_loop(self, n_iter, baseline=False, expert_task_curve={}, agent_task_curve={}):
         """
         :param n_iter:  number of (dagger) iterations
         :param collect_policy:
@@ -136,6 +141,8 @@ class RL_Trainer(object):
         :param start_relabel_with_expert: iteration at which to start relabel with expert
         :param expert_policy:
         """
+        
+        self.baseline=baseline
 
         # init vars at beginning of training
         self.total_envsteps = 0
@@ -155,25 +162,15 @@ class RL_Trainer(object):
                 print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
                 render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
                 training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
-                # training_returns = self.collect_training_trajectories(
-                #     itr,
-                #     env_name,
-                #     expert_policy,
-                #     collect_policy,
-                #     self.args['batch_size'],
-                #     relabel_with_expert
-                # )  # HW1: implement this function below
             
                 paths, envsteps_this_batch, infos = training_returns
                 self.total_envsteps += envsteps_this_batch
 
-                # DAgger: relabel the collected obs with actions from a provided expert policy
-                # if relabel_with_expert and itr>=start_relabel_with_expert:
-                #     paths = self.do_relabel_with_expert(expert_policy, paths)
-
                 # add collected data to replay buffer
-                self.agent.add_to_replay_buffer(paths)
-
+                if self.mt_flag: 
+                    self.agent.add_mt_to_replay_buffer(paths)
+                else:
+                    self.agent.add_to_replay_buffer(paths)
             
             # train agent (using sampled data from replay buffer)
             training_logs = self.train_agent()  # HW1: implement this function below
@@ -209,7 +206,10 @@ class RL_Trainer(object):
                     eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
                     agent_success_curve.append(eval_success_rate)
                 else:
-                    eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
+                    if self.baseline:
+                        eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
+                    else:
+                        eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
                     for name in eval_infos.keys():
                         if name == "mean_success_rate":
                             agent_success_curve.append(eval_infos["mean_success_rate"])
@@ -233,7 +233,11 @@ class RL_Trainer(object):
             eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
             print("mean_success_rate: ", eval_success_rate)
         else:
-            eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
+            if self.baseline:
+                eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
+            else:
+                eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
+            
             for name in eval_infos.keys():
                 if name == "mean_success_rate":
                     continue
@@ -275,12 +279,15 @@ class RL_Trainer(object):
         for _ in range(self.args['gradient_steps']):
 
             # sample some data from the data buffer
-            if self.mt_flag == True:
-                ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.sample(self.args['train_batch_size'])
+            if self.mt_flag:
+                ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
 
                 # use the sampled data to train an agent
-                train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch)
-
+                if self.baseline:
+                    train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch)
+                else:
+                    train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch)
+                    
             else:
                 ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.agent.sample(self.args['train_batch_size'])
 

@@ -31,7 +31,7 @@ class ReplayBuffer(object):
         # convert new rollouts into their component arrays, and append them onto
         # our arrays
         observations, actions, rewards, next_observations, terminals = (
-            convert_listofrollouts(paths, concat_rew))
+                convert_listofrollouts(paths, concat_rew))
 
         if self.obs is None:
             self.obs = observations[-self.max_size:]
@@ -102,7 +102,7 @@ class ReplayBuffer(object):
         # convert new rollouts into their component arrays, and append them onto
         # our arrays
         observations, actions, rewards, next_observations, terminals, embedding_input = (
-            convert_listofrollouts(paths, concat_rew))
+            convert_listofrollouts(paths, concat_rew, embedding=True))
 
         if self.obs is None:
             self.obs = observations[-self.max_size:]

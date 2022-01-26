@@ -141,7 +141,7 @@ class BC_Trainer(object):
     def run_training_loop(self):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
-            relabel_with_expert=self.args['do_dagger'],
+            baseline=False,
             expert_task_curve=self.expert_task_curve,
             agent_task_curve=self.agent_task_curve
         )

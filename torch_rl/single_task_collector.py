@@ -50,8 +50,8 @@ class SingleCollector():
     
     def sample_expert(self, render, render_mode, log, log_prefix):
         # only sample once
-        # path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix)
-        path = self.sample_n_trajectories(self.expert_policy, 100, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
+        path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix)
+        # path = self.sample_n_trajectories(self.expert_policy, 100, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
         
         timesteps_this_batch = len(path)
         info = None
@@ -84,8 +84,8 @@ class SingleCollector():
         steps = 0
         done = False
         success = 0
+        
         while True:
-            
             # use the most recent ob to decide what to do
             ob = ob[:self.input_shape]
             obs.append(ob)

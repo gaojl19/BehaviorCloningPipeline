@@ -24,12 +24,13 @@ class MT10SingleCollector():
     '''
         Create 10 single task environment, sample paths from single-task expert policy
     '''
-    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params):
+    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params, input_shape):
         self.tasks = list(env_cls.keys())
         self.device = device
         self.task_collector = {}
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch/10
+        self.input_shape = input_shape
         
         for i, task in enumerate(self.tasks):
             cls_dicts = {task: EASY_MODE_CLS_DICT[task]}
@@ -58,7 +59,8 @@ class MT10SingleCollector():
                     device=device,
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
-                    embedding_input=embedding_input)
+                    embedding_input=embedding_input,
+                    input_shape=input_shape)
         
     
     def sample_expert(self, render, render_mode, log, log_prefix):
@@ -82,16 +84,36 @@ class MT10SingleCollector():
         return paths, timesteps_this_batch, info
     
     
+    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix):
+        '''
+            serialized sample from 50 environment
+        '''
+        info = {}
+        success = 0
+        for task in self.task_collector.keys():
+            # prefix = log_prefix + "/" + task + "/"
+            collector = self.task_collector[task]
+            success_rate = collector.sample_agent(agent_policy, n_sample, render, render_mode, log, log_prefix)
+            
+            info[task + "_success_rate"] = success_rate
+            success += success_rate
+        
+        info["mean_success_rate"] = success / len(self.task_collector )
+        print(info)
+        return info
+    
+    
 class MT50SingleCollector():
     '''
         Create 50 single task environment, sample paths from single-task expert policy
     '''
-    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params):
+    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params, input_shape):
         self.tasks = list(env_cls.keys())
         self.device = device
         self.task_collector = {}
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch/50
+        self.input_shape = input_shape
         
         for i, task in enumerate(self.tasks):
             if task in HARD_MODE_CLS_DICT['train'].keys():     # 45 tasks
@@ -126,7 +148,8 @@ class MT50SingleCollector():
                     device=device,
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
-                    embedding_input=embedding_input)
+                    embedding_input=embedding_input,
+                    input_shape=self.input_shape)
                 
     
     def sample_expert(self, render, render_mode, log, log_prefix):
@@ -157,6 +180,25 @@ class MT50SingleCollector():
         info["mean_success_rate"] = success / len(self.task_collector )
         print(info)
         return paths, timesteps_this_batch, info
+    
+    
+    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix):
+        '''
+            serialized sample from 50 environment
+        '''
+        info = {}
+        success = 0
+        for task in self.task_collector.keys():
+            # prefix = log_prefix + "/" + task + "/"
+            collector = self.task_collector[task]
+            success_rate = collector.sample_agent(agent_policy, n_sample, render, render_mode, log, log_prefix)
+            
+            info[task + "_success_rate"] = success_rate
+            success += success_rate
+        
+        info["mean_success_rate"] = success / len(self.task_collector )
+        print(info)
+        return info
     
     
 class MTEnvCollector():
