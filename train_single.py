@@ -170,6 +170,8 @@ def main():
     print("gpu available: ", torch.cuda.is_available())
     if not args.cuda:
         args.device = "cpu"
+    # if not args.cuda:
+    #     args.device = "cpu"
     params = get_params(args.config)
     
     # CREATE DIRECTORY FOR LOGGING
