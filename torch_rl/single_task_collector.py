@@ -86,17 +86,20 @@ class SingleCollector():
         success = 0
         
         while True:
-            # use the most recent ob to decide what to do
-            ob = ob[:self.input_shape]
-            obs.append(ob)
             embedding_input.append(self.embedding_input)
             
             # query the policy's get_action function
             if not run_agent:
+                # use the most recent ob to decide what to do
+                ob = ob[:self.input_shape]
+                obs.append(ob)
                 act = policy.get_action(torch.Tensor(ob).to(self.device).unsqueeze(0), self.device)
                 # log_info += "expert:" + str(act) + "\n"
             
             else:
+                # use the most recent ob to decide what to do
+                ob = ob[:policy.input_shape]
+                obs.append(ob)
                 act = policy.get_action(torch.Tensor(ob).to(self.device).unsqueeze(0)).detach().cpu().numpy()
                 act = np.squeeze(act)
                 # log_info += "agent:" + str(act) + "\n"
@@ -105,7 +108,10 @@ class SingleCollector():
             
             # take that action and record results
             ob, r, done, info = env.step(act)
-            ob = ob[:self.input_shape]
+            if not run_agent:
+                ob = ob[:self.input_shape]
+            else:
+                ob = ob[:policy.input_shape]
             
             # record result of taking that action
             steps += 1
