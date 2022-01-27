@@ -54,7 +54,7 @@ class MLPPolicy(nn.Module):
         else:
             observation = obs[None]
 
-        # TODO return the action that the policy prescribes
+        # return the action that the policy prescribes
         return self.forward(observation)
 
     

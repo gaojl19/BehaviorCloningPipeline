@@ -33,15 +33,12 @@ class MLPAgent(BaseAgent):
         # replay buffer
         self.replay_buffer = ReplayBuffer(self.agent_params['max_replay_buffer_size'])
 
-    def train(self, ob_no, ac_na, re_n, next_ob_no, terminal_n, embedding_n=None):
+    def train(self, ob_no, ac_na, re_n, next_ob_no, terminal_n):
         self.actor.train()
         
         self.optimizer.zero_grad()
         
-        if embedding_n == None:
-            pred_acs = self.actor(ob_no)
-        else:
-            pred_acs = self.actor(embedding_n)
+        pred_acs = self.actor(ob_no)
         loss = self.loss(pred_acs, ac_na)
 
         loss.backward()
@@ -55,9 +52,15 @@ class MLPAgent(BaseAgent):
 
     def add_to_replay_buffer(self, paths):
         self.replay_buffer.add_rollouts(paths)
+        
+    def add_mt_to_replay_buffer(self, paths):
+        self.replay_buffer.add_mt_rollouts(paths)
 
     def sample(self, batch_size):
-        return self.replay_buffer.sample_random_data(batch_size)  # HW1: you will modify this
+        return self.replay_buffer.sample_random_data(batch_size) 
+
+    def mt_sample(self, batch_size):
+        return self.replay_buffer.sample_mt_random_data(batch_size) 
 
     def save(self, path):
         return self.actor.save(path)
@@ -105,10 +108,10 @@ class SoftModuleAgent(BaseAgent):
         } 
         return log
 
-    def add_to_replay_buffer(self, paths):
+    def add_mt_to_replay_buffer(self, paths):
         self.replay_buffer.add_mt_rollouts(paths)
 
-    def sample(self, batch_size):
+    def mt_sample(self, batch_size):
         return self.replay_buffer.sample_mt_random_data(batch_size)  # HW1: you will modify this
 
     def save(self, path):

@@ -111,7 +111,7 @@ class BC_Trainer(object):
     def run_training_loop(self):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
-            relabel_with_expert=self.args['do_dagger']
+            baseline=False
         )
 
 
@@ -166,9 +166,9 @@ def main():
     
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
-    print("no cuda: ", args.cuda)
+    print("no cuda: ", args.no_cuda)
     print("gpu available: ", torch.cuda.is_available())
-    if args.no_cuda:
+    if not args.cuda:
         args.device = "cpu"
     # if not args.cuda:
     #     args.device = "cpu"
