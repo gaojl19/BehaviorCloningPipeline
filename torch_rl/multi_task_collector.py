@@ -1,3 +1,4 @@
+from lib2to3.pgen2.token import N_TOKENS
 from utils.utils import *
 from metaworld_utils.meta_env import generate_single_mt_env
 from torch_rl.replay_buffer import EnvInfo
@@ -16,6 +17,9 @@ import torch.multiprocessing as mp
 from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS
 from metaworld.envs.mujoco.env_dict import HARD_MODE_CLS_DICT, HARD_MODE_ARGS_KWARGS
 from metaworld_utils.meta_env import get_meta_env
+from metaworld_utils.customize_env_dict import DIVERSE_MT10_CLS_DICT, DIVERSE_MT10_ARGS_KWARGS
+from metaworld_utils.customize_env_dict import SIMILAR_MT10_CLS_DICT, SIMILAR_MT10_ARGS_KWARGS
+from metaworld_utils.customize_env_dict import FAIL_MT10_CLS_DICT, FAIL_MT10_ARGS_KWARGS
 from torch_rl.single_task_collector import SingleCollector
 
 
@@ -74,6 +78,11 @@ class MT10SingleCollector():
         for task in self.task_collector.keys():
             collector = self.task_collector[task]
             new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
+            # modify observations
+            if self.input_shape > len(new_path[0]["observation"][0]):
+                new_path[0]["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["observation"]]
+                new_path[0]["next_observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["next_observation"]]
+            
             paths += new_path
             timesteps_this_batch += timesteps
             info[task + "_success_rate"] = new_path[0]["success"]
@@ -84,7 +93,7 @@ class MT10SingleCollector():
         return paths, timesteps_this_batch, info
     
     
-    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix):
+    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter=0):
         '''
             serialized sample from 50 environment
         '''
@@ -93,7 +102,7 @@ class MT10SingleCollector():
         for task in self.task_collector.keys():
             # prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            success_rate = collector.sample_agent(agent_policy, n_sample, render, render_mode, log, log_prefix)
+            success_rate = collector.sample_agent(agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter)
             
             info[task + "_success_rate"] = success_rate
             success += success_rate
@@ -102,6 +111,132 @@ class MT10SingleCollector():
         print(info)
         return info
     
+
+class MT10DiverseCollector(MT10SingleCollector):
+    '''
+        Diverse version, 10 tasks
+    '''
+    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params, input_shape):
+        self.tasks = list(env_cls.keys())
+        self.device = device
+        self.task_collector = {}
+        self.max_path_length = max_path_length
+        self.min_timesteps_per_batch = min_timesteps_per_batch/10
+        self.input_shape = input_shape
+        
+        for i, task in enumerate(self.tasks):
+            cls_dicts = {task: DIVERSE_MT10_CLS_DICT[task]}
+            cls_args = {task: DIVERSE_MT10_ARGS_KWARGS[task]}
+            env_name =  DIVERSE_MT10_CLS_DICT[task]
+            
+            # overwrite random init part
+            cls_args[task]['kwargs']['obs_type'] = params['meta_env']['obs_type']
+            cls_args[task]['kwargs']['random_init'] = params['meta_env']['random_init']
+    
+            # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
+            env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+            
+            # create embedding
+            embedding_input = torch.zeros(10)
+            embedding_input[i] = 1
+            embedding_input = embedding_input.unsqueeze(0).to(self.device)
+        
+            if task in expert_dict.keys():
+                self.task_collector[task] = SingleCollector(
+                    env=env, 
+                    env_cls=cls_dicts, 
+                    env_args=env_args,
+                    env_info=env_info,
+                    expert_policy=expert_dict[task],
+                    device=device,
+                    max_path_length=self.max_path_length,
+                    min_timesteps_per_batch=self.min_timesteps_per_batch,
+                    embedding_input=embedding_input,
+                    input_shape=input_shape)
+
+class MT10SimilarCollector(MT10SingleCollector):
+    '''
+        Similar version, 10 tasks
+    '''
+    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params, input_shape):
+        self.tasks = list(env_cls.keys())
+        self.device = device
+        self.task_collector = {}
+        self.max_path_length = max_path_length
+        self.min_timesteps_per_batch = min_timesteps_per_batch/10
+        self.input_shape = input_shape
+        
+        for i, task in enumerate(self.tasks):
+            cls_dicts = {task: SIMILAR_MT10_CLS_DICT[task]}
+            cls_args = {task: SIMILAR_MT10_ARGS_KWARGS[task]}
+            env_name =  SIMILAR_MT10_CLS_DICT[task]
+            
+            # overwrite random init part
+            cls_args[task]['kwargs']['obs_type'] = params['meta_env']['obs_type']
+            cls_args[task]['kwargs']['random_init'] = params['meta_env']['random_init']
+    
+            # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
+            env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+            
+            # create embedding
+            embedding_input = torch.zeros(10)
+            embedding_input[i] = 1
+            embedding_input = embedding_input.unsqueeze(0).to(self.device)
+        
+            if task in expert_dict.keys():
+                self.task_collector[task] = SingleCollector(
+                    env=env, 
+                    env_cls=cls_dicts, 
+                    env_args=env_args,
+                    env_info=env_info,
+                    expert_policy=expert_dict[task],
+                    device=device,
+                    max_path_length=self.max_path_length,
+                    min_timesteps_per_batch=self.min_timesteps_per_batch,
+                    embedding_input=embedding_input,
+                    input_shape=input_shape)
+                
+class MT10FailCollector(MT10SingleCollector):
+    '''
+        Partially failed version, 10 tasks
+    '''
+    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params, input_shape):
+        self.tasks = list(env_cls.keys())
+        self.device = device
+        self.task_collector = {}
+        self.max_path_length = max_path_length
+        self.min_timesteps_per_batch = min_timesteps_per_batch/10
+        self.input_shape = input_shape
+        
+        for i, task in enumerate(self.tasks):
+            cls_dicts = {task: FAIL_MT10_CLS_DICT[task]}
+            cls_args = {task: FAIL_MT10_ARGS_KWARGS[task]}
+            env_name = FAIL_MT10_CLS_DICT[task]
+            
+            # overwrite random init part
+            cls_args[task]['kwargs']['obs_type'] = params['meta_env']['obs_type']
+            cls_args[task]['kwargs']['random_init'] = params['meta_env']['random_init']
+    
+            # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
+            env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+            
+            # create embedding
+            embedding_input = torch.zeros(10)
+            embedding_input[i] = 1
+            embedding_input = embedding_input.unsqueeze(0).to(self.device)
+        
+            if task in expert_dict.keys():
+                self.task_collector[task] = SingleCollector(
+                    env=env, 
+                    env_cls=cls_dicts, 
+                    env_args=env_args,
+                    env_info=env_info,
+                    expert_policy=expert_dict[task],
+                    device=device,
+                    max_path_length=self.max_path_length,
+                    min_timesteps_per_batch=self.min_timesteps_per_batch,
+                    embedding_input=embedding_input,
+                    input_shape=input_shape)  
     
 class MT50SingleCollector():
     '''

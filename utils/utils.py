@@ -23,7 +23,7 @@ def Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_i
             "embedding_input": embedding_input}
 
 
-def convert_listofrollouts(paths, concat_rew=True, embedding=True):
+def convert_listofrollouts(paths, concat_rew=True, embedding=False):
     """
         Take a list of rollout dictionaries
         and return separate arrays,

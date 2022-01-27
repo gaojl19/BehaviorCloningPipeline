@@ -17,7 +17,6 @@ class LoadedGaussianPolicy(BasePolicy):
             head_num=env.num_tasks,
             **params['net'] )
         else:
-            print(env.observation_space.shape[0])
             self.pf = MultiHeadGuassianContPolicy (
             input_shape = env.observation_space.shape[0], 
             output_shape = 2 * env.action_space.shape[0],
@@ -27,7 +26,7 @@ class LoadedGaussianPolicy(BasePolicy):
         self.pf.load_state_dict(torch.load(policy_path, map_location='cpu'))
         self.pf.eval()
         # print(self.pf.state_dict()["base.fc0.weight"])
-
+        self.ob_dim = env.observation_space.shape[0]
 
     def forward(self, obs, idx=torch.LongTensor([0])):
         self.pf.forward(obs, idx)

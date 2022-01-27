@@ -13,8 +13,9 @@ from networks.base import MLPBase
 import random
 
 
-from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS
-from metaworld.envs.mujoco.env_dict import HARD_MODE_CLS_DICT, HARD_MODE_ARGS_KWARGS
+from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT
+from metaworld.envs.mujoco.env_dict import HARD_MODE_CLS_DICT
+from metaworld_utils.customize_env_dict import DIVERSE_MT10_CLS_DICT, SIMILAR_MT10_CLS_DICT, FAIL_MT10_CLS_DICT
 from metaworld_utils.meta_env import get_meta_env
 
 class BC_Trainer(object):
@@ -75,7 +76,10 @@ class BC_Trainer(object):
         
         self.agent_task_curve={}
         self.expert_task_curve={}
-
+        # Observation and action sizes
+        ob_dim = self.env.observation_space.shape[0]
+        ac_dim = self.env.action_space.n if discrete else self.env.action_space.shape[0]
+        
         # LOAD EXPERT POLICY
         print('Loading expert policy from...', self.args['expert_policy_file'])
         expert_dict = {}
@@ -120,7 +124,54 @@ class BC_Trainer(object):
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
         
+        
+        elif self.params["env_name"] == "mt10_diverse":
+            for name, env_name in DIVERSE_MT10_CLS_DICT.items():
+                # add necessary env args
+                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+                expert_env.seed(args["seed"])
+                params['expert_net']['base_type']=MLPBase
+                
+                file_path = self.args['expert_policy_file'] + name + ".pth"
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
+                self.expert_task_curve[name + "_success_rate"] = []
+                self.agent_task_curve[name + "_success_rate"] = []
+            
+            
+        elif self.params["env_name"] == "mt10_similar":
+            for name, env_name in SIMILAR_MT10_CLS_DICT.items():
+                # add necessary env args
+                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+                expert_env.seed(args["seed"])
+                params['expert_net']['base_type']=MLPBase
+                
+                file_path = self.args['expert_policy_file'] + name + ".pth"
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
+                self.expert_task_curve[name + "_success_rate"] = []
+                self.agent_task_curve[name + "_success_rate"] = []
+        
+        elif self.params["env_name"] == "mt10_fail":
+            for name, env_name in FAIL_MT10_CLS_DICT.items():
+                # add necessary env args
+                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+                expert_env.seed(args["seed"])
+                params['expert_net']['base_type']=MLPBase
+                
+                file_path = self.args['expert_policy_file'] + name + ".pth"
+                if os.path.exists(file_path):
+                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
+                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
+                self.expert_task_curve[name + "_success_rate"] = []
+                self.agent_task_curve[name + "_success_rate"] = []
+        
+        
         print('Done restoring expert policy...')
+        self.args['agent_params']['ac_dim'] = ac_dim
+        self.args['agent_params']['ob_dim'] = ob_dim
         
         # RL TRAINER
         self.rl_trainer = RL_Trainer(
@@ -129,9 +180,11 @@ class BC_Trainer(object):
             env_args = [params["env"], cls_args, params["meta_env"]], 
             args = self.args, 
             params = params, 
-            expert_dict=expert_dict, 
+            expert_dict = expert_dict, 
+            input_shape = ob_dim,
             example_embedding=example_embedding
         )
+
 
     
     def run_training_loop(self):

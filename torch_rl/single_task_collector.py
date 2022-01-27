@@ -18,7 +18,7 @@ class SingleCollector():
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch
         self.embedding_input = embedding_input
-        self.input_shape = input_shape
+        self.input_shape = expert_policy.ob_dim
         
         self.env_info.env_cls = generate_single_mt_env
         tasks = list(self.env_cls.keys())
@@ -48,9 +48,9 @@ class SingleCollector():
         self.env_info.env.eval()
     
     
-    def sample_expert(self, render, render_mode, log, log_prefix):
+    def sample_expert(self, render, render_mode, log, log_prefix, n_iter=0):
         # only sample once
-        path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix)
+        path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
         # path = self.sample_n_trajectories(self.expert_policy, 100, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
         
         timesteps_this_batch = len(path)
@@ -59,8 +59,8 @@ class SingleCollector():
         return [path], timesteps_this_batch, info
     
     
-    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix):
-        paths = self.sample_n_trajectories(agent_policy, n_sample, render, render_mode, run_agent=True, log = log, log_prefix = log_prefix)
+    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter):
+        paths = self.sample_n_trajectories(agent_policy, n_sample, render, render_mode, run_agent=True, log = log, log_prefix = log_prefix, n_iter = n_iter)
         success = 0
         for path in paths:
             if path["success"] == True:
@@ -71,7 +71,7 @@ class SingleCollector():
     
     
     # the policy gradient should be frozen before sending into this function
-    def sample_trajectory(self, policy, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", cnt=0):
+    def sample_trajectory(self, policy, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter=0):
         
         # initialize env for the beginning of a new rollout
         env = self.env_info.env
@@ -135,9 +135,9 @@ class SingleCollector():
             
         if len(image_obs)>0:
             if run_agent == True:
-                imageio.mimsave(log_prefix + str(cnt) + "_agent.gif", image_obs)
+                imageio.mimsave(log_prefix + str(n_iter) + "_agent.gif", image_obs)
             else:
-                imageio.mimsave(log_prefix + str(cnt) + "_expert.gif", image_obs)
+                imageio.mimsave(log_prefix + str(n_iter) + "_expert.gif", image_obs)
             
         if log == True:
             print(log_info)
@@ -161,7 +161,7 @@ class SingleCollector():
 
         return paths, timesteps_this_batch
 
-    def sample_n_trajectories(self, policy, ntraj, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./"):
+    def sample_n_trajectories(self, policy, ntraj, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter = 0):
         """
             Collect ntraj rollouts.
             
@@ -170,8 +170,8 @@ class SingleCollector():
         paths = []
 
         for i in range(ntraj):
-            if i == ntraj/2:
-                paths.append(self.sample_trajectory(policy=policy, render=render, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, cnt=i))
+            if i == int(ntraj/2):
+                paths.append(self.sample_trajectory(policy=policy, render=render, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter))
             else:
-                paths.append(self.sample_trajectory(policy=policy, render=render, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, cnt=i))
+                paths.append(self.sample_trajectory(policy=policy, render=False, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter))
         return paths
