@@ -5,7 +5,7 @@ import numpy as np
 import gym
 
 from torch_rl.rl_trainer import RL_Trainer
-from agents.bc_agent import MLPAgent, SoftModuleAgent
+from agents.bc_agent import MLPEmbeddingAgent
 from policy.loaded_gaussian_policy import LoadedGaussianPolicy
 from utils.args import get_params
 from utils.logger import Logger
@@ -33,7 +33,7 @@ class BC_Trainer(object):
         self.args = args
         
         # for baseline
-        self.args['agent_class'] = MLPAgent
+        self.args['agent_class'] = MLPEmbeddingAgent
         self.args['agent_params'] = agent_params
         
         # BUILD ENV

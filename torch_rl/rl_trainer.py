@@ -3,7 +3,7 @@ from metaworld_utils.meta_env import generate_single_mt_env
 from torch_rl.replay_buffer import EnvInfo
 from policy.continuous_policy import MultiHeadGuassianContPolicy, EmbeddingGuassianContPolicyBase
 from utils.utils import Path
-from agents.bc_agent import SoftModuleAgent
+from agents.bc_agent import MLPAgent, SoftModuleAgent
 from torch_rl.multi_task_collector import *
 
 import torch
@@ -43,10 +43,11 @@ class RL_Trainer(object):
         self.params = params
         
         agent_class = self.args['agent_class']
-        if agent_class == SoftModuleAgent:
-            self.agent = agent_class(self.env, example_embedding, self.args['agent_params'], self.params)
-        else:
+        if agent_class == MLPAgent :
             self.agent = agent_class(self.env, self.args['agent_params'])
+        else:
+            self.agent = agent_class(self.env, example_embedding, self.args['agent_params'], self.params)
+            
         
         # Notes:
         # expert has input shape of 9
@@ -357,10 +358,7 @@ class RL_Trainer(object):
                 ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
 
                 # use the sampled data to train an agent
-                if self.baseline:
-                    train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch)
-                else:
-                    train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch)
+                train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch)
                     
             else:
                 ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.agent.sample(self.args['train_batch_size'])

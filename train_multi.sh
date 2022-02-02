@@ -37,7 +37,7 @@
 
 
 python train_mt_baseline.py \
-    --expert_policy_file policy/expert/MT10_Fail/ \
+    --expert_policy_file policy/expert/MT10_Similar/ \
 	--exp_name bc_reach \
     --n_iter 2000 \
     --eval_interval 1000 \
@@ -47,7 +47,7 @@ python train_mt_baseline.py \
     --ep_len 200 \
     --batch_size 64 \
     --train_batch_size 32 \
-    --config config/soft_module_fixed_mt10_fail.json \
+    --config config/soft_module_fixed_mt10_similar.json \
     --id MT50_Single_Task \
     --seed 32 \
     --worker_nums 1 \

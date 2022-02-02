@@ -59,8 +59,11 @@ class SingleCollector():
         return [path], timesteps_this_batch, info
     
     
-    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter):
-        paths = self.sample_n_trajectories(agent_policy, n_sample, render, render_mode, run_agent=True, log = log, log_prefix = log_prefix, n_iter = n_iter)
+    def sample_embedding_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter):
+        '''
+            for MT50 baseline
+        '''
+        paths = self.sample_n_trajectories(agent_policy, n_sample, render, render_mode, run_agent=True, log = log, log_prefix = log_prefix, n_iter = n_iter, use_embedding=True)
         success = 0
         for path in paths:
             if path["success"] == True:
@@ -71,7 +74,7 @@ class SingleCollector():
     
     
     # the policy gradient should be frozen before sending into this function
-    def sample_trajectory(self, policy, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter=0):
+    def sample_trajectory(self, policy, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter=0, use_embedding=False):
         
         # initialize env for the beginning of a new rollout
         env = self.env_info.env
@@ -98,8 +101,13 @@ class SingleCollector():
             
             else:
                 # use the most recent ob to decide what to do
-                ob = ob[:policy.input_shape]
-                obs.append(ob)
+                if use_embedding:
+                    ob = ob[:policy.input_shape-self.embedding_input.shape[1]]
+                    obs.append(ob)
+                    ob = torch.Tensor(np.concatenate((ob, self.embedding_input.squeeze())))
+                else:
+                    ob = ob[:policy.input_shape]
+                    obs.append(ob)
                 act = policy.get_action(torch.Tensor(ob).to(self.device).unsqueeze(0)).detach().cpu().numpy()
                 act = np.squeeze(act)
                 # log_info += "agent:" + str(act) + "\n"
@@ -111,7 +119,10 @@ class SingleCollector():
             if not run_agent:
                 ob = ob[:self.input_shape]
             else:
-                ob = ob[:policy.input_shape]
+                if use_embedding:
+                    ob = ob[:policy.input_shape-self.embedding_input.shape[1]]
+                else:
+                    ob = ob[:policy.input_shape]
             
             # record result of taking that action
             steps += 1
@@ -167,7 +178,7 @@ class SingleCollector():
 
         return paths, timesteps_this_batch
 
-    def sample_n_trajectories(self, policy, ntraj, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter = 0):
+    def sample_n_trajectories(self, policy, ntraj, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter = 0, use_embedding=False):
         """
             Collect ntraj rollouts.
             
@@ -177,7 +188,7 @@ class SingleCollector():
 
         for i in range(ntraj):
             if i == int(ntraj/2):
-                paths.append(self.sample_trajectory(policy=policy, render=render, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter))
+                paths.append(self.sample_trajectory(policy=policy, render=render, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter, use_embedding=use_embedding))
             else:
-                paths.append(self.sample_trajectory(policy=policy, render=False, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter))
+                paths.append(self.sample_trajectory(policy=policy, render=False, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter, use_embedding=use_embedding))
         return paths

@@ -102,7 +102,7 @@ class MT10SingleCollector():
         for task in self.task_collector.keys():
             # prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            success_rate = collector.sample_agent(agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter)
+            success_rate = collector.sample_embedding_agent(agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter)
             
             info[task + "_success_rate"] = success_rate
             success += success_rate
@@ -249,6 +249,7 @@ class MT50SingleCollector():
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch/50
         self.input_shape = input_shape
+        self.embedding_dict = {}
         
         for i, task in enumerate(self.tasks):
             if task in HARD_MODE_CLS_DICT['train'].keys():     # 45 tasks
@@ -272,6 +273,7 @@ class MT50SingleCollector():
             embedding_input = torch.zeros(50)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
+            self.embedding_dict[task] = embedding_input
             
             if task in expert_dict.keys():
                 self.task_collector[task] = SingleCollector(
@@ -285,6 +287,7 @@ class MT50SingleCollector():
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
                     embedding_input=embedding_input,
                     input_shape=self.input_shape)
+            
                 
     
     def sample_expert(self, render, render_mode, log, log_prefix):
@@ -319,14 +322,14 @@ class MT50SingleCollector():
     
     def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix):
         '''
-            serialized sample from 50 environment
+            serialized sample from 50 environment, baseline
         '''
         info = {}
         success = 0
         for task in self.task_collector.keys():
             # prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            success_rate = collector.sample_agent(agent_policy, n_sample, render, render_mode, log, log_prefix)
+            success_rate = collector.sample_embedding_agent(agent_policy, n_sample, render, render_mode, log, log_prefix)
             
             info[task + "_success_rate"] = success_rate
             success += success_rate
