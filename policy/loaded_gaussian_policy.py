@@ -39,10 +39,12 @@ class LoadedGaussianPolicy(BasePolicy):
         """)
 
     # for single task: idx=0
-    def get_action(self, obs, device, idx=torch.LongTensor([0])):
+    def get_action(self, obs, device, idx=torch.LongTensor([0]), random=False):
         obs = obs.detach()
             
         idx = torch.Tensor([[idx]]).to(device).long()
+        if random:
+            return self.pf.random_act(obs, idx)
         return self.pf.eval_act(obs, idx)
 
     def save(self, filepath):

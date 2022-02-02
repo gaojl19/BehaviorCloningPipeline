@@ -24,7 +24,7 @@ MAX_VIDEO_LEN = 40  # we overwrite this in the code below
 
 
 class RL_Trainer(object):
-    def __init__(self, env, env_cls, env_args, args, params, expert_dict, input_shape, example_embedding = None):
+    def __init__(self, env, env_cls, env_args, args, params, expert_dict, input_shape, baseline=False, example_embedding = None):
         
         # environment
         self.env = env
@@ -190,6 +190,8 @@ class RL_Trainer(object):
         
         # build log dir
         plot_prefix = "./fig/"+ self.env_name
+        if baseline:
+            plot_prefix += "_baseline"
         if self.params["meta_env"]["random_init"] == False:
             plot_prefix += "_fixed/"
         else:
@@ -234,9 +236,13 @@ class RL_Trainer(object):
                 print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
                 render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
                 training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
-            
+                # for i in range(5):
+                #     training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
+                # print("sampling expert data for 5 iterations; Ending program")
+                # exit(0)
                 paths, envsteps_this_batch, infos = training_returns
                 self.total_envsteps += envsteps_this_batch
+                print("total training samples: ", self.total_envsteps)
 
                 # add collected data to replay buffer
                 if self.mt_flag: 
@@ -295,7 +301,7 @@ class RL_Trainer(object):
                 for log in training_logs:
                     print("loss: ", log["Training Loss"])
             
-            if min_loss < 0.005:
+            if min_loss < 0.001:
                 print("\n\n-------------------------------- Training stopped due to early stopping -------------------------------- ")
                 print("min loss: ", min_loss)
                 break

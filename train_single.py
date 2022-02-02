@@ -68,7 +68,9 @@ class BC_Trainer(object):
         # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
         self.env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
 
+        # self.env.seed(1027)
         self.env.seed(args["seed"])
+        print("seed: ", args["seed"])
         torch.manual_seed(args["seed"])
         np.random.seed(args["seed"])
         if args["cuda"]:
@@ -85,26 +87,34 @@ class BC_Trainer(object):
         
         discrete = isinstance(self.env.action_space, gym.spaces.Discrete)
         self.args['agent_params']['discrete'] = discrete
-        # Observation and action sizes
-        ob_dim = self.env.observation_space.shape[0]
-        ac_dim = self.env.action_space.n if discrete else self.env.action_space.shape[0]
-        self.args['agent_params']['ac_dim'] = ac_dim
-        self.args['agent_params']['ob_dim'] = ob_dim
         
         # self.args['ep_len'] = self.args['ep_len']
         print(self.args)
         print(params)
         self.params = params
         
+        
+        # Observation and action sizes
+        ob_dim = self.env.observation_space.shape[0]
+        ac_dim = self.env.action_space.n if discrete else self.env.action_space.shape[0]
+        
         # LOAD EXPERT POLICY
         print('Loading expert policy from...', self.args['expert_policy_file'])
         self.loaded_expert_policy = LoadedGaussianPolicy(env=self.env, params=params, policy_path=args["expert_policy_file"])
+        ob_dim = self.loaded_expert_policy.ob_dim
         expert_dict = {self.args["task_name"]: self.loaded_expert_policy}
         print('Done restoring expert policy...')
+        
+        self.args['agent_params']['ac_dim'] = ac_dim
+        self.args['agent_params']['ob_dim'] = ob_dim
 
     
         # RL TRAINER
-        self.rl_trainer = RL_Trainer(env = self.env, env_cls = cls_dicts, env_args = [params["env"], cls_args, params["meta_env"]], args = self.args, params = params, expert_dict=expert_dict) ## HW1: you will modify this
+        self.rl_trainer = RL_Trainer(env = self.env, 
+                                     env_cls = cls_dicts, 
+                                     env_args = [params["env"], cls_args, params["meta_env"]], 
+                                     args = self.args, params = params, 
+                                     input_shape = ob_dim, expert_dict=expert_dict) ## HW1: you will modify this
         
         
     

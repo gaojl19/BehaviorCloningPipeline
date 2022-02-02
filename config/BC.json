@@ -32,7 +32,7 @@
         "opt_times" : 200,
 
         "eval_episodes" : 1,
-        "train_render": true,
+        "train_render": false,
         "eval_render": false
     },
     "sac":{
