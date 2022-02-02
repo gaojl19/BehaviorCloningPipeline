@@ -68,7 +68,9 @@ class BC_Trainer(object):
         # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
         self.env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
 
+        # self.env.seed(1027)
         self.env.seed(args["seed"])
+        print("seed: ", args["seed"])
         torch.manual_seed(args["seed"])
         np.random.seed(args["seed"])
         if args["cuda"]:

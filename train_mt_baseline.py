@@ -182,6 +182,7 @@ class BC_Trainer(object):
             params = params, 
             expert_dict = expert_dict, 
             input_shape = ob_dim,
+            baseline=True,
             example_embedding=example_embedding
         )
 

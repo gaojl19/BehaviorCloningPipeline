@@ -382,6 +382,15 @@ class MultiHeadGuassianContPolicy(networks.BootstrappedNet):
             mean, _, _= self.forward(x, idx)
         return torch.tanh(mean.squeeze(0)).detach().cpu().numpy()
 
+    def random_act(self, x, embedding_input):
+        with torch.no_grad():
+            mean, std, log_std = self.forward(x, embedding_input)
+        
+        dis = TanhNormal(mean, std)
+        action = dis.rsample( return_pretanh_value = False )
+
+        return action.squeeze(0).detach().cpu().numpy()
+
     def explore( self, x, idx, return_log_probs=False, return_pre_tanh=False):
         mean, std, log_std = self.forward(x, idx)
 

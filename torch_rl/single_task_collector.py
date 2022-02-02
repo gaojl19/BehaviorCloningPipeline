@@ -50,13 +50,17 @@ class SingleCollector():
     
     def sample_expert(self, render, render_mode, log, log_prefix, n_iter=0):
         # only sample once
-        path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
-        # path = self.sample_n_trajectories(self.expert_policy, 100, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
+        # path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
         
-        timesteps_this_batch = len(path)
+        # sample 10 times for Single-task BC, to match the data size
+        paths = self.sample_successful_trajectories(self.expert_policy, 10, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
+        
+        timesteps_this_batch = 0
+        for p in paths:
+            timesteps_this_batch += len(p["observation"])
         info = None
         # print(self.env_info.env, path["observation"].shape)
-        return [path], timesteps_this_batch, info
+        return paths, timesteps_this_batch, info
     
     
     def sample_embedding_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter):
@@ -190,5 +194,25 @@ class SingleCollector():
             if i == int(ntraj/2):
                 paths.append(self.sample_trajectory(policy=policy, render=render, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter, use_embedding=use_embedding))
             else:
-                paths.append(self.sample_trajectory(policy=policy, render=False, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter, use_embedding=use_embedding))
+                paths.append(self.sample_trajectory(policy=policy, render=False, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter))
+        return paths
+    
+    
+    def sample_successful_trajectories(self, policy, ntraj, render=False, render_mode=('rgb_array'), run_agent=False, log = False, log_prefix = "./", n_iter = 0):
+        """
+            Collect ntraj successful rollouts
+            
+        """
+        paths = []
+        cnt = 0
+        
+        for i in range(1000):
+            new_path = self.sample_trajectory(policy=policy, render=False, render_mode=render_mode, run_agent=run_agent, log=log, log_prefix=log_prefix, n_iter=n_iter)
+            if new_path["success"] == 1.0:
+                paths.append(new_path)
+                cnt += 1
+                if cnt == ntraj:
+                    print("successful trajectory collected: ", cnt)
+                    return paths
+        print("successful trajectory collected: ", cnt)
         return paths
