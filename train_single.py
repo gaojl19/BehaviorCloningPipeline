@@ -121,7 +121,8 @@ class BC_Trainer(object):
     def run_training_loop(self):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
-            baseline=False
+            baseline=False,
+            multiple_samples=True
         )
 
 

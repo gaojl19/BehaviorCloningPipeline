@@ -192,6 +192,7 @@ class BC_Trainer(object):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
             baseline=True,
+            multiple_samples=False,
             expert_task_curve=self.expert_task_curve,
             agent_task_curve=self.agent_task_curve
         )

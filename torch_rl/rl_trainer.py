@@ -206,7 +206,7 @@ class RL_Trainer(object):
         self.plot_prefix = plot_prefix
     
     
-    def run_training_loop(self, n_iter, baseline=False, expert_task_curve={}, agent_task_curve={}):
+    def run_training_loop(self, n_iter, multiple_samples, baseline=False, expert_task_curve={}, agent_task_curve={}):
         """
         :param n_iter:  number of (dagger) iterations
         :param collect_policy:
@@ -236,7 +236,7 @@ class RL_Trainer(object):
             if itr == 0:
                 print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
                 render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
-                training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
+                training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, multiple_samples=multiple_samples)
                 # for i in range(5):
                 #     training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
                 # print("sampling expert data for 5 iterations; Ending program")

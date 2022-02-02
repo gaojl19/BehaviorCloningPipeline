@@ -48,13 +48,16 @@ class SingleCollector():
         self.env_info.env.eval()
     
     
-    def sample_expert(self, render, render_mode, log, log_prefix, n_iter=0):
-        # only sample once
-        # path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
-        
+    def sample_expert(self, render, render_mode, log, log_prefix, n_iter=0, multiple_samples=False):
         # sample 10 times for Single-task BC, to match the data size
-        paths = self.sample_successful_trajectories(self.expert_policy, 10, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
+        if multiple_samples:
+            paths = self.sample_successful_trajectories(self.expert_policy, 10, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
         
+        # only sample once
+        else:
+            path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
+            paths = [path]
+            
         timesteps_this_batch = 0
         for p in paths:
             timesteps_this_batch += len(p["observation"])

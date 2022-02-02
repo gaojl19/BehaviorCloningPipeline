@@ -67,7 +67,7 @@ class MT10SingleCollector():
                     input_shape=input_shape)
         
     
-    def sample_expert(self, render, render_mode, log, log_prefix):
+    def sample_expert(self, render, render_mode, log, log_prefix, multiple_samples):
         '''
             serialized sample from 10 environment
         '''
@@ -77,7 +77,7 @@ class MT10SingleCollector():
         success = 0
         for task in self.task_collector.keys():
             collector = self.task_collector[task]
-            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
+            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix, multiple_samples)
             # modify observations
             if self.input_shape > len(new_path[0]["observation"][0]):
                 new_path[0]["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["observation"]]
@@ -290,7 +290,7 @@ class MT50SingleCollector():
             
                 
     
-    def sample_expert(self, render, render_mode, log, log_prefix):
+    def sample_expert(self, render, render_mode, log, log_prefix, multiple_samples):
         '''
             serialized sample from 50 environment
         '''
@@ -301,7 +301,7 @@ class MT50SingleCollector():
         for task in self.task_collector.keys():
             # prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix)
+            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix, multiple_samples)
             
             # modify observations
             new_path[0]["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["observation"]]
