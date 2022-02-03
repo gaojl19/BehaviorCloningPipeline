@@ -1,0 +1,1405 @@
+SLURM_JOBID=3527967
+working directory=/viscam/u/jialugao/Imitation-SoftModule
+{'obs_type': 'with_goal'}
+obs type:  with_goal
+seed:  1920
+{'expert_policy_file': 'policy/expert/MT10_Diverse/', 'exp_name': 'bc_reach', 'do_dagger': False, 'ep_len': 200, 'gradient_steps': 1, 'n_iter': 600000, 'render_interval': 40, 'eval_interval': 1000, 'batch_size': 64, 'eval_batch_size': 32, 'train_batch_size': 32, 'n_layers': 2, 'size': 400, 'learning_rate': 0.0001, 'video_log_freq': -1, 'scalar_log_freq': 1, 'no_gpu': False, 'which_gpu': 0, 'max_replay_buffer_size': 1000000, 'save_params': False, 'seed': 1920, 'worker_nums': 1, 'eval_worker_nums': 1, 'config': 'config/soft_module_fixed_mt10_diverse.json', 'no_cuda': True, 'random_init': False, 'device': 'cpu', 'id': 'MT50_Single_Task', 'task_name': None, 'task_env': 'MT50_task_env', 'cuda': False, 'agent_class': <class 'agents.bc_agent.SoftModuleAgent'>, 'agent_params': {'n_layers': 2, 'size': 400, 'learning_rate': 0.0001, 'max_replay_buffer_size': 1000000, 'discrete': False}}
+{'env_name': 'mt10_diverse', 'env': {'reward_scale': 1, 'obs_norm': False}, 'meta_env': {'obs_type': 'with_goal', 'random_init': False}, 'replay_buffer': {'size': 1000000.0}, 'expert_net': {'hidden_shapes': [400, 400], 'append_hidden_shapes': [400]}, 'net': {'hidden_shapes': [400, 400], 'em_hidden_shapes': [400], 'num_layers': 2, 'num_modules': 2, 'module_hidden': 256, 'num_gating_layers': 2, 'gating_hidden': 256, 'add_bn': False, 'pre_softmax': False, 'base_type': <class 'networks.base.MLPBase'>}, 'general_setting': {'discount': 0.99, 'pretrain_epochs': 20, 'num_epochs': 7500, 'epoch_frames': 200, 'max_episode_frames': 200, 'batch_size': 1280, 'min_pool': 10000, 'target_hard_update_period': 1000, 'use_soft_update': True, 'tau': 0.005, 'opt_times': 200, 'eval_episodes': 1, 'train_render': False, 'eval_render': False, 'env': <NormAct<RewardShift<MTEnv instance>>>, 'device': device(type='cpu')}, 'sac': {'plr': 0.0003, 'qlr': 0.0003, 'reparameterization': True, 'automatic_entropy_tuning': True, 'policy_std_reg_weight': 0, 'policy_mean_reg_weight': 0}}
+Loading expert policy from... policy/expert/MT10_Diverse/
+Done restoring expert policy...
+actor: 
+ ModularGuassianGatedCascadeCondContPolicy(
+  (base): MLPBase(
+    (fc0): Linear(in_features=9, out_features=400, bias=True)
+    (fc1): Linear(in_features=400, out_features=400, bias=True)
+  )
+  (em_base): MLPBase(
+    (fc0): Linear(in_features=10, out_features=400, bias=True)
+  )
+  (module_0_0): Linear(in_features=400, out_features=256, bias=True)
+  (module_0_1): Linear(in_features=400, out_features=256, bias=True)
+  (module_1_0): Linear(in_features=256, out_features=256, bias=True)
+  (module_1_1): Linear(in_features=256, out_features=256, bias=True)
+  (last): Linear(in_features=256, out_features=8, bias=True)
+  (gating_fc_0): Linear(in_features=400, out_features=256, bias=True)
+  (gating_fc_1): Linear(in_features=256, out_features=256, bias=True)
+  (gating_weight_fc_0): Linear(in_features=256, out_features=4, bias=True)
+  (gating_weight_cond_last): Linear(in_features=4, out_features=256, bias=True)
+  (gating_weight_last): Linear(in_features=256, out_features=2, bias=True)
+)
+<NormAct<RewardShift<AugObs<SawyerFaucetOpenEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerBoxCloseEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerWindowCloseEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerSoccerEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerDialTurnEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerShelfPlaceEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerHandlePressEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerPlateSlideEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerDrawerOpenEnv instance>>>>
+<NormAct<RewardShift<AugObs<SawyerDoorCloseEnv instance>>>>
+/viscam/u/jialugao/.anaconda3/envs/metaworldEnv/lib/python3.7/site-packages/gym/logger.py:30: UserWarning: [33mWARN: Could not seed environment <MTEnv instance>[0m
+  warnings.warn(colorize('%s: %s'%('WARN', msg % args), 'yellow'))
+
+
+-------------------------------- Iteration 0 -------------------------------- 
+initial ob: [-0.0344551   0.50704863  0.23980516 -0.015       0.7         0.115
+  0.1         0.8         0.115       0.1         0.8         0.115     ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.0326477   0.51488164  0.23687858  0.          0.60000002  0.11
+  0.          0.9         0.133       0.          0.9         0.133     ]
+expert_success: 1.0
+path_length: 200
+
+initial ob: [-0.03445605  0.50704462  0.23981209  0.12        0.73000003  0.15000001
+ -0.08        0.785       0.15       -0.08        0.785       0.15      ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03265121  0.51487852  0.23688147  0.          0.6         0.02998765
+  0.          0.9         0.03        0.          0.9         0.03      ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03445341  0.50704491  0.23981405  0.          0.67        0.08
+  0.          0.73        0.08        0.          0.73        0.08      ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03265248  0.51488137  0.23688703  0.          0.6         0.01999588
+  0.          0.85000002  0.301       0.          0.85000002  0.301     ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03265156  0.51487877  0.23688007  0.          0.75        0.16
+  0.          0.75        0.04        0.          0.75        0.04      ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03264849  0.51488124  0.2368859   0.          0.6         0.015
+  0.          0.85        0.02        0.          0.85        0.02      ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03445723  0.50704204  0.23981373  0.          0.69999998  0.09
+  0.          0.55        0.04        0.          0.55        0.04      ]
+expert_success: 1.0
+path_length: 150
+
+initial ob: [-0.03264849  0.51488124  0.2368859  -0.21000095  0.69000054  0.15
+  0.2         0.8         0.15        0.2         0.8         0.15      ]
+expert_success: 1.0
+path_length: 150
+
+{'faucet-open-v1_success_rate': array(1., dtype=float32), 'box-close-v1_success_rate': array(1., dtype=float32), 'window-close-v1_success_rate': array(1., dtype=float32), 'soccer-v1_success_rate': array(1., dtype=float32), 'dial-turn-v1_success_rate': array(1., dtype=float32), 'shelf-place-v1_success_rate': array(1., dtype=float32), 'handle-press-v1_success_rate': array(1., dtype=float32), 'plate-slide-v1_success_rate': array(1., dtype=float32), 'drawer-open-v1_success_rate': array(1., dtype=float32), 'door-close-v1_success_rate': array(1., dtype=float32), 'mean_success_rate': 1.0}
+total training samples:  1550
+
+
+-------------------------------- Iteration 0 -------------------------------- 
+training time:  1.176743745803833
+evaluation time:  7.602659225463867
+epoch time:  8.77941632270813
+loss:  0.8111955
+
+
+-------------------------------- Iteration 1000 -------------------------------- 
+training time:  0.012109518051147461
+evaluation time:  7.731802701950073
+epoch time:  7.743933439254761
+loss:  0.3229251
+
+
+-------------------------------- Iteration 2000 -------------------------------- 
+training time:  0.011879920959472656
+evaluation time:  7.6768317222595215
+epoch time:  7.6887335777282715
+loss:  0.24232285
+
+
+-------------------------------- Iteration 3000 -------------------------------- 
+training time:  0.012200355529785156
+evaluation time:  7.654961347579956
+epoch time:  7.667183876037598
+loss:  0.32939112
+
+
+-------------------------------- Iteration 4000 -------------------------------- 
+training time:  0.011944770812988281
+evaluation time:  7.732813119888306
+epoch time:  7.744795799255371
+loss:  0.29669887
+
+
+-------------------------------- Iteration 5000 -------------------------------- 
+training time:  0.011894941329956055
+evaluation time:  7.688480854034424
+epoch time:  7.700418710708618
+loss:  0.305155
+
+
+-------------------------------- Iteration 6000 -------------------------------- 
+training time:  0.012203454971313477
+evaluation time:  7.674275159835815
+epoch time:  7.686497926712036
+loss:  0.2182323
+
+
+-------------------------------- Iteration 7000 -------------------------------- 
+training time:  0.011918783187866211
+evaluation time:  7.751159906387329
+epoch time:  7.7631025314331055
+loss:  0.2196176
+
+
+-------------------------------- Iteration 8000 -------------------------------- 
+training time:  0.011868953704833984
+evaluation time:  7.670761346817017
+epoch time:  7.682642936706543
+loss:  0.17729974
+
+
+-------------------------------- Iteration 9000 -------------------------------- 
+training time:  0.011783123016357422
+evaluation time:  7.657950401306152
+epoch time:  7.669753313064575
+loss:  0.20792076
+
+
+-------------------------------- Iteration 10000 -------------------------------- 
+training time:  0.0118865966796875
+evaluation time:  7.741661071777344
+epoch time:  7.753576278686523
+loss:  0.09526861
+
+
+-------------------------------- Iteration 11000 -------------------------------- 
+training time:  0.012122392654418945
+evaluation time:  7.6342384815216064
+epoch time:  7.646393060684204
+loss:  0.15981722
+
+
+-------------------------------- Iteration 12000 -------------------------------- 
+training time:  0.012109041213989258
+evaluation time:  7.653830528259277
+epoch time:  7.665958881378174
+loss:  0.15607703
+
+
+-------------------------------- Iteration 13000 -------------------------------- 
+training time:  0.011881351470947266
+evaluation time:  7.778408765792847
+epoch time:  7.790326356887817
+loss:  0.16770527
+
+
+-------------------------------- Iteration 14000 -------------------------------- 
+training time:  0.01176905632019043
+evaluation time:  7.844813823699951
+epoch time:  7.856596231460571
+loss:  0.15024602
+
+
+-------------------------------- Iteration 15000 -------------------------------- 
+training time:  0.011898040771484375
+evaluation time:  7.757423400878906
+epoch time:  7.769337177276611
+loss:  0.12067429
+
+
+-------------------------------- Iteration 16000 -------------------------------- 
+training time:  0.011884927749633789
+evaluation time:  7.797374963760376
+epoch time:  7.809281587600708
+loss:  0.17086753
+
+
+-------------------------------- Iteration 17000 -------------------------------- 
+training time:  0.012032508850097656
+evaluation time:  7.8862385749816895
+epoch time:  7.898284196853638
+loss:  0.10581753
+
+
+-------------------------------- Iteration 18000 -------------------------------- 
+training time:  0.011904478073120117
+evaluation time:  7.805368423461914
+epoch time:  7.817316770553589
+loss:  0.056993954
+
+
+-------------------------------- Iteration 19000 -------------------------------- 
+training time:  0.011891365051269531
+evaluation time:  7.769063234329224
+epoch time:  7.7809669971466064
+loss:  0.13367835
+
+
+-------------------------------- Iteration 20000 -------------------------------- 
+training time:  0.011827230453491211
+evaluation time:  7.882256269454956
+epoch time:  7.894097089767456
+loss:  0.16555884
+
+
+-------------------------------- Iteration 21000 -------------------------------- 
+training time:  0.012644767761230469
+evaluation time:  7.80128026008606
+epoch time:  7.813941478729248
+loss:  0.1061735
+
+
+-------------------------------- Iteration 22000 -------------------------------- 
+training time:  0.011832714080810547
+evaluation time:  7.80562424659729
+epoch time:  7.817469596862793
+loss:  0.059159294
+
+
+-------------------------------- Iteration 23000 -------------------------------- 
+training time:  0.012952566146850586
+evaluation time:  7.795869588851929
+epoch time:  7.80884051322937
+loss:  0.05526355
+
+
+-------------------------------- Iteration 24000 -------------------------------- 
+training time:  0.011893033981323242
+evaluation time:  7.876592636108398
+epoch time:  7.888525724411011
+loss:  0.039918
+
+
+-------------------------------- Iteration 25000 -------------------------------- 
+training time:  0.0119171142578125
+evaluation time:  7.7791571617126465
+epoch time:  7.791086673736572
+loss:  0.1185522
+
+
+-------------------------------- Iteration 26000 -------------------------------- 
+training time:  0.01181340217590332
+evaluation time:  7.766815662384033
+epoch time:  7.778647184371948
+loss:  0.08198634
+
+
+-------------------------------- Iteration 27000 -------------------------------- 
+training time:  0.011816263198852539
+evaluation time:  7.8188652992248535
+epoch time:  7.83070707321167
+loss:  0.058365077
+
+
+-------------------------------- Iteration 28000 -------------------------------- 
+training time:  0.011890649795532227
+evaluation time:  7.821545362472534
+epoch time:  7.833449363708496
+loss:  0.08397272
+
+
+-------------------------------- Iteration 29000 -------------------------------- 
+training time:  0.012223482131958008
+evaluation time:  7.767985105514526
+epoch time:  7.780224323272705
+loss:  0.05023544
+
+
+-------------------------------- Iteration 30000 -------------------------------- 
+training time:  0.011974334716796875
+evaluation time:  7.759979248046875
+epoch time:  7.771975040435791
+loss:  0.060066864
+
+
+-------------------------------- Iteration 31000 -------------------------------- 
+training time:  0.012703895568847656
+evaluation time:  7.838428735733032
+epoch time:  7.851146936416626
+loss:  0.055423606
+
+
+-------------------------------- Iteration 32000 -------------------------------- 
+training time:  0.011919021606445312
+evaluation time:  7.7583167552948
+epoch time:  7.770251750946045
+loss:  0.07408072
+
+
+-------------------------------- Iteration 33000 -------------------------------- 
+training time:  0.01193547248840332
+evaluation time:  7.756057024002075
+epoch time:  7.768013954162598
+loss:  0.0401265
+
+
+-------------------------------- Iteration 34000 -------------------------------- 
+training time:  0.01195669174194336
+evaluation time:  7.853074073791504
+epoch time:  7.865045070648193
+loss:  0.06015508
+
+
+-------------------------------- Iteration 35000 -------------------------------- 
+training time:  0.011941671371459961
+evaluation time:  7.7709949016571045
+epoch time:  7.7829749584198
+loss:  0.1028109
+
+
+-------------------------------- Iteration 36000 -------------------------------- 
+training time:  0.012001991271972656
+evaluation time:  7.7136313915252686
+epoch time:  7.72564959526062
+loss:  0.05130723
+
+
+-------------------------------- Iteration 37000 -------------------------------- 
+training time:  0.01219487190246582
+evaluation time:  7.714073896408081
+epoch time:  7.72628116607666
+loss:  0.07712958
+
+
+-------------------------------- Iteration 38000 -------------------------------- 
+training time:  0.012115955352783203
+evaluation time:  7.8191914558410645
+epoch time:  7.83135724067688
+loss:  0.07721981
+
+
+-------------------------------- Iteration 39000 -------------------------------- 
+training time:  0.01231837272644043
+evaluation time:  7.740462303161621
+epoch time:  7.752799987792969
+loss:  0.06846041
+
+
+-------------------------------- Iteration 40000 -------------------------------- 
+training time:  0.012215852737426758
+evaluation time:  7.756165981292725
+epoch time:  7.76839542388916
+loss:  0.057980705
+
+
+-------------------------------- Iteration 41000 -------------------------------- 
+training time:  0.012295722961425781
+evaluation time:  7.860996246337891
+epoch time:  7.87331223487854
+loss:  0.028564317
+
+
+-------------------------------- Iteration 42000 -------------------------------- 
+training time:  0.012420415878295898
+evaluation time:  7.643010377883911
+epoch time:  7.655454635620117
+loss:  0.045850255
+
+
+-------------------------------- Iteration 43000 -------------------------------- 
+training time:  0.012533903121948242
+evaluation time:  7.763450622558594
+epoch time:  7.775998115539551
+loss:  0.0371668
+
+
+-------------------------------- Iteration 44000 -------------------------------- 
+training time:  0.01272439956665039
+evaluation time:  7.821046829223633
+epoch time:  7.833807945251465
+loss:  0.030120501
+
+
+-------------------------------- Iteration 45000 -------------------------------- 
+training time:  0.012700796127319336
+evaluation time:  7.984826564788818
+epoch time:  7.997549295425415
+loss:  0.05082436
+
+
+-------------------------------- Iteration 46000 -------------------------------- 
+training time:  0.012653112411499023
+evaluation time:  7.840153932571411
+epoch time:  7.85282039642334
+loss:  0.025186524
+
+
+-------------------------------- Iteration 47000 -------------------------------- 
+training time:  0.012628555297851562
+evaluation time:  7.753580808639526
+epoch time:  7.76622462272644
+loss:  0.038065866
+
+
+-------------------------------- Iteration 48000 -------------------------------- 
+training time:  0.012676715850830078
+evaluation time:  7.742627143859863
+epoch time:  7.755322456359863
+loss:  0.099898994
+
+
+-------------------------------- Iteration 49000 -------------------------------- 
+training time:  0.012704849243164062
+evaluation time:  7.835254192352295
+epoch time:  7.847973823547363
+loss:  0.02854254
+
+
+-------------------------------- Iteration 50000 -------------------------------- 
+training time:  0.012727975845336914
+evaluation time:  7.726282596588135
+epoch time:  7.739023208618164
+loss:  0.07508901
+
+
+-------------------------------- Iteration 51000 -------------------------------- 
+training time:  0.012787103652954102
+evaluation time:  7.692961692810059
+epoch time:  7.70576810836792
+loss:  0.045151882
+
+
+-------------------------------- Iteration 52000 -------------------------------- 
+training time:  0.01283121109008789
+evaluation time:  7.811396360397339
+epoch time:  7.8242409229278564
+loss:  0.027705256
+
+
+-------------------------------- Iteration 53000 -------------------------------- 
+training time:  0.01336050033569336
+evaluation time:  7.727728605270386
+epoch time:  7.741101980209351
+loss:  0.07888407
+
+
+-------------------------------- Iteration 54000 -------------------------------- 
+training time:  0.012900352478027344
+evaluation time:  7.742620468139648
+epoch time:  7.755537748336792
+loss:  0.03686663
+
+
+-------------------------------- Iteration 55000 -------------------------------- 
+training time:  0.012949705123901367
+evaluation time:  7.70341682434082
+epoch time:  7.716379880905151
+loss:  0.04278522
+
+
+-------------------------------- Iteration 56000 -------------------------------- 
+training time:  0.013117313385009766
+evaluation time:  7.892412185668945
+epoch time:  7.905564546585083
+loss:  0.036315396
+
+
+-------------------------------- Iteration 57000 -------------------------------- 
+training time:  0.01333928108215332
+evaluation time:  7.777933835983276
+epoch time:  7.791290760040283
+loss:  0.02427114
+
+
+-------------------------------- Iteration 58000 -------------------------------- 
+training time:  0.013830900192260742
+evaluation time:  7.787870645523071
+epoch time:  7.801715135574341
+loss:  0.032499105
+
+
+-------------------------------- Iteration 59000 -------------------------------- 
+training time:  0.01423335075378418
+evaluation time:  7.799804449081421
+epoch time:  7.81405782699585
+loss:  0.029482756
+
+
+-------------------------------- Iteration 60000 -------------------------------- 
+training time:  0.014750480651855469
+evaluation time:  7.818797588348389
+epoch time:  7.833588600158691
+loss:  0.031693514
+
+
+-------------------------------- Iteration 61000 -------------------------------- 
+training time:  0.015642166137695312
+evaluation time:  7.738757133483887
+epoch time:  7.754412651062012
+loss:  0.080500424
+
+
+-------------------------------- Iteration 62000 -------------------------------- 
+training time:  0.01611185073852539
+evaluation time:  7.80070686340332
+epoch time:  7.816833734512329
+loss:  0.036273442
+
+
+-------------------------------- Iteration 63000 -------------------------------- 
+training time:  0.01591038703918457
+evaluation time:  7.786633253097534
+epoch time:  7.802560329437256
+loss:  0.042490363
+
+
+-------------------------------- Iteration 64000 -------------------------------- 
+training time:  0.017600536346435547
+evaluation time:  8.416018724441528
+epoch time:  8.43363642692566
+loss:  0.05443195
+
+
+-------------------------------- Iteration 65000 -------------------------------- 
+training time:  0.01750802993774414
+evaluation time:  8.198513984680176
+epoch time:  8.216046333312988
+loss:  0.03114982
+
+
+-------------------------------- Iteration 66000 -------------------------------- 
+training time:  0.01638340950012207
+evaluation time:  8.06990933418274
+epoch time:  8.08630657196045
+loss:  0.018423196
+
+
+-------------------------------- Iteration 67000 -------------------------------- 
+training time:  0.016549348831176758
+evaluation time:  8.111898422241211
+epoch time:  8.128466129302979
+loss:  0.031170687
+
+
+-------------------------------- Iteration 68000 -------------------------------- 
+training time:  0.01649022102355957
+evaluation time:  8.205873489379883
+epoch time:  8.222378730773926
+loss:  0.030958388
+
+
+-------------------------------- Iteration 69000 -------------------------------- 
+training time:  0.01634979248046875
+evaluation time:  8.04845643043518
+epoch time:  8.064828634262085
+loss:  0.03547953
+
+
+-------------------------------- Iteration 70000 -------------------------------- 
+training time:  0.016342639923095703
+evaluation time:  8.210343360900879
+epoch time:  8.226712942123413
+loss:  0.034250848
+
+
+-------------------------------- Iteration 71000 -------------------------------- 
+training time:  0.01672506332397461
+evaluation time:  8.2657790184021
+epoch time:  8.282519102096558
+loss:  0.021745514
+
+
+-------------------------------- Iteration 72000 -------------------------------- 
+training time:  0.017889738082885742
+evaluation time:  8.23218822479248
+epoch time:  8.250092029571533
+loss:  0.016452698
+
+
+-------------------------------- Iteration 73000 -------------------------------- 
+training time:  0.01856231689453125
+evaluation time:  8.203031778335571
+epoch time:  8.221620082855225
+loss:  0.022797313
+
+
+-------------------------------- Iteration 74000 -------------------------------- 
+training time:  0.017267227172851562
+evaluation time:  8.192842721939087
+epoch time:  8.210127592086792
+loss:  0.029879179
+
+
+-------------------------------- Iteration 75000 -------------------------------- 
+training time:  0.017614126205444336
+evaluation time:  8.376265048980713
+epoch time:  8.393925189971924
+loss:  0.02219364
+
+
+-------------------------------- Iteration 76000 -------------------------------- 
+training time:  0.017212629318237305
+evaluation time:  8.184040307998657
+epoch time:  8.201267719268799
+loss:  0.007005709
+
+
+-------------------------------- Iteration 77000 -------------------------------- 
+training time:  0.016895294189453125
+evaluation time:  8.068687438964844
+epoch time:  8.085602760314941
+loss:  0.01756552
+
+
+-------------------------------- Iteration 78000 -------------------------------- 
+training time:  0.017953157424926758
+evaluation time:  8.079336643218994
+epoch time:  8.097331285476685
+loss:  0.027930025
+
+
+-------------------------------- Iteration 79000 -------------------------------- 
+training time:  0.01712632179260254
+evaluation time:  7.959263324737549
+epoch time:  7.976409912109375
+loss:  0.023619607
+
+
+-------------------------------- Iteration 80000 -------------------------------- 
+training time:  0.016374826431274414
+evaluation time:  8.218051671981812
+epoch time:  8.23445200920105
+loss:  0.033983834
+
+
+-------------------------------- Iteration 81000 -------------------------------- 
+training time:  0.016337156295776367
+evaluation time:  8.059454679489136
+epoch time:  8.075807571411133
+loss:  0.02008794
+
+
+-------------------------------- Iteration 82000 -------------------------------- 
+training time:  0.016611576080322266
+evaluation time:  8.10028338432312
+epoch time:  8.116915225982666
+loss:  0.035985768
+
+
+-------------------------------- Iteration 83000 -------------------------------- 
+training time:  0.017926454544067383
+evaluation time:  8.155866384506226
+epoch time:  8.17380690574646
+loss:  0.02302717
+
+
+-------------------------------- Iteration 84000 -------------------------------- 
+training time:  0.01624321937561035
+evaluation time:  8.191957950592041
+epoch time:  8.208245992660522
+loss:  0.026036607
+
+
+-------------------------------- Iteration 85000 -------------------------------- 
+training time:  0.01630091667175293
+evaluation time:  8.120776891708374
+epoch time:  8.13709282875061
+loss:  0.01117346
+
+
+-------------------------------- Iteration 86000 -------------------------------- 
+training time:  0.017065763473510742
+evaluation time:  8.086426496505737
+epoch time:  8.103514432907104
+loss:  0.04828985
+
+
+-------------------------------- Iteration 87000 -------------------------------- 
+training time:  0.016396522521972656
+evaluation time:  8.041241884231567
+epoch time:  8.057655334472656
+loss:  0.00936217
+
+
+-------------------------------- Iteration 88000 -------------------------------- 
+training time:  0.016286134719848633
+evaluation time:  8.153596639633179
+epoch time:  8.169898271560669
+loss:  0.0136884535
+
+
+-------------------------------- Iteration 89000 -------------------------------- 
+training time:  0.017125606536865234
+evaluation time:  8.11867904663086
+epoch time:  8.135828971862793
+loss:  0.03754777
+
+
+-------------------------------- Iteration 90000 -------------------------------- 
+training time:  0.016155481338500977
+evaluation time:  8.035475254058838
+epoch time:  8.05164647102356
+loss:  0.027089294
+
+
+-------------------------------- Iteration 91000 -------------------------------- 
+training time:  0.016683340072631836
+evaluation time:  8.03761076927185
+epoch time:  8.054312944412231
+loss:  0.016832557
+
+
+-------------------------------- Iteration 92000 -------------------------------- 
+training time:  0.01602911949157715
+evaluation time:  8.215507984161377
+epoch time:  8.23156189918518
+loss:  0.023886602
+
+
+-------------------------------- Iteration 93000 -------------------------------- 
+training time:  0.01745772361755371
+evaluation time:  8.16593074798584
+epoch time:  8.183402299880981
+loss:  0.021767328
+
+
+-------------------------------- Iteration 94000 -------------------------------- 
+training time:  0.01656341552734375
+evaluation time:  8.047865390777588
+epoch time:  8.064448118209839
+loss:  0.021090318
+
+
+-------------------------------- Iteration 95000 -------------------------------- 
+training time:  0.015999555587768555
+evaluation time:  8.0927574634552
+epoch time:  8.10877251625061
+loss:  0.008913839
+
+
+-------------------------------- Iteration 96000 -------------------------------- 
+training time:  0.016259193420410156
+evaluation time:  7.917712450027466
+epoch time:  7.934009790420532
+loss:  0.016450832
+
+
+-------------------------------- Iteration 97000 -------------------------------- 
+training time:  0.01603555679321289
+evaluation time:  7.749973773956299
+epoch time:  7.766025543212891
+loss:  0.025643663
+
+
+-------------------------------- Iteration 98000 -------------------------------- 
+training time:  0.016074419021606445
+evaluation time:  7.773067951202393
+epoch time:  7.789155960083008
+loss:  0.027803108
+
+
+-------------------------------- Iteration 99000 -------------------------------- 
+training time:  0.01575183868408203
+evaluation time:  7.8278257846832275
+epoch time:  7.843600749969482
+loss:  0.008519187
+
+
+-------------------------------- Iteration 100000 -------------------------------- 
+training time:  0.015905380249023438
+evaluation time:  7.917958498001099
+epoch time:  7.933910369873047
+loss:  0.009388334
+
+
+-------------------------------- Iteration 101000 -------------------------------- 
+training time:  0.015790939331054688
+evaluation time:  7.909298896789551
+epoch time:  7.925103664398193
+loss:  0.014479386
+
+
+-------------------------------- Iteration 102000 -------------------------------- 
+training time:  0.0167539119720459
+evaluation time:  7.907589912414551
+epoch time:  7.9243669509887695
+loss:  0.006349423
+
+
+-------------------------------- Iteration 103000 -------------------------------- 
+training time:  0.015787124633789062
+evaluation time:  7.850988864898682
+epoch time:  7.866797924041748
+loss:  0.017257033
+
+
+-------------------------------- Iteration 104000 -------------------------------- 
+training time:  0.016738176345825195
+evaluation time:  7.912554502487183
+epoch time:  7.929311513900757
+loss:  0.044637308
+
+
+-------------------------------- Iteration 105000 -------------------------------- 
+training time:  0.01569080352783203
+evaluation time:  7.970253229141235
+epoch time:  7.985966920852661
+loss:  0.009002609
+
+
+-------------------------------- Iteration 106000 -------------------------------- 
+training time:  0.015745162963867188
+evaluation time:  7.8087968826293945
+epoch time:  7.8245556354522705
+loss:  0.01662468
+
+
+-------------------------------- Iteration 107000 -------------------------------- 
+training time:  0.015726089477539062
+evaluation time:  7.798487186431885
+epoch time:  7.8142335414886475
+loss:  0.018672884
+
+
+-------------------------------- Iteration 108000 -------------------------------- 
+training time:  0.01584911346435547
+evaluation time:  7.80458927154541
+epoch time:  7.820459842681885
+loss:  0.012238016
+
+
+-------------------------------- Iteration 109000 -------------------------------- 
+training time:  0.015740633010864258
+evaluation time:  7.9112389087677
+epoch time:  7.926995277404785
+loss:  0.012711764
+
+
+-------------------------------- Iteration 110000 -------------------------------- 
+training time:  0.015860319137573242
+evaluation time:  7.796279191970825
+epoch time:  7.812159061431885
+loss:  0.005311072
+
+
+-------------------------------- Iteration 111000 -------------------------------- 
+training time:  0.016244888305664062
+evaluation time:  7.79801869392395
+epoch time:  7.814276933670044
+loss:  0.017739704
+
+
+-------------------------------- Iteration 112000 -------------------------------- 
+training time:  0.015593290328979492
+evaluation time:  7.808589220046997
+epoch time:  7.824204444885254
+loss:  0.0067864656
+
+
+-------------------------------- Iteration 113000 -------------------------------- 
+training time:  0.015647172927856445
+evaluation time:  7.918168306350708
+epoch time:  7.933834075927734
+loss:  0.006633222
+
+
+-------------------------------- Iteration 114000 -------------------------------- 
+training time:  0.015656471252441406
+evaluation time:  7.783867597579956
+epoch time:  7.799537181854248
+loss:  0.011149455
+
+
+-------------------------------- Iteration 115000 -------------------------------- 
+training time:  0.01571822166442871
+evaluation time:  7.801998853683472
+epoch time:  7.817739486694336
+loss:  0.012794317
+
+
+-------------------------------- Iteration 116000 -------------------------------- 
+training time:  0.01581287384033203
+evaluation time:  7.77604603767395
+epoch time:  7.791899919509888
+loss:  0.029529952
+
+
+-------------------------------- Iteration 117000 -------------------------------- 
+training time:  0.016091585159301758
+evaluation time:  7.787913084030151
+epoch time:  7.804018259048462
+loss:  0.015168272
+
+
+-------------------------------- Iteration 118000 -------------------------------- 
+training time:  0.015816926956176758
+evaluation time:  7.924349308013916
+epoch time:  7.9401843547821045
+loss:  0.01031567
+
+
+-------------------------------- Iteration 119000 -------------------------------- 
+training time:  0.01572871208190918
+evaluation time:  7.789904356002808
+epoch time:  7.805647134780884
+loss:  0.010737531
+
+
+-------------------------------- Iteration 120000 -------------------------------- 
+training time:  0.016149044036865234
+evaluation time:  7.772092342376709
+epoch time:  7.788254737854004
+loss:  0.025677275
+
+
+-------------------------------- Iteration 121000 -------------------------------- 
+training time:  0.015811681747436523
+evaluation time:  7.808610200881958
+epoch time:  7.824437618255615
+loss:  0.004772391
+
+
+-------------------------------- Iteration 122000 -------------------------------- 
+training time:  0.015835046768188477
+evaluation time:  7.9357428550720215
+epoch time:  7.951590538024902
+loss:  0.0090827625
+
+
+-------------------------------- Iteration 123000 -------------------------------- 
+training time:  0.015816450119018555
+evaluation time:  7.804882287979126
+epoch time:  7.820719242095947
+loss:  0.012799433
+
+
+-------------------------------- Iteration 124000 -------------------------------- 
+training time:  0.016077756881713867
+evaluation time:  7.8701491355896
+epoch time:  7.886243104934692
+loss:  0.008794419
+
+
+-------------------------------- Iteration 125000 -------------------------------- 
+training time:  0.015601158142089844
+evaluation time:  7.871663808822632
+epoch time:  7.8872785568237305
+loss:  0.005582936
+
+
+-------------------------------- Iteration 126000 -------------------------------- 
+training time:  0.015665054321289062
+evaluation time:  7.977397918701172
+epoch time:  7.9930784702301025
+loss:  0.0061511463
+
+
+-------------------------------- Iteration 127000 -------------------------------- 
+training time:  0.015674591064453125
+evaluation time:  7.8393471240997314
+epoch time:  7.855041980743408
+loss:  0.012114889
+
+
+-------------------------------- Iteration 128000 -------------------------------- 
+training time:  0.015598297119140625
+evaluation time:  7.886922359466553
+epoch time:  7.902534246444702
+loss:  0.039467424
+
+
+-------------------------------- Iteration 129000 -------------------------------- 
+training time:  0.01565837860107422
+evaluation time:  7.806808948516846
+epoch time:  7.822501182556152
+loss:  0.0087841125
+
+
+-------------------------------- Iteration 130000 -------------------------------- 
+training time:  0.015653610229492188
+evaluation time:  7.815810441970825
+epoch time:  7.83147931098938
+loss:  0.02968602
+
+
+-------------------------------- Iteration 131000 -------------------------------- 
+training time:  0.015793800354003906
+evaluation time:  7.911951780319214
+epoch time:  7.927759885787964
+loss:  0.010095344
+
+
+-------------------------------- Iteration 132000 -------------------------------- 
+training time:  0.015697956085205078
+evaluation time:  7.766569137573242
+epoch time:  7.782315015792847
+loss:  0.008320908
+
+
+-------------------------------- Iteration 133000 -------------------------------- 
+training time:  0.01622295379638672
+evaluation time:  7.780781030654907
+epoch time:  7.797018051147461
+loss:  0.004960053
+
+
+-------------------------------- Iteration 134000 -------------------------------- 
+training time:  0.015901565551757812
+evaluation time:  7.774751663208008
+epoch time:  7.7906670570373535
+loss:  0.0036918775
+
+
+-------------------------------- Iteration 135000 -------------------------------- 
+training time:  0.016025066375732422
+evaluation time:  7.8875815868377686
+epoch time:  7.9036338329315186
+loss:  0.007946659
+
+
+-------------------------------- Iteration 136000 -------------------------------- 
+training time:  0.01573634147644043
+evaluation time:  7.776981353759766
+epoch time:  7.792730808258057
+loss:  0.005837724
+
+
+-------------------------------- Iteration 137000 -------------------------------- 
+training time:  0.016138315200805664
+evaluation time:  7.760999917984009
+epoch time:  7.777156591415405
+loss:  0.020583669
+
+
+-------------------------------- Iteration 138000 -------------------------------- 
+training time:  0.015692710876464844
+evaluation time:  7.822437047958374
+epoch time:  7.838144063949585
+loss:  0.011157057
+
+
+-------------------------------- Iteration 139000 -------------------------------- 
+training time:  0.015684127807617188
+evaluation time:  7.757755517959595
+epoch time:  7.773461103439331
+loss:  0.008094869
+
+
+-------------------------------- Iteration 140000 -------------------------------- 
+training time:  0.015752792358398438
+evaluation time:  7.944432258605957
+epoch time:  7.960208892822266
+loss:  0.005082995
+
+
+-------------------------------- Iteration 141000 -------------------------------- 
+training time:  0.016222000122070312
+evaluation time:  7.792296886444092
+epoch time:  7.808540105819702
+loss:  0.012122542
+
+
+-------------------------------- Iteration 142000 -------------------------------- 
+training time:  0.015758752822875977
+evaluation time:  7.818943738937378
+epoch time:  7.834718942642212
+loss:  0.0054090205
+
+
+-------------------------------- Iteration 143000 -------------------------------- 
+training time:  0.01578354835510254
+evaluation time:  7.763554096221924
+epoch time:  7.779350996017456
+loss:  0.021332141
+
+
+-------------------------------- Iteration 144000 -------------------------------- 
+training time:  0.01599407196044922
+evaluation time:  7.796313047409058
+epoch time:  7.812321662902832
+loss:  0.012860914
+
+
+-------------------------------- Iteration 145000 -------------------------------- 
+training time:  0.01576542854309082
+evaluation time:  7.99587345123291
+epoch time:  8.01165771484375
+loss:  0.0062199496
+
+
+-------------------------------- Iteration 146000 -------------------------------- 
+training time:  0.015788555145263672
+evaluation time:  7.821446895599365
+epoch time:  7.837249040603638
+loss:  0.017242014
+
+
+-------------------------------- Iteration 147000 -------------------------------- 
+training time:  0.01578378677368164
+evaluation time:  7.71795129776001
+epoch time:  7.73375129699707
+loss:  0.00653375
+
+
+-------------------------------- Iteration 148000 -------------------------------- 
+training time:  0.015880107879638672
+evaluation time:  7.787142276763916
+epoch time:  7.803035497665405
+loss:  0.007823969
+
+
+-------------------------------- Iteration 149000 -------------------------------- 
+training time:  0.01579761505126953
+evaluation time:  7.893482685089111
+epoch time:  7.909295082092285
+loss:  0.020447448
+
+
+-------------------------------- Iteration 150000 -------------------------------- 
+training time:  0.01577448844909668
+evaluation time:  7.7738165855407715
+epoch time:  7.789604425430298
+loss:  0.012689323
+
+
+-------------------------------- Iteration 151000 -------------------------------- 
+training time:  0.015818357467651367
+evaluation time:  7.79284930229187
+epoch time:  7.808692693710327
+loss:  0.013726643
+
+
+-------------------------------- Iteration 152000 -------------------------------- 
+training time:  0.016165971755981445
+evaluation time:  7.8246307373046875
+epoch time:  7.840816259384155
+loss:  0.003972155
+
+
+-------------------------------- Iteration 153000 -------------------------------- 
+training time:  0.016088247299194336
+evaluation time:  7.7436203956604
+epoch time:  7.759726047515869
+loss:  0.014837679
+
+
+-------------------------------- Iteration 154000 -------------------------------- 
+training time:  0.01654338836669922
+evaluation time:  7.933700799942017
+epoch time:  7.950280427932739
+loss:  0.011063203
+
+
+-------------------------------- Iteration 155000 -------------------------------- 
+training time:  0.016750097274780273
+evaluation time:  7.79029655456543
+epoch time:  7.807060956954956
+loss:  0.0040068864
+
+
+-------------------------------- Iteration 156000 -------------------------------- 
+training time:  0.01582050323486328
+evaluation time:  7.793836832046509
+epoch time:  7.809673070907593
+loss:  0.012310254
+
+
+-------------------------------- Iteration 157000 -------------------------------- 
+training time:  0.015975475311279297
+evaluation time:  7.784887075424194
+epoch time:  7.800894737243652
+loss:  0.020902373
+
+
+-------------------------------- Iteration 158000 -------------------------------- 
+training time:  0.01585698127746582
+evaluation time:  7.7387683391571045
+epoch time:  7.7546422481536865
+loss:  0.0042681303
+
+
+-------------------------------- Iteration 159000 -------------------------------- 
+training time:  0.015845060348510742
+evaluation time:  7.9223527908325195
+epoch time:  7.9382264614105225
+loss:  0.010356342
+
+
+-------------------------------- Iteration 160000 -------------------------------- 
+training time:  0.015835285186767578
+evaluation time:  7.756540060043335
+epoch time:  7.772395133972168
+loss:  0.0038373221
+
+
+-------------------------------- Iteration 161000 -------------------------------- 
+training time:  0.016169071197509766
+evaluation time:  7.742581129074097
+epoch time:  7.758764743804932
+loss:  0.002292626
+
+
+-------------------------------- Iteration 162000 -------------------------------- 
+training time:  0.015885591506958008
+evaluation time:  7.806028604507446
+epoch time:  7.821927547454834
+loss:  0.003976078
+
+
+-------------------------------- Iteration 163000 -------------------------------- 
+training time:  0.01597452163696289
+evaluation time:  7.7427146434783936
+epoch time:  7.758734941482544
+loss:  0.0101024145
+
+
+-------------------------------- Iteration 164000 -------------------------------- 
+training time:  0.015833616256713867
+evaluation time:  7.941129207611084
+epoch time:  7.956976652145386
+loss:  0.004674131
+
+
+-------------------------------- Iteration 165000 -------------------------------- 
+training time:  0.015833139419555664
+evaluation time:  7.754087924957275
+epoch time:  7.769944906234741
+loss:  0.009170137
+
+
+-------------------------------- Iteration 166000 -------------------------------- 
+training time:  0.016597747802734375
+evaluation time:  7.9601030349731445
+epoch time:  7.976721286773682
+loss:  0.0050679636
+
+
+-------------------------------- Iteration 167000 -------------------------------- 
+training time:  0.016795635223388672
+evaluation time:  7.9399333000183105
+epoch time:  7.956744909286499
+loss:  0.0032588146
+
+
+-------------------------------- Iteration 168000 -------------------------------- 
+training time:  0.01644420623779297
+evaluation time:  7.956734895706177
+epoch time:  7.973199367523193
+loss:  0.009407476
+
+
+-------------------------------- Iteration 169000 -------------------------------- 
+training time:  0.016663789749145508
+evaluation time:  8.076913833618164
+epoch time:  8.093592882156372
+loss:  0.006981745
+
+
+-------------------------------- Iteration 170000 -------------------------------- 
+training time:  0.016663551330566406
+evaluation time:  7.878852844238281
+epoch time:  7.895540475845337
+loss:  0.010123923
+
+
+-------------------------------- Iteration 171000 -------------------------------- 
+training time:  0.0168001651763916
+evaluation time:  7.932292222976685
+epoch time:  7.9491071701049805
+loss:  0.0066381576
+
+
+-------------------------------- Iteration 172000 -------------------------------- 
+training time:  0.016384601593017578
+evaluation time:  7.889125347137451
+epoch time:  7.9055235385894775
+loss:  0.008069296
+
+
+-------------------------------- Iteration 173000 -------------------------------- 
+training time:  0.017222881317138672
+evaluation time:  7.88374137878418
+epoch time:  7.900984048843384
+loss:  0.006190829
+
+
+-------------------------------- Iteration 174000 -------------------------------- 
+training time:  0.016464948654174805
+evaluation time:  8.091893911361694
+epoch time:  8.10837435722351
+loss:  0.0022856046
+
+
+-------------------------------- Iteration 175000 -------------------------------- 
+training time:  0.016126632690429688
+evaluation time:  7.919358491897583
+epoch time:  7.935729503631592
+loss:  0.0069614677
+
+
+-------------------------------- Iteration 176000 -------------------------------- 
+training time:  0.017803668975830078
+evaluation time:  7.920805215835571
+epoch time:  7.938636541366577
+loss:  0.00360227
+
+
+-------------------------------- Iteration 177000 -------------------------------- 
+training time:  0.01638317108154297
+evaluation time:  7.927549362182617
+epoch time:  7.943947076797485
+loss:  0.0049740598
+
+
+-------------------------------- Iteration 178000 -------------------------------- 
+training time:  0.016171932220458984
+evaluation time:  7.889737367630005
+epoch time:  7.90593695640564
+loss:  0.008125633
+
+
+-------------------------------- Iteration 179000 -------------------------------- 
+training time:  0.016017675399780273
+evaluation time:  8.217767477035522
+epoch time:  8.233822584152222
+loss:  0.0049024955
+
+
+-------------------------------- Iteration 180000 -------------------------------- 
+training time:  0.016573429107666016
+evaluation time:  7.960505485534668
+epoch time:  7.977093935012817
+loss:  0.0047897752
+
+
+-------------------------------- Iteration 181000 -------------------------------- 
+training time:  0.01670670509338379
+evaluation time:  8.006526708602905
+epoch time:  8.02325177192688
+loss:  0.0038300173
+
+
+-------------------------------- Iteration 182000 -------------------------------- 
+training time:  0.016200780868530273
+evaluation time:  7.96063756942749
+epoch time:  7.976853132247925
+loss:  0.0038791266
+
+
+-------------------------------- Iteration 183000 -------------------------------- 
+training time:  0.01605844497680664
+evaluation time:  7.920892715454102
+epoch time:  7.936970949172974
+loss:  0.0051527987
+
+
+-------------------------------- Training stopped due to early stopping -------------------------------- 
+min loss:  0.0009961266
+
+
+-------------------------------- Test Results -------------------------------- 
+box-close-v1_success_rate _success_rate:  1.0
+dial-turn-v1_success_rate _success_rate:  1.0
+<string>:6: FutureWarning: The input object of type 'Tensor' is an array-like implementing one of the corresponding protocols (`__array__`, `__array_interface__` or `__array_struct__`); but not a sequence (or 0-D). In the future, this object will be coerced as if it was first converted using `np.array(obj)`. To retain the old behaviour, you have to either modify the type 'Tensor', or assign to an empty array created with `np.empty(correct_shape, dtype=object)`.
+<string>:6: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+door-close-v1_success_rate _success_rate:  1.0
+drawer-open-v1_success_rate _success_rate:  1.0
+faucet-open-v1_success_rate _success_rate:  1.0
+handle-press-v1_success_rate _success_rate:  1.0
+plate-slide-v1_success_rate _success_rate:  1.0
+shelf-place-v1_success_rate _success_rate:  0.0
+soccer-v1_success_rate _success_rate:  1.0
+window-close-v1_success_rate _success_rate:  1.0
+mean_success_rate:  0.9
+Done

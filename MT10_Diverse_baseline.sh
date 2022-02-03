@@ -21,7 +21,7 @@ srun python3 train_mt_baseline.py \
     --train_batch_size 32 \
     --config config/soft_module_fixed_mt10_diverse.json \
     --id MT50_Single_Task \
-    --seed 32 \
+    --seed 1920 \
     --worker_nums 1 \
     --eval_worker_nums 1 \
     --task_env MT50_task_env \
