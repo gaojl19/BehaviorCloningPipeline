@@ -54,6 +54,23 @@ class RL_Trainer(object):
         # agent will have input shape of 12(Augmented observation)
         self.input_shape = input_shape
         
+        
+        
+        # build log dir
+        plot_prefix = "./fig/"+ self.env_name
+        if baseline:
+            plot_prefix += "_baseline"
+        if self.params["meta_env"]["random_init"] == False:
+            plot_prefix += "_fixed/"
+        else:
+            plot_prefix += "_random/"
+        
+        if not os.path.isdir(plot_prefix):
+            os.makedirs(plot_prefix)
+        
+        self.plot_prefix = plot_prefix
+        
+        
         # MT10
         if self.params["env_name"] == "mt10":
             self.expert_env = MT10SingleCollector(
@@ -74,7 +91,8 @@ class RL_Trainer(object):
                 env_info=self.env_info,
                 args=args,
                 params=params,
-                example_embedding=example_embedding
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
             )
             self.mt_flag = True
         
@@ -98,7 +116,8 @@ class RL_Trainer(object):
                 env_info=self.env_info,
                 args=args,
                 params=params,
-                example_embedding=example_embedding
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
             )
             self.mt_flag = True
         
@@ -122,7 +141,8 @@ class RL_Trainer(object):
                 env_info=self.env_info,
                 args=args,
                 params=params,
-                example_embedding=example_embedding
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
             )
             self.mt_flag = True
         
@@ -146,7 +166,8 @@ class RL_Trainer(object):
                 env_info=self.env_info,
                 args=args,
                 params=params,
-                example_embedding=example_embedding
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
             )
             self.mt_flag = True
         
@@ -169,7 +190,8 @@ class RL_Trainer(object):
                 env_info=self.env_info,
                 args=args,
                 params=params,
-                example_embedding=example_embedding
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
             )
             self.mt_flag = True
         
@@ -187,23 +209,10 @@ class RL_Trainer(object):
             )
             
             self.mt_flag=False
-            
         
-        # build log dir
-        plot_prefix = "./fig/"+ self.env_name
-        if baseline:
-            plot_prefix += "_baseline"
-        if self.params["meta_env"]["random_init"] == False:
-            plot_prefix += "_fixed/"
-        else:
-            plot_prefix += "_random/"
-        
-        if not os.path.isdir(plot_prefix):
-            os.makedirs(plot_prefix)
         
         if self.mt_flag == False:
-            plot_prefix += self.args["task_name"] + "_"
-        self.plot_prefix = plot_prefix
+            self.plot_prefix += self.args["task_name"] + "_"
     
     
     def run_training_loop(self, n_iter, multiple_samples, baseline=False, expert_task_curve={}, agent_task_curve={}):
@@ -317,7 +326,7 @@ class RL_Trainer(object):
             if self.baseline:
                 eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
             else:
-                eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
+                eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render, plot_weights=True)
             
             for name in eval_infos.keys():
                 if name == "mean_success_rate":

@@ -38,3 +38,13 @@ class SoftModulePolicy(nn.Module):
 
         # TODO return the action that the policy prescribes
         return self.forward(observation, embedding_input)
+
+
+    # def get_routing_prob(self, obs: np.ndarray, embedding_input):
+    #     if len(obs.shape) > 1:
+    #         observation = obs
+    #     else:
+    #         observation = obs[None]
+
+    #     # TODO return the action that the policy prescribes
+    #     return self.forward(observation, embedding_input)

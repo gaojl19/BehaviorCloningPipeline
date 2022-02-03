@@ -1,10 +1,15 @@
 from lib2to3.pgen2.token import N_TOKENS
+
+from jinja2 import TemplateNotFound
 from utils.utils import *
 from metaworld_utils.meta_env import generate_single_mt_env
 from torch_rl.replay_buffer import EnvInfo
 from policy.continuous_policy import MultiHeadGuassianContPolicy, EmbeddingGuassianContPolicyBase
 from utils.utils import Path
 from agents.bc_agent import SoftModuleAgent
+
+from sklearn.manifold import TSNE
+import seaborn as sns
 
 import torch
 import numpy as np
@@ -343,7 +348,7 @@ class MTEnvCollector():
     '''
         create MT10/50 environment, sample paths from multi-task policy(usually agent policy for evaluation) 
     '''
-    def __init__(self, env, env_cls, env_args, env_info, args, params, example_embedding):
+    def __init__(self, env, env_cls, env_args, env_info, args, params, example_embedding, plot_prefix):
         self.env = env
         self.env_cls = env_cls
         self.env_args = env_args
@@ -352,17 +357,19 @@ class MTEnvCollector():
         self.params = params
         self.example_embedding = example_embedding
         self.epochs = args["n_iter"]
+        self.plot_prefix=plot_prefix
         
         # multi-processing
         self.manager = mp.Manager()
     
-    def sample_agent(self, log_prefix, agent_policy, input_shape, render):
+    def sample_agent(self, log_prefix, agent_policy, input_shape, render, plot_weights=False):
         
-        self.build_Multi_task_env(agent_policy=agent_policy, input_shape=input_shape, render=render)
+        self.build_Multi_task_env(agent_policy=agent_policy, input_shape=input_shape, render=render, return_weights = plot_weights)
         active_task_counts = 0
         tasks_result = []
         mean_success_rate = 0
         images = {}
+        weights = {}
         
         # for _ in range(self.eval_worker_nums):
         #     worker_rst = self.eval_shared_que.get()
@@ -379,10 +386,14 @@ class MTEnvCollector():
             tasks_result.append((res["task_name"], res["mean_success_rate"]))
             if len(res["image_obs"]) >0 :
                 images[res["task_name"]] = res["image_obs"]
+            weights[res["task_name"]] = res['weights']
         
         if len(images) > 0:
             for task_name in images.keys():
                 imageio.mimsave(log_prefix + task_name + "_agent.gif", images[task_name])
+                
+        if plot_weights:
+            self.plot_TSNE(weights=weights)
     
         tasks_result.sort()
         dic = OrderedDict()
@@ -400,7 +411,7 @@ class MTEnvCollector():
     
     
 
-    def build_Multi_task_env(self, agent_policy, input_shape, render=False):
+    def build_Multi_task_env(self, agent_policy, input_shape, render=False, return_weights=False):
     
         self.eval_workers = []
         self.eval_worker_nums = self.env.num_tasks
@@ -450,7 +461,8 @@ class MTEnvCollector():
                           task_name=task,
                           shared_dict=self.shared_dict,
                           render=render,
-                          input_shape=input_shape)
+                          input_shape=input_shape,
+                          return_weights=return_weights)
             
             self.results.append(result)
             # eval_p = mp.Process(
@@ -462,7 +474,7 @@ class MTEnvCollector():
             # self.eval_workers.append(eval_p)
             
     
-    def evaluate(self, agent_policy, env_info, eval_episode, max_frame, task_name, shared_dict, render, input_shape):
+    def evaluate(self, agent_policy, env_info, eval_episode, max_frame, task_name, shared_dict, render, input_shape, return_weights=False):
         
         # pf = copy.deepcopy(agent_policy).to(env_info.device)
         # pf.eval()
@@ -492,6 +504,7 @@ class MTEnvCollector():
             # initialize
             acs = []
             done = False
+            weights = []
         
             eval_ob = env_info.env.reset()
             task_idx = env_info.env_rank
@@ -524,7 +537,13 @@ class MTEnvCollector():
                             # print("original ob: ", eval_ob, end= "\t")
                             eval_ob = eval_ob[:input_shape]
                             # print("new ob: ", eval_ob)
-                        act = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0), embedding_input)
+                        
+                        if return_weights:
+                            act, general_weights = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0), embedding_input, return_weights=return_weights)
+                            weights.append(general_weights)
+                        else:
+                            act = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0), embedding_input)
+
                     else:
                         act = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0))
                 
@@ -554,7 +573,8 @@ class MTEnvCollector():
         return { 
             'image_obs': image_obs, 
             'mean_success_rate': success_rate, 
-            'task_name': task_name
+            'task_name': task_name,
+            'weights': weights
         }
         
     @staticmethod
@@ -650,3 +670,27 @@ class MTEnvCollector():
             'mean_success_rate': success_rate, 
             'task_name': task_name
         })
+
+
+    def plot_TSNE(self, weights):
+        '''
+            plot t-sne of modular weights
+        '''
+        sns.set(rc={'figure.figsize':(11.7,8.27)})
+        palette = sns.color_palette("bright", 10)
+        X = []
+        y = []
+        for task_name in weights.keys():
+            for w in weights[task_name]:
+                X.append(torch.reshape(w[0], (-1,)))
+                y.append(task_name)
+        X = torch.stack(X)
+        print(X.shape)
+        
+        # using scikit-learn package
+        tsne = TSNE()
+        X_embedded = tsne.fit_transform(X)  
+        sns_plot = sns.scatterplot(X_embedded[:,0], X_embedded[:,1], hue=y, legend='full', palette=palette)
+        fig = sns_plot.get_figure()
+        fig.savefig(self.plot_prefix + "_tsne.png")
+        

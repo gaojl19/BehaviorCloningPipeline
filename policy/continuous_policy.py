@@ -297,8 +297,8 @@ class ModularGuassianGatedCascadeCondContPolicy(networks.ModularGatedCascadeCond
         std = torch.exp(log_std)
 
         if return_weights:
-            return mean, std, log_std, general_weights, last_weights
-            # return mean, std, log_std, general_weights
+            # return mean, std, log_std, general_weights, last_weights
+            return mean, std, log_std, general_weights
         return mean, std, log_std
 
     def eval_act( self, x, embedding_input, return_weights = False ):

@@ -85,6 +85,8 @@ class MLPEmbeddingAgent(BaseAgent):
             n_layers = self.agent_params['n_layers'],
             hidden_shape = self.agent_params['size']
         )
+        
+        print("actor: \n", self.actor)
 
         # update
         self.loss = nn.MSELoss()
@@ -178,7 +180,7 @@ class SoftModuleAgent(BaseAgent):
         self.replay_buffer.add_mt_rollouts(paths)
 
     def mt_sample(self, batch_size):
-        return self.replay_buffer.sample_mt_random_data(batch_size)  # HW1: you will modify this
+        return self.replay_buffer.sample_mt_random_data(batch_size)  # HW1: you will modify this  
 
     def save(self, path):
         return self.actor.save(path)
