@@ -23,6 +23,8 @@ class MLPAgent(BaseAgent):
             n_layers = self.agent_params['n_layers'],
             hidden_shape = self.agent_params['size']
         )
+        
+        print("actor: \n", self.actor)
 
         # update
         self.loss = nn.MSELoss()
@@ -148,6 +150,8 @@ class SoftModuleAgent(BaseAgent):
             example_embedding = example_embedding,
             params = params
         )
+        
+        print("actor: \n", self.actor.policy)
         
         # update
         self.loss = nn.MSELoss()
