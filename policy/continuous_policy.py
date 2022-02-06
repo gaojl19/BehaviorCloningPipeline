@@ -358,14 +358,12 @@ class ModularGuassianGatedCascadeCondContPolicy(networks.ModularGatedCascadeCond
 
 class MultiHeadGuassianContPolicy(networks.BootstrappedNet):
     def forward(self, x, idx):
+    
         x = super().forward(x, idx)
-        # print("idx: ", idx)
-        # print("idx shape: ", idx.shape)
         
-        # print("out shape: ", x.shape) [1,8]
-
         # divide output into 2 parts: mean and covariance
         mean, log_std = x.chunk(2, dim=-1)
+        
         # print("mean shape: ", mean.shape) [1,4]
         # print("log_std shape: ", log_std.shape) [1,4]
 

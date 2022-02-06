@@ -3,7 +3,7 @@ from metaworld_utils.meta_env import generate_single_mt_env
 from torch_rl.replay_buffer import EnvInfo
 from policy.continuous_policy import MultiHeadGuassianContPolicy, EmbeddingGuassianContPolicyBase
 from utils.utils import Path
-from agents.bc_agent import MLPAgent, SoftModuleAgent
+from agents.bc_agent import MHSACAgent, MLPAgent, MLPEmbeddingAgent, SoftModuleAgent
 from torch_rl.multi_task_collector import *
 
 import torch
@@ -42,24 +42,30 @@ class RL_Trainer(object):
         self.args = args
         self.params = params
         
+        self.index_flag = False
+        
         agent_class = self.args['agent_class']
         if agent_class == MLPAgent :
             self.agent = agent_class(self.env, self.args['agent_params'])
-        else:
+        elif agent_class == SoftModuleAgent or agent_class == MLPEmbeddingAgent:
             self.agent = agent_class(self.env, example_embedding, self.args['agent_params'], self.params)
+        elif agent_class == MHSACAgent:
+            self.agent = agent_class(self.env, self.args['agent_params'], self.params)
+            self.index_flag = True
+        else:
+            raise NotImplementedError(agent_class)
             
-        
-        # Notes:
         # expert has input shape of 9
         # agent will have input shape of 12(Augmented observation)
         self.input_shape = input_shape
-        
         
         
         # build log dir
         plot_prefix = "./fig/"+ self.env_name
         if baseline:
             plot_prefix += "_baseline"
+        if self.index_flag:
+            plot_prefix += "_mhsac"
         if self.params["meta_env"]["random_init"] == False:
             plot_prefix += "_fixed/"
         else:
@@ -171,6 +177,7 @@ class RL_Trainer(object):
             )
             self.mt_flag = True
         
+        # MT50
         elif self.params["env_name"] == "mt50":
             self.expert_env = MT50SingleCollector(
                 env_cls=env_cls,
@@ -284,9 +291,9 @@ class RL_Trainer(object):
 
             train_time = time.time() - train_start_time
             
-            eval_start_time = time.time()
 
             # EVALUATION
+            eval_start_time = time.time()
             if itr % self.args["eval_interval"] == 0:
                 print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
                 render = self.params["general_setting"]["eval_render"]
@@ -326,7 +333,10 @@ class RL_Trainer(object):
             if self.baseline:
                 eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
             else:
-                eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render, plot_weights=True)
+                if self.index_flag:
+                    eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
+                else:
+                    eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render, plot_weights=True)
             
             for name in eval_infos.keys():
                 if name == "mean_success_rate":
@@ -368,18 +378,17 @@ class RL_Trainer(object):
         all_logs = []
         for _ in range(self.args['gradient_steps']):
 
-            # sample some data from the data buffer
+            # sample some data from the data buffer, and train on that batch
             if self.mt_flag:
-                ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
-
-                # use the sampled data to train an agent
-                train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch)
-                    
+                if self.index_flag:
+                    ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, index_batch = self.agent.mt_sample(self.args['train_batch_size'])
+                    train_log = self.agent.train(ob_batch, ac_batch, index_batch)
+                else:  
+                    ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
+                    train_log = self.agent.train(ob_batch, ac_batch, embedding_batch)
             else:
                 ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.agent.sample(self.args['train_batch_size'])
-
-                # use the sampled data to train an agent
-                train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch)
+                train_log = self.agent.train(ob_batch, ac_batch)
             all_logs.append(train_log)
             
         return all_logs

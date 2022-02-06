@@ -1,3 +1,4 @@
+from operator import index
 from os import lockf
 import numpy as np
 import torch
@@ -8,7 +9,7 @@ from utils.utils import *
 from metaworld_utils.meta_env import generate_single_mt_env
 
 class SingleCollector():
-    def __init__(self, env, env_cls, env_args, env_info, expert_policy, device, max_path_length, min_timesteps_per_batch, embedding_input = [], input_shape = None):
+    def __init__(self, env, env_cls, env_args, env_info, expert_policy, device, max_path_length, min_timesteps_per_batch, embedding_input = [], index_input = None, input_shape = None):
         self.env = copy.deepcopy(env)
         self.env_cls = copy.deepcopy(env_cls)
         self.env_args = copy.deepcopy(env_args)
@@ -18,6 +19,7 @@ class SingleCollector():
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch
         self.embedding_input = embedding_input
+        self.index_input = index_input
         self.input_shape = expert_policy.ob_dim
         
         self.env_info.env_cls = generate_single_mt_env
@@ -90,13 +92,14 @@ class SingleCollector():
         log_info = "initial ob: " + str(ob) + "\n"
         
         # init vars
-        obs, acs, rewards, next_obs, terminals, image_obs, embedding_input = [], [], [], [], [], [], []
+        obs, acs, rewards, next_obs, terminals, image_obs, embedding_input, index_input = [], [], [], [], [], [], [], []
         steps = 0
         done = False
         success = 0
         
         while True:
             embedding_input.append(self.embedding_input)
+            index_input.append(self.index_input)
             
             # query the policy's get_action function
             if not run_agent:
@@ -166,7 +169,7 @@ class SingleCollector():
         if log == True:
             print(log_info)
             
-        return Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_input)
+        return Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_input, index_input)
 
 
     def sample_trajectories(self, policy, render=False, render_mode=('rgb_array'), run_agent=False, log=False, log_prefix = "./"):

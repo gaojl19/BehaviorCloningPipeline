@@ -5,7 +5,7 @@ import copy
 import imageio
 
 
-def Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_input = []):
+def Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_input = [], index_input = []):
     """
         Take info (separate arrays) from a single rollout
         and return it in a single dictionary
@@ -20,10 +20,11 @@ def Path(obs, image_obs, acs, rewards, next_obs, terminals, success, embedding_i
             "next_observation": np.array(next_obs, dtype=np.float32),
             "terminal": np.array(terminals, dtype=np.float32),
             "success": np.array(success, dtype=np.float32),
-            "embedding_input": embedding_input}
+            "embedding_input": embedding_input,
+            "index_input": index_input}
 
 
-def convert_listofrollouts(paths, concat_rew=True, embedding=False):
+def convert_listofrollouts(paths, concat_rew=True, embedding_flag=False, index_flag=False):
     """
         Take a list of rollout dictionaries
         and return separate arrays,
@@ -40,9 +41,13 @@ def convert_listofrollouts(paths, concat_rew=True, embedding=False):
     terminals = np.concatenate([path["terminal"] for path in paths])
     
     
-    if embedding:
-        embeddings_input= np.concatenate([path["embedding_input"] for path in paths])
-        return observations, actions, rewards, next_observations, terminals, embeddings_input
+    if embedding_flag:
+        embedding_input= np.concatenate([path["embedding_input"] for path in paths])
+        return observations, actions, rewards, next_observations, terminals, embedding_input
+
+    elif index_flag:
+        index_input = np.concatenate([path["index_input"] for path in paths])
+        return observations, actions, rewards, next_observations, terminals, index_input
     # single task doesn't need task embedding
     else:
         return observations, actions, rewards, next_observations, terminals

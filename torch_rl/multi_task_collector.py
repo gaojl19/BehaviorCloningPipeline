@@ -1,4 +1,5 @@
 from lib2to3.pgen2.token import N_TOKENS
+from operator import index
 
 from jinja2 import TemplateNotFound
 from utils.utils import *
@@ -57,6 +58,9 @@ class MT10SingleCollector():
             embedding_input = torch.zeros(10)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
+            
+            # create index
+            index_input = torch.Tensor([[i]]).to(env_info.device).long()
         
             if task in expert_dict.keys():
                 self.task_collector[task] = SingleCollector(
@@ -69,6 +73,7 @@ class MT10SingleCollector():
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
                     embedding_input=embedding_input,
+                    index_input = index_input,
                     input_shape=input_shape)
         
     
@@ -145,6 +150,9 @@ class MT10DiverseCollector(MT10SingleCollector):
             embedding_input = torch.zeros(10)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
+            
+            # create index
+            index_input = torch.Tensor([[i]]).to(env_info.device).long()
         
             if task in expert_dict.keys():
                 self.task_collector[task] = SingleCollector(
@@ -157,6 +165,7 @@ class MT10DiverseCollector(MT10SingleCollector):
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
                     embedding_input=embedding_input,
+                    index_input=index_input,
                     input_shape=input_shape)
 
 class MT10SimilarCollector(MT10SingleCollector):
@@ -187,6 +196,9 @@ class MT10SimilarCollector(MT10SingleCollector):
             embedding_input = torch.zeros(10)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
+            
+            # create index
+            index_input = torch.Tensor([[i]]).to(env_info.device).long()
         
             if task in expert_dict.keys():
                 self.task_collector[task] = SingleCollector(
@@ -199,6 +211,7 @@ class MT10SimilarCollector(MT10SingleCollector):
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
                     embedding_input=embedding_input,
+                    index_input=index_input,
                     input_shape=input_shape)
                 
 class MT10FailCollector(MT10SingleCollector):
@@ -229,6 +242,9 @@ class MT10FailCollector(MT10SingleCollector):
             embedding_input = torch.zeros(10)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
+            
+            # create index
+            index_input = torch.Tensor([[i]]).to(env_info.device).long()
         
             if task in expert_dict.keys():
                 self.task_collector[task] = SingleCollector(
@@ -241,6 +257,7 @@ class MT10FailCollector(MT10SingleCollector):
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
                     embedding_input=embedding_input,
+                    index_input=index_input,
                     input_shape=input_shape)  
     
 class MT50SingleCollector():
@@ -254,7 +271,6 @@ class MT50SingleCollector():
         self.max_path_length = max_path_length
         self.min_timesteps_per_batch = min_timesteps_per_batch/50
         self.input_shape = input_shape
-        self.embedding_dict = {}
         
         for i, task in enumerate(self.tasks):
             if task in HARD_MODE_CLS_DICT['train'].keys():     # 45 tasks
@@ -278,7 +294,9 @@ class MT50SingleCollector():
             embedding_input = torch.zeros(50)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
-            self.embedding_dict[task] = embedding_input
+            
+            # create index
+            index_input = torch.Tensor([[i]]).to(env_info.device).long()
             
             if task in expert_dict.keys():
                 self.task_collector[task] = SingleCollector(
@@ -291,6 +309,7 @@ class MT50SingleCollector():
                     max_path_length=self.max_path_length,
                     min_timesteps_per_batch=self.min_timesteps_per_batch,
                     embedding_input=embedding_input,
+                    index_input=index_input,
                     input_shape=self.input_shape)
             
                 
@@ -510,7 +529,12 @@ class MTEnvCollector():
             task_idx = env_info.env_rank
             current_success = 0
             current_step = 0
-            while not done:
+            
+            while not done:  
+                # mask out the last 3 dimensions
+                if len(eval_ob) != input_shape:
+                    eval_ob = eval_ob[:input_shape]
+                
                 if idx_flag:
                     idx_input = torch.Tensor([[task_idx]]).to(env_info.device).long()
                     if embedding_flag:
@@ -530,13 +554,6 @@ class MTEnvCollector():
                         embedding_input = torch.zeros(env_info.num_tasks)
                         embedding_input[env_info.env_rank] = 1
                         embedding_input = embedding_input.unsqueeze(0).to(env_info.device)
-                        
-                        # mask out the last 3 dimensions
-                        # eval_ob = eval_ob[:9]
-                        if len(eval_ob) != input_shape:
-                            # print("original ob: ", eval_ob, end= "\t")
-                            eval_ob = eval_ob[:input_shape]
-                            # print("new ob: ", eval_ob)
                         
                         if return_weights:
                             act, general_weights = pf.eval_act( torch.Tensor( eval_ob ).to(env_info.device).unsqueeze(0), embedding_input, return_weights=return_weights)

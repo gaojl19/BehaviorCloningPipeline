@@ -31,7 +31,7 @@ class ReplayBuffer(object):
         # convert new rollouts into their component arrays, and append them onto
         # our arrays
         observations, actions, rewards, next_observations, terminals = (
-                convert_listofrollouts(paths, concat_rew, embedding=False))
+                convert_listofrollouts(paths, concat_rew))
 
         if self.obs is None:
             self.obs = observations[-self.max_size:]
@@ -93,8 +93,10 @@ class ReplayBuffer(object):
         return (obs, acs, rews, next_obs, terminals)
     
     
-    def add_mt_rollouts(self, paths, concat_rew=True):
-    
+    def add_embedding_rollouts(self, paths, concat_rew=True):
+        '''
+            add rollouts consisting of (obs, acs, rew, next_obs, terminals, embedding)
+        '''
         # add new rollouts into our list of rollouts
         for path in paths:
             self.paths.append(path)
@@ -102,7 +104,7 @@ class ReplayBuffer(object):
         # convert new rollouts into their component arrays, and append them onto
         # our arrays
         observations, actions, rewards, next_observations, terminals, embedding_input = (
-            convert_listofrollouts(paths, concat_rew, embedding=True))
+            convert_listofrollouts(paths, concat_rew, embedding_flag=True))
 
         if self.obs is None:
             self.obs = observations[-self.max_size:]
@@ -128,9 +130,51 @@ class ReplayBuffer(object):
             self.next_obs = np.concatenate([self.next_obs, next_observations])[-self.max_size:]
             self.terminals = np.concatenate([self.terminals, terminals])[-self.max_size:]
             self.embedding_input = np.concatenate([self.embedding_input, embedding_input])[-self.max_size:]
-            
+    
+    
+    def add_index_rollouts(self, paths, concat_rew=True):
+        '''
+            add rollouts consisting of (obs, acs, rew, next_obs, terminals, index)
+        '''
+        # add new rollouts into our list of rollouts
+        for path in paths:
+            self.paths.append(path)
 
-    def sample_mt_random_data(self, batch_size):
+        # convert new rollouts into their component arrays, and append them onto
+        # our arrays
+        observations, actions, rewards, next_observations, terminals, index_input = (
+            convert_listofrollouts(paths, concat_rew, index_flag=True))
+
+        if self.obs is None:
+            self.obs = observations[-self.max_size:]
+            self.acs = actions[-self.max_size:]
+            self.rews = rewards[-self.max_size:]
+            self.next_obs = next_observations[-self.max_size:]
+            self.terminals = terminals[-self.max_size:]
+            self.index_input = index_input[-self.max_size:]
+        else:
+            self.obs = np.concatenate([self.obs, observations])[-self.max_size:]
+            self.acs = np.concatenate([self.acs, actions])[-self.max_size:]
+            if concat_rew:
+                self.rews = np.concatenate(
+                    [self.rews, rewards]
+                )[-self.max_size:]
+            else:
+                if isinstance(rewards, list):
+                    self.rews += rewards
+                else:
+                    self.rews.append(rewards)
+                self.rews = self.rews[-self.max_size:]
+            
+            self.next_obs = np.concatenate([self.next_obs, next_observations])[-self.max_size:]
+            self.terminals = np.concatenate([self.terminals, terminals])[-self.max_size:]
+            self.index_input = np.concatenate([self.index_input, index_input])[-self.max_size:]
+            
+            
+    def sample_random_data_embedding(self, batch_size):
+        '''
+            from replay buffer, sample data of batch_size with embedding
+        '''
         assert (
                 self.obs.shape[0]
                 == self.acs.shape[0]
@@ -161,6 +205,42 @@ class ReplayBuffer(object):
         embedding_input = torch.stack(embedding_input_batch)
         
         return (obs, acs, rews, next_obs, terminals, embedding_input)
+
+
+    def sample_random_data_index(self, batch_size):
+        '''
+            from replay buffer, sample data of batch_size with index
+        '''
+        assert (
+                self.obs.shape[0]
+                == self.acs.shape[0]
+                == self.rews.shape[0]
+                == self.next_obs.shape[0]
+                == self.terminals.shape[0]
+                == self.index_input.shape[0]
+        )
+
+        idx = np.random.permutation(self.obs.shape[0])
+        batch_idx = idx[:batch_size]
+        
+        obs_batch, acs_batch, rews_batch, next_obs_batch, terminals_batch, index_input_batch = [], [], [], [], [], []
+        for i in batch_idx:
+            obs_batch.append(self.obs[i])
+            acs_batch.append(self.acs[i])
+            rews_batch.append(self.rews[i])
+            next_obs_batch.append(self.next_obs[i])
+            terminals_batch.append(self.terminals[i])
+            index_input_batch.append(self.index_input[i])
+    
+        assert len(obs_batch) == len(acs_batch) == len(rews_batch) == len(next_obs_batch) == len(terminals_batch) == len(index_input_batch) == batch_size
+        obs = torch.Tensor(obs_batch)
+        acs = torch.Tensor(acs_batch)
+        rews = torch.Tensor(rews_batch)
+        next_obs = torch.Tensor(next_obs_batch)
+        terminals = torch.Tensor(terminals_batch)
+        index_input = torch.stack(index_input_batch)
+        
+        return (obs, acs, rews, next_obs, terminals, index_input)
 
 
     def sample_recent_data(self, batch_size=1):
