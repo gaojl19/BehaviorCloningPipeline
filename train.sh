@@ -17,7 +17,7 @@
 #     --no_cuda \
 
 python train_single.py \
-    --expert_policy_file policy/expert/MT50_Fixed/push-v1.pth \
+    --expert_policy_file policy/expert/MT50_Fixed/reach-v1.pth \
 	--exp_name bc_reach \
     --n_iter 10000 \
     --eval_interval 200 \
@@ -27,7 +27,7 @@ python train_single.py \
     --batch_size 64 \
     --train_batch_size 32 \
     --config config/BC.json \
-    --task_name push-v1 \
+    --task_name reach-v1 \
     --id MT10_Single_Task \
     --seed 32 \
     --worker_nums 1 \

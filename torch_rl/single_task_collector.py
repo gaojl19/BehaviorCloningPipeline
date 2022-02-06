@@ -68,6 +68,19 @@ class SingleCollector():
         return paths, timesteps_this_batch, info
     
     
+    def sample_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter):
+        '''
+            for Single-task baseline
+        '''
+        paths = self.sample_n_trajectories(agent_policy, n_sample, render, render_mode, run_agent=True, log = log, log_prefix = log_prefix, n_iter = n_iter)
+        success = 0
+        for path in paths:
+            if path["success"] == True:
+                success += 1
+        
+        mean_success_rate = success/n_sample
+        return mean_success_rate
+    
     def sample_embedding_agent(self, agent_policy, n_sample, render, render_mode, log, log_prefix, n_iter):
         '''
             for MT50 baseline

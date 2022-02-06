@@ -65,7 +65,7 @@ class MLPAgent(BaseAgent):
         return self.replay_buffer.sample_random_data(batch_size) 
 
     def mt_sample(self, batch_size):
-        return self.replay_buffer.sample_mt_random_data(batch_size) 
+        return self.replay_buffer.sample_random_data_embedding(batch_size) 
 
     def save(self, path):
         return self.actor.save(path)
@@ -125,13 +125,13 @@ class MLPEmbeddingAgent(BaseAgent):
         self.replay_buffer.add_rollouts(paths)
         
     def add_mt_to_replay_buffer(self, paths):
-        self.replay_buffer.add_mt_rollouts(paths)
+        self.replay_buffer.add_embedding_rollouts(paths)
 
     def sample(self, batch_size):
         return self.replay_buffer.sample_random_data(batch_size) 
 
     def mt_sample(self, batch_size):
-        return self.replay_buffer.sample_mt_random_data(batch_size) 
+        return self.replay_buffer.sample_random_data_embedding(batch_size) 
 
     def save(self, path):
         return self.actor.save(path)
