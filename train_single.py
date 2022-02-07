@@ -2,10 +2,12 @@ import os
 import time
 import torch
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import gym
 
 from torch_rl.rl_trainer import RL_Trainer
-from agents.bc_agent import MLPAgent
+from agents.bc_agent import MLPAgent, MHSACAgent, SoftModuleAgent, MLPEmbeddingAgent
 from policy.loaded_gaussian_policy import LoadedGaussianPolicy
 from utils.args import get_params
 from utils.logger import Logger
@@ -116,15 +118,81 @@ class BC_Trainer(object):
                                      args = self.args, params = params, 
                                      input_shape = ob_dim, expert_dict=expert_dict) ## HW1: you will modify this
         
-        
     
     def run_training_loop(self):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
             baseline=False,
-            multiple_samples=True
+            multiple_samples=10
+        )
+    
+    def run_multiple_training_loop(self):
+        '''
+            run training with 1, 2, 5, 10 sample sizes, and plot the success-rate vs. sample size curve
+        '''
+        
+        agent_curve_1 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            baseline=False,
+            multiple_samples=1
+        )
+        self.reset_agent()
+        
+        agent_curve_2 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            baseline=False,
+            multiple_samples=2
+        )
+        self.reset_agent()
+        
+        agent_curve_5 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            baseline=False,
+            multiple_samples=5
+        )
+        self.reset_agent()
+        
+        agent_curve_10 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            baseline=False,
+            multiple_samples=10
         )
 
+        length = max(len(agent_curve_1), max(len(agent_curve_2), max(len(agent_curve_5), len(agent_curve_10))))
+        
+        for _ in range(length-len(agent_curve_1)):
+            agent_curve_1.append(agent_curve_1[-1])
+        for _ in range(length-len(agent_curve_2)):
+            agent_curve_2.append(agent_curve_2[-1])
+        for _ in range(length-len(agent_curve_5)):
+            agent_curve_5.append(agent_curve_5[-1])
+        for _ in range(length-len(agent_curve_10)):
+            agent_curve_10.append(agent_curve_10[-1])
+            
+            
+        index = np.linspace(0, (length-1)*self.args["eval_interval"], length)
+        df = {"1": agent_curve_1,
+              "2": agent_curve_2,
+              "5": agent_curve_5,
+              "10": agent_curve_10}
+        wide_df = pd.DataFrame(data=df, index=index)
+        wide_df.to_csv(self.args["task_name"] + "_agent_success.csv") # save to a csv to plot the whole single curve
+        
+    
+    def reset_agent(self):
+        '''
+            run training with 1, 2, 5, 10 sample sizes
+            reset agent after every training loop finished
+        '''
+        agent_class = self.args['agent_class']
+        if agent_class == MLPAgent:
+            self.rl_trainer.agent = agent_class(self.env, self.args['agent_params'])
+        elif agent_class == SoftModuleAgent or agent_class == MLPEmbeddingAgent:
+            self.rl_trainer.agent = agent_class(self.env, self.example_embedding, self.args['agent_params'], self.params)
+        elif agent_class == MHSACAgent:
+            self.rl_trainer.agent = agent_class(self.env, self.args['agent_params'], self.params)
+        else:
+            raise NotImplementedError(agent_class)
 
 def main():
     import argparse
@@ -166,6 +234,8 @@ def main():
     parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument("--random_init", type=bool, default=False, help="whether use random init when collecting data & evaluating", )
     parser.add_argument("--device", type=int, default=0, help="gpu secification", )
+    
+    parser.add_argument("--multiple_runs", type=bool, default=False, help="run multiple training loops with different sample sizes", )
 
     # tensorboard
     parser.add_argument("--id", type=str,   default=None, help="id for tensorboard", )
@@ -212,7 +282,10 @@ def main():
 
     # RUN TRAINING
     trainer = BC_Trainer(args, params)
-    trainer.run_training_loop()
+    if args["multiple_runs"]:
+        trainer.run_multiple_training_loop()
+    else:
+        trainer.run_training_loop()
 
 if __name__ == "__main__":
     main()

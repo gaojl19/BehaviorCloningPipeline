@@ -340,7 +340,7 @@ class RL_Trainer(object):
             
             for name in eval_infos.keys():
                 if name == "mean_success_rate":
-                    continue
+                    agent_success_curve.append(eval_infos["mean_success_rate"])
                 else:
                     print(name, "_success_rate: ",  eval_infos[name])
             print("mean_success_rate: ", eval_infos["mean_success_rate"])
@@ -373,6 +373,8 @@ class RL_Trainer(object):
             # agent
             for task_name in agent_task_curve.keys():
                 self.plot_single_curve(agent_task_curve[task_name], "agent", self.plot_prefix, task_name)
+   
+        return agent_success_curve
    
     def train_agent(self):
         all_logs = []

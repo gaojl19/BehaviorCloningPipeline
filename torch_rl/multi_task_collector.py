@@ -1,3 +1,4 @@
+from audioop import mul
 from lib2to3.pgen2.token import N_TOKENS
 from operator import index
 
@@ -87,7 +88,7 @@ class MT10SingleCollector():
         success = 0
         for task in self.task_collector.keys():
             collector = self.task_collector[task]
-            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix, multiple_samples)
+            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix, multiple_samples=multiple_samples)
             # modify observations
             if self.input_shape > len(new_path[0]["observation"][0]):
                 new_path[0]["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["observation"]]
@@ -325,7 +326,7 @@ class MT50SingleCollector():
         for task in self.task_collector.keys():
             # prefix = log_prefix + "/" + task + "/"
             collector = self.task_collector[task]
-            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix, multiple_samples)
+            new_path, timesteps, infos = collector.sample_expert(render, render_mode, log, log_prefix, multiple_samples=multiple_samples)
             
             # modify observations
             new_path[0]["observation"] = [np.append(ob, ob[6:]) if len(ob)==9 else ob for ob in new_path[0]["observation"]]

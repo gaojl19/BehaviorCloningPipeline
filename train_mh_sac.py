@@ -2,11 +2,13 @@ from email.errors import ObsoleteHeaderDefect
 import os
 import time
 import torch
+import pandas as pd
+import seaborn as sns
 import numpy as np
 import gym
 
 from torch_rl.rl_trainer import RL_Trainer
-from agents.bc_agent import MHSACAgent, SoftModuleAgent
+from agents.bc_agent import MHSACAgent, SoftModuleAgent, MLPAgent, MLPEmbeddingAgent
 from policy.loaded_gaussian_policy import LoadedGaussianPolicy
 from utils.args import get_params
 from utils.logger import Logger
@@ -187,11 +189,104 @@ class BC_Trainer(object):
     def run_training_loop(self):
         self.rl_trainer.run_training_loop(
             n_iter=self.args['n_iter'],
-            baseline=False,
-            multiple_samples=False,
+            multiple_samples=1,
             expert_task_curve=self.expert_task_curve,
             agent_task_curve=self.agent_task_curve
         )
+    
+    
+    def run_multiple_training_loop(self):
+        '''
+            run training with 1, 2, 5, 10 sample sizes, and plot the success-rate vs. sample size curve
+        '''
+        agent_curve_1 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            multiple_samples=1,
+            expert_task_curve=self.expert_task_curve,
+            agent_task_curve=self.agent_task_curve
+        )
+        self.reset_agent()
+        
+        agent_curve_2 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            multiple_samples=2,
+            expert_task_curve=self.expert_task_curve,
+            agent_task_curve=self.agent_task_curve
+        )
+        self.reset_agent()
+        
+        agent_curve_5 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            multiple_samples=5,
+            expert_task_curve=self.expert_task_curve,
+            agent_task_curve=self.agent_task_curve
+        )
+        self.reset_agent()
+        
+        agent_curve_10 = self.rl_trainer.run_training_loop(
+            n_iter=self.args['n_iter'],
+            multiple_samples=10,
+            expert_task_curve=self.expert_task_curve,
+            agent_task_curve=self.agent_task_curve
+        )
+        
+        plot_success_curve(agent_curve_1,
+                           agent_curve_2,
+                           agent_curve_5,
+                           agent_curve_10,
+                           eval_interval=self.args["eval_interval"],
+                           env_name=self.params["env_name"])
+    
+    def reset_agent(self):
+        '''
+            run training with 1, 2, 5, 10 sample sizes
+            reset agent after every training loop finished
+        '''
+        agent_class = self.args['agent_class']
+        if agent_class == MLPAgent:
+            self.rl_trainer.agent = agent_class(self.env, self.args['agent_params'])
+        elif agent_class == SoftModuleAgent or agent_class == MLPEmbeddingAgent:
+            self.rl_trainer.agent = agent_class(self.env, self.example_embedding, self.args['agent_params'], self.params)
+        elif agent_class == MHSACAgent:
+            self.rl_trainer.agent = agent_class(self.env, self.args['agent_params'], self.params)
+        else:
+            raise NotImplementedError(agent_class)
+
+
+def plot_success_curve(agent_curve_1, agent_curve_2, agent_curve_5, agent_curve_10, eval_interval, env_name):
+    length = max(len(agent_curve_1), max(len(agent_curve_2), max(len(agent_curve_5), len(agent_curve_10))))
+        
+    for _ in range(length-len(agent_curve_1)):
+        agent_curve_1.append(agent_curve_1[-1])
+    for _ in range(length-len(agent_curve_2)):
+        agent_curve_2.append(agent_curve_2[-1])
+    for _ in range(length-len(agent_curve_5)):
+        agent_curve_5.append(agent_curve_5[-1])
+    for _ in range(length-len(agent_curve_10)):
+        agent_curve_10.append(agent_curve_10[-1])
+        
+        
+    index = np.linspace(0,(length-1)*eval_interval, length)
+    df = {  "1": agent_curve_1,
+            "2": agent_curve_2,
+            "5": agent_curve_5,
+            "10": agent_curve_10}
+    wide_df = pd.DataFrame(data=df, index=index)
+    sns.set("paper")
+    sns.set_theme(style="whitegrid")
+    palette = sns.color_palette("bright", 4)
+    ax = sns.lineplot(data=wide_df, palette=palette)
+    
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("agent mean success rate")
+    ax.set_title("Multi-head SAC Sample-SuccessRate Curve")
+    ax.set(ylim=(-0.1, 1.1))
+    
+    fig = ax.get_figure()
+    fig.savefig("./fig/" + env_name +"_mh_sac_sample_and_success_curve.png")
+    
+    fig.clf()
+
 
 
 def main():
@@ -227,7 +322,7 @@ def main():
     parser.add_argument('--save_params', action='store_true')
     parser.add_argument('--seed', type=int, default=1)
     
-    
+    parser.add_argument("--multiple_runs", type=bool, default=False, help="run multiple training loops with different sample sizes", )
     parser.add_argument('--worker_nums', type=int, default=4, help='worker nums')
     parser.add_argument('--eval_worker_nums', type=int, default=2,help='eval worker nums')
     parser.add_argument("--config", type=str,   default=None, help="config file", )
@@ -249,34 +344,17 @@ def main():
         args.device = "cpu"
     params = get_params(args.config)
     
-    # # CREATE DIRECTORY FOR LOGGING
-    # if args.do_dagger:
-    #     logdir_prefix = 'DAgger_'
-    #     print("do dagger")
-    #     assert args.n_iter>1, ('DAGGER needs more than 1 iteration (n_iter>1) of training, to iteratively query the expert and train (after 1st warmstarting from behavior cloning).')
-    # else:
-    #     logdir_prefix = 'Base_'
-    #     # assert args.n_iter==1, ('Vanilla behavior cloning collects expert data just once (n_iter=1)')
-
     
-    # # directory for logging
-    # data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-    # if not (os.path.exists(data_path)):
-    #     os.makedirs(data_path)
-    # logdir = logdir_prefix + 'soft_module'+ '_' + str(args.n_layers) + str(args.batch_size) + str(args.learning_rate) + time.strftime("%d-%m-%Y_%H-%M-%S")
-    # logdir = os.path.join(data_path, logdir)
-    
-     # convert args to dictionary
+    # convert args to dictionary
     args = vars(args)
     
-    # args['log_dir'] = logdir
-    # if not(os.path.exists(logdir)):
-    #     os.makedirs(logdir)
-
-
     # RUN TRAINING
     trainer = BC_Trainer(args, params)
-    trainer.run_training_loop()
-
+    if args["multiple_runs"]:
+        trainer.run_multiple_training_loop() 
+    else:
+        trainer.run_training_loop()
+    
+    
 if __name__ == "__main__":
     main()

@@ -50,10 +50,10 @@ class SingleCollector():
         self.env_info.env.eval()
     
     
-    def sample_expert(self, render, render_mode, log, log_prefix, n_iter=0, multiple_samples=False):
-        # sample 10 times for Single-task BC, to match the data size
-        if multiple_samples:
-            paths = self.sample_successful_trajectories(self.expert_policy, 10, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
+    def sample_expert(self, render, render_mode, log, log_prefix, n_iter=0, multiple_samples=1):
+        # sample multiple_successful samples for training
+        if multiple_samples > 1:
+            paths = self.sample_successful_trajectories(self.expert_policy, multiple_samples, render, render_mode, run_agent=False, log = True, log_prefix = log_prefix)
         
         # only sample once
         else:

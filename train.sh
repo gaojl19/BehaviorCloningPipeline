@@ -19,7 +19,7 @@
 python train_single.py \
     --expert_policy_file policy/expert/MT50_Fixed/reach-v1.pth \
 	--exp_name bc_reach \
-    --n_iter 10000 \
+    --n_iter 1000 \
     --eval_interval 200 \
     --learning_rate 1e-4 \
 	--video_log_freq -1 \
@@ -34,4 +34,5 @@ python train_single.py \
     --eval_worker_nums 1 \
     --task_env MT50_task_env \
     --no_cuda \
+    --multiple_runs True
     
