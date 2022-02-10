@@ -13,11 +13,15 @@
     },
     "expert_net":{ 
         "hidden_shapes": [400,400],
-        "append_hidden_shapes":[400]
+        "append_hidden_shapes":[400],
+        "add_bn": false,
+        "add_ln": false
     },
     "net":{ 
         "hidden_shapes": [400,400],
-        "append_hidden_shapes":[400]
+        "append_hidden_shapes":[400],
+        "add_bn": false,
+        "add_ln": true
     },
     "general_setting": {
         "discount" : 0.99,

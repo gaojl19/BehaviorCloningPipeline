@@ -694,7 +694,6 @@ class MTEnvCollector():
         '''
             plot t-sne of modular weights
         '''
-        sns.set(rc={'figure.figsize':(11.7,8.27)})
         palette = sns.color_palette("bright", 10)
         X = []
         y = []

@@ -18,6 +18,8 @@ class Net(nn.Module):
             append_hidden_init_func=init.basic_init,
             net_last_init_func=init.uniform_init,
             activation_func=F.relu,
+            add_bn=False,
+            add_ln=False,
             **kwargs):
 
         super().__init__()
@@ -29,12 +31,27 @@ class Net(nn.Module):
         for i, next_shape in enumerate(append_hidden_shapes):
             fc = nn.Linear(append_input_shape, next_shape)
             append_hidden_init_func(fc)
-            self.append_fcs.append(fc)
+            if add_bn:
+                module = nn.Sequential(
+                    nn.BatchNorm1d(append_input_shape),
+                    fc,
+                    nn.BatchNorm1d(next_shape)
+                )
+            elif add_ln:
+                module = nn.Sequential(
+                    nn.LayerNorm(append_input_shape),
+                    fc,
+                    nn.LayerNorm(next_shape)
+                )
+            else:
+                module = fc
+            self.append_fcs.append(module)
             # set attr for pytorch to track parameters( device )
-            self.__setattr__("append_fc{}".format(i), fc)
+            self.__setattr__("append_fc{}".format(i), module)
             append_input_shape = next_shape
 
         self.last = nn.Linear(append_input_shape, output_shape)
+        # print(output_shape)
         net_last_init_func(self.last)
 
     def forward(self, x):
@@ -71,6 +88,7 @@ class ModularGatedCascadeCondNet(nn.Module):
 
             # gated_hidden
             add_bn = True,
+            add_ln = False,
             pre_softmax = False,
             cond_ob = True,
             module_hidden_init_func = init.basic_init,
@@ -101,6 +119,8 @@ class ModularGatedCascadeCondNet(nn.Module):
         self.num_layers = num_layers
         self.num_modules = num_modules
 
+        print("add batch norm: ", add_bn)
+        print("add layer norm: ", add_ln)
         for i in range(num_layers):
             layer_module = []
             for j in range( num_modules ):
@@ -111,6 +131,12 @@ class ModularGatedCascadeCondNet(nn.Module):
                         nn.BatchNorm1d(module_input_shape),
                         fc,
                         nn.BatchNorm1d(module_hidden)
+                    )
+                elif add_ln:
+                    module = nn.Sequential(
+                        nn.LayerNorm(module_input_shape),
+                        fc,
+                        nn.LayerNorm(module_hidden)
                     )
                 else:
                     module = fc
@@ -285,15 +311,20 @@ class BootstrappedNet(Net):
     
         # print("base shape: ", base_shape) # [batch_size, 1]
         out = super().forward(x)
+        # print("out: ", out.shape)
         out_shape = base_shape + torch.Size([self.origin_output_shape, self.head_num])
         # print("out_shape:", out_shape) # [batch_size, 1, 8, 1] (8 = 4 *2) or [batch_size, 1, 1, 1]
         view_idx_shape = base_shape + torch.Size([1, 1])
         expand_idx_shape = base_shape + torch.Size([self.origin_output_shape, 1])
+        # print("view idx shape: ", view_idx_shape)
+        # print("expane idx shape: ", expand_idx_shape)
         
         out = out.reshape(out_shape)
         idx = idx.view(view_idx_shape)
         idx = idx.expand(expand_idx_shape)
         out = out.gather(-1, idx).squeeze(-1)
+        # print("final out: ", out.shape)
+        # exit(0)
         return out
 
 

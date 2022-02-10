@@ -24,6 +24,7 @@
         "num_gating_layers": 2,
         "gating_hidden": 256,
         "add_bn": false,
+        "add_ln": true,
         "pre_softmax": false
     },
     "general_setting": {
