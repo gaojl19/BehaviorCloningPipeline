@@ -414,6 +414,7 @@ class MTEnvCollector():
                 
         if plot_weights:
             self.plot_TSNE(weights=weights)
+            self.visualize_weights(weights=weights)
     
         tasks_result.sort()
         dic = OrderedDict()
@@ -710,4 +711,35 @@ class MTEnvCollector():
         sns_plot = sns.scatterplot(X_embedded[:,0], X_embedded[:,1], hue=y, legend='full', palette=palette)
         fig = sns_plot.get_figure()
         fig.savefig(self.plot_prefix + "_tsne.png")
+        
+    
+    
+    def visualize_weights(self, weights):
+        '''
+            visualize weights between modules
+        '''
+        
+        weight_dict = {}
+        for task_name in weights.keys():
+            X = torch.zeros(1, weights[task_name][0][0].shape[1] * weights[task_name][0][0].shape[2])
+            Y = []
+            cnt = 0
+            for w in weights[task_name]:
+                new_value = torch.reshape(w[0], (-1,))
+                new_value = torch.nn.functional.normalize(new_value, p=1, dim=0)
+                X = torch.add(X, new_value)
+                # Y.append(new_value.numpy().tolist())
+                cnt += 1
+                # print(new_value)
+            weight_dict[task_name] = X.numpy().tolist()
+            # weight_dict[task_name] = Y
+            print(cnt)
+            print(task_name)
+        
+        import json
+        weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)
+        f = open(self.plot_prefix + "_weight.json", 'w')
+        f.write(weight_json)
+    
+        
         

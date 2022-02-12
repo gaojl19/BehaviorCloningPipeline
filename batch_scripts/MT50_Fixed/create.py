@@ -34,7 +34,9 @@ srun python3 train_single.py \
     --seed 32 \
     --worker_nums 1 \
     --eval_worker_nums 1 \
-    --task_env MT50_task_env
+    --task_env MT50_task_env \
+    --no_cuda \
+    --multiple_runs True
     
 echo "Done"'''
 
