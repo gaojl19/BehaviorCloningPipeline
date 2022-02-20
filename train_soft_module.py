@@ -326,7 +326,7 @@ def main():
     parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument("--random_init", type=bool, default=False, help="whether use random init when collecting data & evaluating", )
     parser.add_argument("--device", type=int, default=0, help="gpu secification", )
-
+    
     # tensorboard
     parser.add_argument("--id", type=str,   default=None, help="id for tensorboard", )
     

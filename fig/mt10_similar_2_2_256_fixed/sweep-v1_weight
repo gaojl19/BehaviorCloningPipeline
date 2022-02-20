@@ -1,0 +1,13 @@
+// network
+digraph "sweep-v1" {
+	edge [arrowsize=0.8]
+	rankdir=BT
+	"0_0" [shape=square]
+	"0_1" [shape=square]
+	"1_0" [shape=square]
+	"1_1" [shape=square]
+	"0_0" -> "1_0" [color="0.010 0.0100 0.0" style=bold]
+	"0_0" -> "1_1" [color="0.010 0.0100 0.9642092266158582" style=bold]
+	"0_1" -> "1_0" [color="0.010 0.0100 0.054482616596059574" style=bold]
+	"0_1" -> "1_1" [color="0.010 0.0100 0.9097261259450613" style=bold]
+}

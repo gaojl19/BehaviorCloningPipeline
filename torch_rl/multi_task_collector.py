@@ -733,8 +733,6 @@ class MTEnvCollector():
                 # print(new_value)
             weight_dict[task_name] = X.numpy().tolist()
             # weight_dict[task_name] = Y
-            print(cnt)
-            print(task_name)
         
         import json
         weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)

@@ -79,7 +79,7 @@ class ModularGatedCascadeCondNet(nn.Module):
             base_type, em_input_shape, input_shape,
             em_hidden_shapes,
             hidden_shapes,
-
+            shared_base_hidden_shapes,
             num_layers, num_modules,
 
             module_hidden,
@@ -94,22 +94,33 @@ class ModularGatedCascadeCondNet(nn.Module):
             module_hidden_init_func = init.basic_init,
             last_init_func = init.uniform_init,
             activation_func = F.relu,
+            shared_base = False,
              **kwargs ):
 
         super().__init__()
 
         self.base = base_type( 
-                        last_activation_func = null_activation,
-                        input_shape = input_shape,
-                        activation_func = activation_func,
-                        hidden_shapes = hidden_shapes,
-                        **kwargs )
+            last_activation_func = null_activation,
+            input_shape = input_shape,
+            activation_func = activation_func,
+            hidden_shapes = hidden_shapes,
+            **kwargs)
+        
         self.em_base = base_type(
-                        last_activation_func = null_activation,
-                        input_shape = em_input_shape,
-                        activation_func = activation_func,
-                        hidden_shapes = em_hidden_shapes,
-                        **kwargs )
+            last_activation_func = null_activation,
+            input_shape = em_input_shape,
+            activation_func = activation_func,
+            hidden_shapes = em_hidden_shapes,
+            **kwargs )
+        
+        self.shared_base_flag=shared_base
+        if shared_base:
+            self.shared_base = base_type(
+                last_activation_func = null_activation,
+                input_shape = hidden_shapes[-1],
+                activation_func = activation_func,
+                hidden_shapes = shared_base_hidden_shapes,
+                **kwargs )
 
         self.activation_func = activation_func
 
@@ -217,7 +228,8 @@ class ModularGatedCascadeCondNet(nn.Module):
 
         weights = []
         flatten_weights = []
-
+        
+        # calculate weight: staring with layer 0-1 (because there must be at least 2 layers)
         raw_weight = self.gating_weight_fc_0(self.activation_func(embedding))
 
         weight_shape = base_shape + torch.Size([self.num_modules,
@@ -261,6 +273,11 @@ class ModularGatedCascadeCondNet(nn.Module):
         raw_last_weight = self.gating_weight_last(cond)
         last_weight = F.softmax(raw_last_weight, dim = -1)
 
+        
+        # go through shared base if there is any
+        if self.shared_base_flag:
+            out = self.shared_base(out)
+            
         module_outputs = [(layer_module(out)).unsqueeze(-2) \
                 for layer_module in self.layer_modules[0]]
 
