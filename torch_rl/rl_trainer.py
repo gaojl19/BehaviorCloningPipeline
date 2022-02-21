@@ -177,6 +177,56 @@ class RL_Trainer(object):
             )
             self.mt_flag = True
         
+        # MT10 medium
+        elif self.params["env_name"] == "mt10_medium":
+            self.expert_env = MT10MediumCollector(
+                env_cls=env_cls,
+                env_args=env_args,
+                env_info=self.env_info,
+                expert_dict=expert_dict,
+                device=params['general_setting']['device'],
+                max_path_length=self.args["ep_len"],
+                min_timesteps_per_batch=self.args['batch_size'],
+                params=params,
+                input_shape = self.input_shape
+            )
+            self.agent_env = MTEnvCollector(
+                env=self.env,
+                env_cls=env_cls,
+                env_args=env_args,
+                env_info=self.env_info,
+                args=args,
+                params=params,
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
+            )
+            self.mt_flag = True
+        
+        # MT10 hard
+        elif self.params["env_name"] == "mt10_hard":
+            self.expert_env = MT10HardCollector(
+                env_cls=env_cls,
+                env_args=env_args,
+                env_info=self.env_info,
+                expert_dict=expert_dict,
+                device=params['general_setting']['device'],
+                max_path_length=self.args["ep_len"],
+                min_timesteps_per_batch=self.args['batch_size'],
+                params=params,
+                input_shape = self.input_shape
+            )
+            self.agent_env = MTEnvCollector(
+                env=self.env,
+                env_cls=env_cls,
+                env_args=env_args,
+                env_info=self.env_info,
+                args=args,
+                params=params,
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
+            )
+            self.mt_flag = True
+        
         # MT50
         elif self.params["env_name"] == "mt50":
             self.expert_env = MT50SingleCollector(
@@ -252,7 +302,7 @@ class RL_Trainer(object):
             if itr == 0:
                 print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
                 render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
-                training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, multiple_samples=multiple_samples)
+                training_returns = self.expert_env.sample_expert(render=True, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, multiple_samples=multiple_samples)
                 # for i in range(5):
                 #     training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
                 # print("sampling expert data for 5 iterations; Ending program")

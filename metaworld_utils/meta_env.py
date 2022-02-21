@@ -272,6 +272,36 @@ def generate_mt50_env(mt_param):
 
     return generate_mt_env(cls_dict, args_kwargs, **mt_param), \
         cls_dict, args_kwargs
+        
+        
+def generate_mt10_medium_env(mt_param):
+    from metaworld_utils.customize_env_dict import MEDIUM_MT10_CLS_DICT, MEDIUM_MT10_ARGS_KWARGS
+    
+    if "random_init" in mt_param:
+        for key in MEDIUM_MT10_ARGS_KWARGS:
+            MEDIUM_MT10_ARGS_KWARGS[key]["kwargs"]["random_init"] = mt_param['random_init']
+    
+    # if 'obs_type' in mt_param:
+    #     for key in EASY_MODE_ARGS_KWARGS:
+    #         EASY_MODE_ARGS_KWARGS[key]["kwargs"]["obs_type"] = mt_param['obs_type']
+            
+    return generate_mt_env(MEDIUM_MT10_CLS_DICT, MEDIUM_MT10_ARGS_KWARGS, **mt_param), \
+        MEDIUM_MT10_CLS_DICT, MEDIUM_MT10_ARGS_KWARGS
+
+
+def generate_mt10_hard_env(mt_param):
+    from metaworld_utils.customize_env_dict import HARD_MT10_CLS_DICT, HARD_MT10_ARGS_KWARGS
+    
+    if "random_init" in mt_param:
+        for key in HARD_MT10_ARGS_KWARGS:
+            HARD_MT10_ARGS_KWARGS[key]["kwargs"]["random_init"] = mt_param['random_init']
+    
+    # if 'obs_type' in mt_param:
+    #     for key in EASY_MODE_ARGS_KWARGS:
+    #         EASY_MODE_ARGS_KWARGS[key]["kwargs"]["obs_type"] = mt_param['obs_type']
+            
+    return generate_mt_env(HARD_MT10_CLS_DICT, HARD_MT10_ARGS_KWARGS, **mt_param), \
+        HARD_MT10_CLS_DICT, HARD_MT10_ARGS_KWARGS
 
 
 def get_meta_env(env_id, env_param, mt_param, return_dicts=True):
@@ -287,6 +317,11 @@ def get_meta_env(env_id, env_param, mt_param, return_dicts=True):
         env, cls_dicts, args_kwargs = generate_mt10_similar_env(mt_param)
     elif env_id == "mt10_fail":
         env, cls_dicts, args_kwargs = generate_mt10_fail_env(mt_param)
+    elif env_id == "mt10_medium":
+        env, cls_dicts, args_kwargs = generate_mt10_medium_env(mt_param)
+    elif env_id == "mt10_hard":
+        env, cls_dicts, args_kwargs = generate_mt10_hard_env(mt_param)
+        
     else:
         env = env_id(**mt_param)
         env = SingleWrapper(env)
@@ -297,7 +332,7 @@ def get_meta_env(env_id, env_param, mt_param, return_dicts=True):
     act_space = env.action_space
     if isinstance(act_space, gym.spaces.Box):
         env = NormAct(env)
-    if env_id == "mt10" or env_id == "mt50" or env_id == "mt10_diverse" or env_id == "mt10_similar" or env_id == "mt10_fail":
+    if env_id == "mt10" or env_id == "mt50" or env_id == "mt10_diverse" or env_id == "mt10_similar" or env_id == "mt10_fail" or env_id == "mt10_medium" or env_id == "mt10_hard":
         env.num_tasks = len(cls_dicts)
     else:
         env.num_tasks = 1

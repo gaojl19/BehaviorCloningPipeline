@@ -18,6 +18,7 @@
     "net":{ 
         "hidden_shapes": [400, 400],
         "em_hidden_shapes": [400],
+        "shared_base_hidden_shapes": [400],
         "num_layers": 2,
         "num_modules": 2,
         "module_hidden": 256,

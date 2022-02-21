@@ -125,7 +125,76 @@ FAIL_MT10_CLS_DICT = {
 FAIL_MT10_ARGS_KWARGS = {}
 for key, env_cls in FAIL_MT10_CLS_DICT.items():
     FAIL_MT10_ARGS_KWARGS[key] = _hard_mode_args_kwargs(env_cls, key)
+    
+    
 
+
+
+'''
+    Customize EASY_MT10 tasks: 9 successful : 1 unsuccessful
+    Same as MT10 Similar
+'''
+EASY_MT10_CLS_DICT = {
+    'push-v1': SawyerReachPushPickPlaceEnv,
+    'button-press-v1': SawyerButtonPressEnv,
+    'coffee-push-v1': SawyerCoffeePushEnv,
+    'soccer-v1': SawyerSoccerEnv,
+    'push-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'sweep-v1': SawyerSweepEnv,
+    'sweep-into-v1': SawyerSweepIntoGoalEnv,
+    'plate-slide-v1': SawyerPlateSlideEnv,
+    'plate-slide-side-v1': SawyerPlateSlideSideEnv,
+    'drawer-close-v1': SawyerDrawerCloseEnv
+}
+
+EASY_MT10_ARGS_KWARGS = {}
+for key, env_cls in EASY_MT10_CLS_DICT.items():
+    EASY_MT10_ARGS_KWARGS[key] = _hard_mode_args_kwargs(env_cls, key)
+
+
+'''
+    Customize MEDIUM_MT10 tasks: 7 successful : 3 unsuccessful (which is average)
+'''
+MEDIUM_MT10_CLS_DICT = {
+    'push-v1': SawyerReachPushPickPlaceEnv,
+    'pick-place-v1': SawyerReachPushPickPlaceEnv,
+    'drawer-open-v1': SawyerDrawerOpenEnv,
+    'drawer-close-v1': SawyerDrawerCloseEnv,
+    'basket-ball-v1': SawyerBasketballEnv,
+    'push-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'pick-place-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'coffee-push-v1': SawyerCoffeePushEnv,
+    'coffee-pull-v1': SawyerCoffeePullEnv,
+    'soccer-v1': SawyerSoccerEnv,
+}
+
+MEDIUM_MT10_ARGS_KWARGS = {}
+for key, env_cls in MEDIUM_MT10_CLS_DICT.items():
+    MEDIUM_MT10_ARGS_KWARGS[key] = _hard_mode_args_kwargs(env_cls, key)
+
+
+
+'''
+    Customize HARD_MT10 tasks: 5 successful : 5 unsuccessful
+'''
+HARD_MT10_CLS_DICT = {
+    'push-v1': SawyerReachPushPickPlaceEnv,
+    'pick-place-v1': SawyerReachPushPickPlaceEnv,
+    'drawer-open-v1': SawyerDrawerOpenEnv,
+    'button-press-wall-v1': SawyerButtonPressWallEnv,
+    'peg-insert-side-v1': SawyerPegInsertionSideEnv,
+    'push-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'pick-place-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'coffee-pull-v1': SawyerCoffeePullEnv,
+    'button-press-v1': SawyerButtonPressEnv,
+    'stick-push-v1': SawyerStickPushEnv
+}
+
+HARD_MT10_ARGS_KWARGS = {}
+for key, env_cls in HARD_MT10_CLS_DICT.items():
+    HARD_MT10_ARGS_KWARGS[key] = _hard_mode_args_kwargs(env_cls, key)
+    
+    
 
 # dict(
 #     train={
