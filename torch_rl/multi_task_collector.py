@@ -29,7 +29,7 @@ from metaworld_utils.customize_env_dict import SIMILAR_MT10_CLS_DICT, SIMILAR_MT
 from metaworld_utils.customize_env_dict import FAIL_MT10_CLS_DICT, FAIL_MT10_ARGS_KWARGS
 from metaworld_utils.customize_env_dict import MEDIUM_MT10_CLS_DICT, MEDIUM_MT10_ARGS_KWARGS
 from metaworld_utils.customize_env_dict import HARD_MT10_CLS_DICT, HARD_MT10_ARGS_KWARGS
-
+from metaworld_utils.customize_env_dict import MT40_CLS_DICT, MT40_ARGS_KWARGS
 from torch_rl.single_task_collector import SingleCollector
 
 
@@ -337,6 +337,54 @@ class MT10HardCollector(MT10SingleCollector):
             
             # create embedding
             embedding_input = torch.zeros(10)
+            embedding_input[i] = 1
+            embedding_input = embedding_input.unsqueeze(0).to(self.device)
+            
+            # create index
+            index_input = torch.Tensor([[i]]).to(env_info.device).long()
+        
+            if task in expert_dict.keys():
+                self.task_collector[task] = SingleCollector(
+                    env=env, 
+                    env_cls=cls_dicts, 
+                    env_args=env_args,
+                    env_info=env_info,
+                    expert_policy=expert_dict[task],
+                    device=device,
+                    max_path_length=self.max_path_length,
+                    min_timesteps_per_batch=self.min_timesteps_per_batch,
+                    embedding_input=embedding_input,
+                    index_input=index_input,
+                    input_shape=input_shape)
+                
+                
+                
+class MT40Collector(MT10SingleCollector):
+    '''
+        40 tasks with all successful expert data
+    '''
+    def __init__(self, env_cls, env_args, env_info, expert_dict, device, max_path_length, min_timesteps_per_batch, params, input_shape):
+        self.tasks = list(env_cls.keys())
+        self.device = device
+        self.task_collector = {}
+        self.max_path_length = max_path_length
+        self.min_timesteps_per_batch = min_timesteps_per_batch/40
+        self.input_shape = input_shape
+        
+        for i, task in enumerate(self.tasks):
+            cls_dicts = {task: MT40_CLS_DICT[task]}
+            cls_args = {task: MT40_ARGS_KWARGS[task]}
+            env_name =  MT40_CLS_DICT[task]
+            
+            # overwrite random init part
+            cls_args[task]['kwargs']['obs_type'] = params['meta_env']['obs_type']
+            cls_args[task]['kwargs']['random_init'] = params['meta_env']['random_init']
+    
+            # env, cls_dicts, cls_args = get_meta_env(params['env_name'], params['env'], params['meta_env'])
+            env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
+            
+            # create embedding
+            embedding_input = torch.zeros(40)
             embedding_input[i] = 1
             embedding_input = embedding_input.unsqueeze(0).to(self.device)
             

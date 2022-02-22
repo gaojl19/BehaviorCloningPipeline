@@ -226,6 +226,30 @@ class RL_Trainer(object):
                 plot_prefix=self.plot_prefix
             )
             self.mt_flag = True
+
+        elif self.params["env_name"] == "mt40":
+            self.expert_env = MT40Collector(
+                env_cls=env_cls,
+                env_args=env_args,
+                env_info=self.env_info,
+                expert_dict=expert_dict,
+                device=params['general_setting']['device'],
+                max_path_length=self.args["ep_len"],
+                min_timesteps_per_batch=self.args['batch_size'],
+                params=params,
+                input_shape = self.input_shape
+            )
+            self.agent_env = MTEnvCollector(
+                env=self.env,
+                env_cls=env_cls,
+                env_args=env_args,
+                env_info=self.env_info,
+                args=args,
+                params=params,
+                example_embedding=example_embedding,
+                plot_prefix=self.plot_prefix
+            )
+            self.mt_flag = True
         
         # MT50
         elif self.params["env_name"] == "mt50":

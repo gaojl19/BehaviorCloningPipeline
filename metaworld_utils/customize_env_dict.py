@@ -196,6 +196,67 @@ for key, env_cls in HARD_MT10_CLS_DICT.items():
     
     
 
+'''
+    Customize MT40 tasks:   remove 7 unsuccessful agent(peg-unplug-side, disassemble, pick-out-of-hole, assembly, push-back, lever-pull, bin-picking), 
+                            and 3 bad expert(hammer, stick-pull, peg-insert-side)
+'''
+MT40_CLS_DICT = {
+    'reach-v1': SawyerReachPushPickPlaceEnv,
+    'push-v1': SawyerReachPushPickPlaceEnv,
+    'pick-place-v1': SawyerReachPushPickPlaceEnv,
+    'reach-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'pick-place-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'push-wall-v1': SawyerReachPushPickPlaceWallEnv,
+    'door-open-v1': SawyerDoorEnv,
+    'door-close-v1': SawyerDoorCloseEnv,
+    'drawer-open-v1': SawyerDrawerOpenEnv,
+    'drawer-close-v1': SawyerDrawerCloseEnv,
+    'button-press_topdown-v1': SawyerButtonPressTopdownEnv,
+    'button-press-v1': SawyerButtonPressEnv,
+    'button-press-topdown-wall-v1': SawyerButtonPressTopdownWallEnv,
+    'button-press-wall-v1': SawyerButtonPressWallEnv,
+    'window-open-v1': SawyerWindowOpenEnv,
+    'window-close-v1': SawyerWindowCloseEnv,
+    'plate-slide-v1': SawyerPlateSlideEnv,
+    'plate-slide-side-v1': SawyerPlateSlideSideEnv,
+    'plate-slide-back-v1': SawyerPlateSlideBackEnv, 
+    'plate-slide-back-side-v1': SawyerPlateSlideBackSideEnv,
+    'handle-press-v1': SawyerHandlePressEnv,
+    'handle-pull-v1': SawyerHandlePullEnv,
+    'handle-press-side-v1': SawyerHandlePressSideEnv,
+    'handle-pull-side-v1': SawyerHandlePullSideEnv,
+    'stick-push-v1': SawyerStickPushEnv,
+    'basket-ball-v1': SawyerBasketballEnv,
+    'soccer-v1': SawyerSoccerEnv,
+    'faucet-open-v1': SawyerFaucetOpenEnv,
+    'faucet-close-v1': SawyerFaucetCloseEnv,
+    'coffee-push-v1': SawyerCoffeePushEnv,
+    'coffee-pull-v1': SawyerCoffeePullEnv,
+    'coffee-button-v1': SawyerCoffeeButtonEnv,
+    'sweep-v1': SawyerSweepEnv,
+    'sweep-into-v1': SawyerSweepIntoGoalEnv,
+    'shelf-place-v1': SawyerShelfPlaceEnv,
+    'dial-turn-v1': SawyerDialTurnEnv,
+    'box-close-v1': SawyerBoxCloseEnv,
+    'hand-insert-v1': SawyerHandInsertEnv,
+    'door-lock-v1': SawyerDoorLockEnv,
+    'door-unlock-v1': SawyerDoorUnlockEnv
+}
+
+MT40_ARGS_KWARGS = {}
+for key, env_cls in MT40_CLS_DICT.items():
+    MT40_ARGS_KWARGS[key] = _hard_mode_args_kwargs(env_cls, key)
+    
+
+ENV_TASK_DICT = {
+    "mt10_diverse": DIVERSE_MT10_CLS_DICT,
+    "mt10_similar": SIMILAR_MT10_CLS_DICT,
+    "mt10_fail": FAIL_MT10_CLS_DICT,
+    "mt10_medium": MEDIUM_MT10_CLS_DICT,
+    "mt10_hard": HARD_MT10_CLS_DICT,
+    "mt40": MT40_CLS_DICT
+}
+
 # dict(
 #     train={
 #         'reach-v1': SawyerReachPushPickPlaceEnv,
