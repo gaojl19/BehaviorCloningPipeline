@@ -351,7 +351,7 @@ def get_meta_env(env_id, env_param, mt_param, return_dicts=True):
     act_space = env.action_space
     if isinstance(act_space, gym.spaces.Box):
         env = NormAct(env)
-    if env_id == "mt10" or env_id == "mt50" or env_id == "mt10_diverse" or env_id == "mt10_similar" or env_id == "mt10_fail" or env_id == "mt10_medium" or env_id == "mt10_hard":
+    if env_id == "mt10" or env_id == "mt50" or env_id == "mt10_diverse" or env_id == "mt10_similar" or env_id == "mt10_fail" or env_id == "mt10_medium" or env_id == "mt10_hard" or env_id == "mt40":
         env.num_tasks = len(cls_dicts)
     else:
         env.num_tasks = 1

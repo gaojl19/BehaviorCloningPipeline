@@ -136,6 +136,8 @@ class BC_Trainer(object):
                 if os.path.exists(file_path):
                     expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
                     ob_dim = max(ob_dim, expert_dict[name].ob_dim)
+                else:
+                    print(file_path + " not found!")
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
         

@@ -36,6 +36,7 @@ class SingleCollector():
 
         for i, task in enumerate(tasks): # currently only 1 task
             env_cls = self.env_cls[task]
+            self.task = task
             
             self.env_info.env_rank = i 
             self.env_info.device = "cuda:0"
@@ -46,7 +47,6 @@ class SingleCollector():
             self.env_info.env_args["env_rank"] = i
             self.env_info.env = self.env_info.env_cls(**self.env_info.env_args)
             
-        print(self.env_info.env)
         self.env_info.env.eval()
     
     
@@ -57,6 +57,7 @@ class SingleCollector():
         
         # only sample once
         else:
+            print("sampling task: ", task)
             path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
             paths = [path]
             

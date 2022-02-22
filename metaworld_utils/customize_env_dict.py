@@ -211,7 +211,7 @@ MT40_CLS_DICT = {
     'door-close-v1': SawyerDoorCloseEnv,
     'drawer-open-v1': SawyerDrawerOpenEnv,
     'drawer-close-v1': SawyerDrawerCloseEnv,
-    'button-press_topdown-v1': SawyerButtonPressTopdownEnv,
+    'button-press-topdown-v1': SawyerButtonPressTopdownEnv,
     'button-press-v1': SawyerButtonPressEnv,
     'button-press-topdown-wall-v1': SawyerButtonPressTopdownWallEnv,
     'button-press-wall-v1': SawyerButtonPressWallEnv,

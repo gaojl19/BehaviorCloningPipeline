@@ -180,16 +180,21 @@ class SoftModuleAgent(BaseAgent):
             l1_norm = 0.0
             
             # separate routing networks from the whole policy networks
-            nets = self.actor.policy.gating_fcs
-            nets += self.actor.policy.gating_weight_fcs
-            nets += self.actor.policy.gating_weight_cond_fcs
-            nets.append(self.actor.policy.gating_weight_fc_0)
-            nets.append(self.actor.policy.gating_weight_cond_last)
-            nets.append(self.actor.policy.gating_weight_last)
-            
-            for net in self.actor.policy.gating_fcs:
-                l1_norm += sum(p.abs().sum() for p in net.parameters())
-        
+            # includes:
+            #   gating_fc_0.weight
+            #   gating_fc_0.bias
+            #   gating_fc_1.weight
+            #   gating_fc_1.bias
+            #   gating_weight_fc_0.weight
+            #   gating_weight_fc_0.bias
+            #   gating_weight_cond_last.weight
+            #   gating_weight_cond_last.bias
+            #   gating_weight_last.weight
+            #   gating_weight_last.bias
+            for name, p in self.actor.policy.named_parameters():
+                if "gating" in name:
+                    # print(name)
+                    l1_norm += p.abs().sum()       
             loss = loss + l1_lambda * l1_norm
 
         loss.backward()
@@ -202,7 +207,7 @@ class SoftModuleAgent(BaseAgent):
         return log
 
     def add_mt_to_replay_buffer(self, paths):
-        self.replay_buffer.add_embedding_rollouts(paths)
+        self.replay_buffer .add_embedding_rollouts(paths)
 
     def mt_sample(self, batch_size):
         return self.replay_buffer.sample_random_data_embedding(batch_size) 

@@ -392,6 +392,7 @@ class MT40Collector(MT10SingleCollector):
             index_input = torch.Tensor([[i]]).to(env_info.device).long()
         
             if task in expert_dict.keys():
+                print(task)
                 self.task_collector[task] = SingleCollector(
                     env=env, 
                     env_cls=cls_dicts, 
@@ -558,7 +559,7 @@ class MTEnvCollector():
                 imageio.mimsave(log_prefix + task_name + "_agent.gif", images[task_name])
                 
         if plot_weights:
-            self.plot_TSNE(weights=weights)
+            # self.plot_TSNE(weights=weights)
             self.visualize_weights(weights=weights)
     
         tasks_result.sort()
@@ -589,6 +590,7 @@ class MTEnvCollector():
                 
         self.env_info.env = None
         self.env_info.num_tasks = self.env.num_tasks
+        print(self.env.num_tasks)
         self.env_info.env_cls = generate_single_mt_env
         single_mt_env_args = {
             "task_cls": None,
