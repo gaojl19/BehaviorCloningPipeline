@@ -24,6 +24,7 @@
         "num_gating_layers": 2,
         "gating_hidden": 256,
         "add_bn": false,
+        "add_ln": false,
         "pre_softmax": false,
         "shared_base": true,
         "shared_base_hidden_shapes": [400]

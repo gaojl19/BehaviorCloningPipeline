@@ -145,6 +145,8 @@ class BC_Trainer(object):
         print('Done restoring expert policy...')
         self.args['agent_params']['ac_dim'] = ac_dim
         self.args['agent_params']['ob_dim'] = ob_dim
+        self.args['agent_params']['l1_regularization'] = self.args['l1_regularization']
+        self.args['agent_params']['l1_lambda'] = self.args['l1_lambda']
         
         # RL TRAINER
         self.rl_trainer = RL_Trainer(
@@ -283,6 +285,8 @@ def main():
     parser.add_argument('--n_layers', type=int, default=2)  # depth, of policy to be learned
     parser.add_argument('--size', type=int, default=400)  # width of each layer, of policy to be learned
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)  # LR for supervised learning
+    parser.add_argument('--l1_regularization', type=bool, default=False)
+    parser.add_argument('--l1_lambda', type=float, default=0.001)
 
     parser.add_argument('--video_log_freq', type=int, default=5)
     parser.add_argument('--scalar_log_freq', type=int, default=1)

@@ -164,6 +164,8 @@ class ModularGatedCascadeCondNet(nn.Module):
         assert self.em_base.output_shape == self.base.output_shape, \
             "embedding should has the same dimension with base output for gated" 
         gating_input_shape = self.em_base.output_shape
+        
+        # 1. gating layers
         self.gating_fcs = []
         for i in range(num_gating_layers):
             gating_fc = nn.Linear(gating_input_shape, gating_hidden)
@@ -172,13 +174,14 @@ class ModularGatedCascadeCondNet(nn.Module):
             self.__setattr__("gating_fc_{}".format(i), gating_fc)
             gating_input_shape = gating_hidden
 
+        # 2. gating weight layers and gating_weight_cond_fcs = n_layer - 1
         self.gating_weight_fcs = []
         self.gating_weight_cond_fcs = []
 
+        # 3. gating weight_fc_0
         self.gating_weight_fc_0 = nn.Linear(gating_input_shape,
                     num_modules * num_modules )
         last_init_func( self.gating_weight_fc_0)
-        # self.gating_weight_fcs.append(self.gating_weight_fc_0)
 
         for layer_idx in range(num_layers-2):
             gating_weight_cond_fc = nn.Linear((layer_idx+1) * \
@@ -196,11 +199,13 @@ class ModularGatedCascadeCondNet(nn.Module):
                              gating_weight_fc)
             self.gating_weight_fcs.append(gating_weight_fc)
 
+        # 4. gating weight cond last
         self.gating_weight_cond_last = nn.Linear((num_layers-1) * \
                                                  num_modules * num_modules,
                                                  gating_input_shape)
         module_hidden_init_func(self.gating_weight_cond_last)
 
+        # 5. gating weight last
         self.gating_weight_last = nn.Linear(gating_input_shape, num_modules)
         last_init_func( self.gating_weight_last )
 

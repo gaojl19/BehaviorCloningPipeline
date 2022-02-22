@@ -19,7 +19,7 @@ import random
 
 from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT
 from metaworld.envs.mujoco.env_dict import HARD_MODE_CLS_DICT
-from metaworld_utils.customize_env_dict import DIVERSE_MT10_CLS_DICT, SIMILAR_MT10_CLS_DICT, FAIL_MT10_CLS_DICT, MEDIUM_MT10_CLS_DICT, HARD_MT10_CLS_DICT
+from metaworld_utils.customize_env_dict import ENV_TASK_DICT
 from metaworld_utils.meta_env import get_meta_env
 
 class BC_Trainer(object):
@@ -133,24 +133,9 @@ class BC_Trainer(object):
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
         
-        
-        elif self.params["env_name"] == "mt10_diverse":
-            for name, env_name in DIVERSE_MT10_CLS_DICT.items():
-                # add necessary env args
-                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
-                expert_env.seed(args["seed"])
-                params['expert_net']['base_type']=MLPBase
-                
-                file_path = self.args['expert_policy_file'] + name + ".pth"
-                if os.path.exists(file_path):
-                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
-                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
-                self.expert_task_curve[name + "_success_rate"] = []
-                self.agent_task_curve[name + "_success_rate"] = []
-            
-            
-        elif self.params["env_name"] == "mt10_similar":
-            for name, env_name in SIMILAR_MT10_CLS_DICT.items():
+        elif self.params["env_name"] in ENV_TASK_DICT.keys():
+            CLS_DICT = ENV_TASK_DICT[self.params["env_name"]]
+            for name, env_name in CLS_DICT.items():
                 # add necessary env args
                 expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
                 expert_env.seed(args["seed"])
@@ -163,48 +148,8 @@ class BC_Trainer(object):
                 self.expert_task_curve[name + "_success_rate"] = []
                 self.agent_task_curve[name + "_success_rate"] = []
         
-        elif self.params["env_name"] == "mt10_fail":
-            for name, env_name in FAIL_MT10_CLS_DICT.items():
-                # add necessary env args
-                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
-                expert_env.seed(args["seed"])
-                params['expert_net']['base_type']=MLPBase
-                
-                file_path = self.args['expert_policy_file'] + name + ".pth"
-                if os.path.exists(file_path):
-                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
-                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
-                self.expert_task_curve[name + "_success_rate"] = []
-                self.agent_task_curve[name + "_success_rate"] = []
-        
-        elif self.params["env_name"] == "mt10_medium":
-            for name, env_name in MEDIUM_MT10_CLS_DICT.items():
-                # add necessary env args
-                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
-                expert_env.seed(args["seed"])
-                params['expert_net']['base_type']=MLPBase
-                
-                file_path = self.args['expert_policy_file'] + name + ".pth"
-                if os.path.exists(file_path):
-                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
-                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
-                self.expert_task_curve[name + "_success_rate"] = []
-                self.agent_task_curve[name + "_success_rate"] = []
-        
-        
-        elif self.params["env_name"] == "mt10_hard":
-            for name, env_name in HARD_MT10_CLS_DICT.items():
-                # add necessary env args
-                expert_env = get_meta_env(env_name, params['env'], params['meta_env'], return_dicts=False) 
-                expert_env.seed(args["seed"])
-                params['expert_net']['base_type']=MLPBase
-                
-                file_path = self.args['expert_policy_file'] + name + ".pth"
-                if os.path.exists(file_path):
-                    expert_dict[name] = LoadedGaussianPolicy(env=expert_env, params=params, policy_path=file_path)
-                    ob_dim = max(ob_dim, expert_dict[name].ob_dim)
-                self.expert_task_curve[name + "_success_rate"] = []
-                self.agent_task_curve[name + "_success_rate"] = []
+        else:
+            raise NotFoundErr("the env name {} is not found\n" %self.params["env_name"])
         
         
         print('Done restoring expert policy...')

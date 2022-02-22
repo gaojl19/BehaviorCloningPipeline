@@ -173,6 +173,24 @@ class SoftModuleAgent(BaseAgent):
         self.optimizer.zero_grad()
         pred_acs = self.actor(ob_no, embedding_input_n.squeeze())
         loss = self.loss(pred_acs, ac_na)
+        
+        # add L1 regularization
+        if self.agent_params["l1_regularization"]:
+            l1_lambda = self.agent_params["l1_lambda"]  # 0.001
+            l1_norm = 0.0
+            
+            # separate routing networks from the whole policy networks
+            nets = self.actor.policy.gating_fcs
+            nets += self.actor.policy.gating_weight_fcs
+            nets += self.actor.policy.gating_weight_cond_fcs
+            nets.append(self.actor.policy.gating_weight_fc_0)
+            nets.append(self.actor.policy.gating_weight_cond_last)
+            nets.append(self.actor.policy.gating_weight_last)
+            
+            for net in self.actor.policy.gating_fcs:
+                l1_norm += sum(p.abs().sum() for p in net.parameters())
+        
+            loss = loss + l1_lambda * l1_norm
 
         loss.backward()
         self.optimizer.step()

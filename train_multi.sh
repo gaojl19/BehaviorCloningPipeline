@@ -79,7 +79,7 @@
 #     --task_env MT50_task_env \
 #     --no_cuda
 
-python train_mh_sac.py \
+python train_mt_baseline.py \
     --expert_policy_file policy/expert/MT40/ \
 	--exp_name bc_reach \
     --n_iter 4000 \
@@ -90,7 +90,7 @@ python train_mh_sac.py \
     --ep_len 200 \
     --batch_size 64 \
     --train_batch_size 32 \
-    --config config/mtmh_sac_fixed_mt40.json \
+    --config config/soft_module_fixed_mt40.json \
     --id MT50_Single_Task \
     --seed 32 \
     --worker_nums 1 \
