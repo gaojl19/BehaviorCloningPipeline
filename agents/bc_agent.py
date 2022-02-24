@@ -104,7 +104,7 @@ class MLPEmbeddingAgent(BaseAgent):
         # replay buffer
         self.replay_buffer = ReplayBuffer(self.agent_params['max_replay_buffer_size'])
 
-    def train(self, ob_no, ac_na, embedding_input_n):
+    def train(self, ob_no, ac_na, embedding_input_n, alternate=-1):
         self.actor.train()
         
         self.optimizer.zero_grad()
@@ -160,46 +160,78 @@ class SoftModuleAgent(BaseAgent):
         self.loss = nn.MSELoss()
         self.learning_rate = self.agent_params['learning_rate']
         self.optimizer = optim.Adam(
-            self.actor.parameters(),
+            self.actor.policy.parameters(),
             lr=self.learning_rate,
+        )
+        
+        # define 2 optimizers for training 2 parts of networks
+        p1 = []
+        p2 = []
+        for name, p in self.actor.policy.named_parameters():
+            if "gating" in name or "em_base" in name:
+                p2.append(p)
+            else:
+                p1.append(p)
+                
+        self.optimizer1 = optim.Adam(
+            p1,
+            lr=self.learning_rate
+        )
+        self.optimizer2 = optim.Adam(
+            p2,
+            lr=self.learning_rate
         )
 
         # replay buffer
         self.replay_buffer = ReplayBuffer(self.agent_params['max_replay_buffer_size'])
 
-    def train(self, ob_no, ac_na, embedding_input_n):
+    def train(self, ob_no, ac_na, embedding_input_n, alternate=-1):
         self.actor.train()
-        
-        self.optimizer.zero_grad()
         pred_acs = self.actor(ob_no, embedding_input_n.squeeze())
         loss = self.loss(pred_acs, ac_na)
         
-        # add L1 regularization
-        if self.agent_params["l1_regularization"]:
-            l1_lambda = self.agent_params["l1_lambda"]  # 0.001
-            l1_norm = 0.0
-            
-            # separate routing networks from the whole policy networks
-            # includes:
-            #   gating_fc_0.weight
-            #   gating_fc_0.bias
-            #   gating_fc_1.weight
-            #   gating_fc_1.bias
-            #   gating_weight_fc_0.weight
-            #   gating_weight_fc_0.bias
-            #   gating_weight_cond_last.weight
-            #   gating_weight_cond_last.bias
-            #   gating_weight_last.weight
-            #   gating_weight_last.bias
-            for name, p in self.actor.policy.named_parameters():
-                if "gating" in name:
-                    # print(name)
-                    l1_norm += p.abs().sum()       
-            loss = loss + l1_lambda * l1_norm
+        if alternate == 0:  # train base policy
+            print("train policy!\n")
+            self.optimizer1.zero_grad()
+            loss.backward()
+            self.optimizer1.step()
 
-        loss.backward()
-        self.optimizer.step()
         
+        elif alternate == 1: # train routing network
+            print("train routing!\n")
+            self.optimizer2.zero_grad()
+            loss.backward()
+            self.optimizer2.step()
+            
+        else:   # train full net
+            self.optimizer.zero_grad()
+
+            # add L1 regularization
+            if self.agent_params["l1_regularization"]:
+                l1_lambda = self.agent_params["l1_lambda"]  # 0.001
+                l1_norm = 0.0
+                
+                # separate routing networks from the whole policy networks
+                # includes:
+                #   gating_fc_0.weight
+                #   gating_fc_0.bias
+                #   gating_fc_1.weight
+                #   gating_fc_1.bias
+                #   gating_weight_fc_0.weight
+                #   gating_weight_fc_0.bias
+                #   gating_weight_cond_last.weight
+                #   gating_weight_cond_last.bias
+                #   gating_weight_last.weight
+                #   gating_weight_last.bias
+                for name, p in self.actor.policy.named_parameters():
+                    if "gating" in name:
+                        # print(name)
+                        l1_norm += p.abs().sum()       
+                loss = loss + l1_lambda * l1_norm
+
+            loss.backward()
+            self.optimizer.step()
+
         log = {
             # You can add extra logging information here, but keep this line
             'Training Loss': loss.to('cpu').detach().numpy(),

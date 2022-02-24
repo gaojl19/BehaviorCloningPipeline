@@ -57,7 +57,7 @@ class SingleCollector():
         
         # only sample once
         else:
-            print("sampling task: ", task)
+            print("sampling task: ", self.task)
             path = self.sample_trajectory(self.expert_policy, render, render_mode, run_agent=False, log = log, log_prefix = log_prefix, n_iter = n_iter)
             paths = [path]
             

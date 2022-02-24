@@ -66,6 +66,22 @@ class RL_Trainer(object):
             plot_prefix += "_baseline"
         if self.index_flag:
             plot_prefix += "_mhsac"
+        if "num_layers" in self.params["net"].keys(): # for Soft-Module with different module architectures
+            plot_prefix += "_"
+            plot_prefix += str(self.params["net"]["num_layers"])
+            plot_prefix += "_"
+            plot_prefix += str(self.params["net"]["num_modules"])
+            plot_prefix += "_"
+            plot_prefix += str(self.params["net"]["module_hidden"])
+        
+        if "l1_regularization" in self.args.keys():
+            if self.args["l1_regularization"]:
+                plot_prefix += "_L1Norm"
+        
+        if "shared_base" in self.params["net"].keys():
+            if self.params["net"]["shared_base"]:
+                plot_prefix += "_sharedBase"
+            
         if self.params["meta_env"]["random_init"] == False:
             plot_prefix += "_fixed/"
         else:
@@ -315,6 +331,7 @@ class RL_Trainer(object):
         loss_curve = []
         expert_success_curve = []
         agent_success_curve = []
+        self.alternate = 0 # start with base policy training
     
         # TRAIN
         for itr in range(n_iter):
@@ -326,7 +343,7 @@ class RL_Trainer(object):
             if itr == 0:
                 print("\n\n-------------------------------- Iteration %i -------------------------------- "%itr)
                 render = self.params["general_setting"]["train_render"] if (itr % self.args["render_interval"] == 0) else False
-                training_returns = self.expert_env.sample_expert(render=True, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, multiple_samples=multiple_samples)
+                training_returns = self.expert_env.sample_expert(render=False, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, multiple_samples=multiple_samples)
                 # for i in range(5):
                 #     training_returns = self.expert_env.sample_expert(render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix)
                 # print("sampling expert data for 5 iterations; Ending program")
@@ -342,7 +359,8 @@ class RL_Trainer(object):
                     self.agent.add_to_replay_buffer(paths)
             
             # train agent (using sampled data from replay buffer)
-            training_logs = self.train_agent()  # HW1: implement this function below
+            training_logs = self.train_agent(alternate_flag = self.args["alternate_train"])  # whether or not do alternate training
+            self.alternate = 0 if self.alternate==1 else 1
             
             min_loss = 1000
             for log in training_logs:
@@ -392,7 +410,7 @@ class RL_Trainer(object):
                 for log in training_logs:
                     print("loss: ", log["Training Loss"])
             
-            if min_loss < 0.001:
+            if min_loss < 0.0001:
                 print("\n\n-------------------------------- Training stopped due to early stopping -------------------------------- ")
                 print("min loss: ", min_loss)
                 break
@@ -450,8 +468,9 @@ class RL_Trainer(object):
    
         return agent_success_curve
    
-    def train_agent(self):
+    def train_agent(self, alternate_flag):
         all_logs = []
+ 
         for _ in range(self.args['gradient_steps']):
 
             # sample some data from the data buffer, and train on that batch
@@ -461,7 +480,10 @@ class RL_Trainer(object):
                     train_log = self.agent.train(ob_batch, ac_batch, index_batch)
                 else:  
                     ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
-                    train_log = self.agent.train(ob_batch, ac_batch, embedding_batch)
+                    if alternate_flag:
+                        train_log = self.agent.train(ob_batch, ac_batch, embedding_batch, self.alternate)
+                    else:
+                        train_log = self.agent.train(ob_batch, ac_batch, embedding_batch) # alternate=-1, meaning disabled
             else:
                 ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.agent.sample(self.args['train_batch_size'])
                 train_log = self.agent.train(ob_batch, ac_batch)

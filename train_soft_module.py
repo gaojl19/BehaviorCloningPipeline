@@ -1,3 +1,4 @@
+from inspect import ArgSpec
 from xml.dom import NotFoundErr
 import os
 import time
@@ -150,6 +151,7 @@ class BC_Trainer(object):
         self.args['agent_params']['l1_regularization'] = self.args['l1_regularization']
         self.args['agent_params']['l1_lambda'] = self.args['l1_lambda']
         
+        
         # RL TRAINER
         self.rl_trainer = RL_Trainer(
             env = self.env,
@@ -271,9 +273,10 @@ def main():
     # parser.add_argument('--env_name', '-env', type=str, help='choices: Ant-v2, Humanoid-v2, Walker-v2, HalfCheetah-v2, Hopper-v2', required=True)
     parser.add_argument('--exp_name', '-exp', type=str, default='pick an experiment name', required=True)
     parser.add_argument('--do_dagger', action='store_true')
+    parser.add_argument('--alternate_train', type=bool, default=False) # train base policy for alternate_train epochs, and train routing networks for another alternate_train epochs
     parser.add_argument('--ep_len', type=int)
 
-    parser.add_argument('--gradient_steps', type=int, default=1)  # number of gradient steps for training policy (per iter in n_iter)
+    parser.add_argument('--gradient_steps', type=int, default=100)  # number of gradient steps for training policy (per iter in n_iter)
     parser.add_argument('--n_iter', '-n', type=int, default=1)
     parser.add_argument('--render_interval', type=int, default=1)
     parser.add_argument('--eval_interval', type=int, default=1)
