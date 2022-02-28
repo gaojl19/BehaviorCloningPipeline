@@ -875,16 +875,17 @@ class MTEnvCollector():
                 new_value = torch.reshape(w[0], (-1,))
                 new_value = torch.nn.functional.normalize(new_value, p=1, dim=0)
                 X = torch.add(X, new_value)
-                # Y.append(new_value.numpy().tolist())
                 cnt += 1
-                # print(new_value)
+                # just choose one sample
+                break 
             weight_dict[task_name] = X.numpy().tolist()
-            # weight_dict[task_name] = Y
         
         import json
         weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)
         f = open(self.plot_prefix + "_weight.json", 'w')
         f.write(weight_json)
+    
+   
     
         
         

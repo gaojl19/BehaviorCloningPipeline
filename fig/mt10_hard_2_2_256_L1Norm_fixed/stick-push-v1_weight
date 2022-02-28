@@ -1,0 +1,13 @@
+// network
+digraph "stick-push-v1" {
+	edge [arrowsize=0.8]
+	rankdir=LR
+	"0_0" [shape=square]
+	"0_1" [shape=square]
+	"1_0" [shape=square]
+	"1_1" [shape=square]
+	"0_0" -> "1_0" [color="0.010 0.0100 1.5410439988539082e-05" style=bold]
+	"0_0" -> "1_1" [color="0.010 0.0100 7.667263245525469e-06" style=bold]
+	"0_1" -> "1_0" [color="0.010 0.0100 2.307770323406455e-05" style=bold]
+	"0_1" -> "1_1" [color="0.010 0.0100 0.0" style=bold]
+}

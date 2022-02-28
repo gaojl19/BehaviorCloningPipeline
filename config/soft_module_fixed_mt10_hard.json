@@ -19,13 +19,13 @@
         "hidden_shapes": [400, 400],
         "em_hidden_shapes": [400],
         "num_layers": 2,
-        "num_modules": 2,
-        "module_hidden": 256,
+        "num_modules": 20,
+        "module_hidden": 16,
         "num_gating_layers": 2,
         "gating_hidden": 256,
         "add_bn": false,
         "pre_softmax": false,
-        "shared_base": true,
+        "shared_base": false,
         "shared_base_hidden_shapes": [400]
     },
     "general_setting": {

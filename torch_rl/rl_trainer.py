@@ -14,8 +14,7 @@ from collections import OrderedDict
 import seaborn as sns
 import pandas as pd
 import torch.multiprocessing as mp
-from metaworld.envs.mujoco.env_dict import EASY_MODE_CLS_DICT, EASY_MODE_ARGS_KWARGS
-from metaworld.envs.mujoco.env_dict import HARD_MODE_CLS_DICT, HARD_MODE_ARGS_KWARGS
+from scipy.signal import savgol_filter
 import time
 
 # how many rollouts to save as videos to tensorboard
@@ -91,6 +90,7 @@ class RL_Trainer(object):
             os.makedirs(plot_prefix)
         
         self.plot_prefix = plot_prefix
+        print("plot prefix: ", plot_prefix)
         
         
         # MT10
@@ -493,21 +493,27 @@ class RL_Trainer(object):
             
     def plot_single_curve(self, curve, tag, plot_prefix, task_name):
         iteration = range(1, len(curve)+1)
-        data = pd.DataFrame(curve, iteration)
-        ax=sns.lineplot(data=data)
-        ax.set_xlabel("Iteration")
-        ax.set_ylabel(tag + " success")
-        ax.set_title(tag + "_" + task_name + " Mean Success Curve")
-        ax.set(ylim=(-0.1, 1.1))
+        # smooth
+        # curve_hat = savgol_filter(curve, 5, 3)
+        # data = pd.DataFrame(curve_hat, iteration)
         
-        fig = ax.get_figure()
-        fig.savefig(plot_prefix + task_name + "_"+ tag + "_success_curve.png")
+        # data = pd.DataFrame(curve, iteration)
+        # ax=sns.lineplot(data=data)
+        # ax.set_xlabel("Iteration")
+        # ax.set_ylabel(tag + " success")
+        # ax.set_title(tag + "_" + task_name + " Mean Success Curve")
+        # ax.set(ylim=(-0.1, 1.1))
         
-        fig.clf()
+        # fig = ax.get_figure()
+        # fig.savefig(plot_prefix + task_name + "_"+ tag + "_success_curve.png")
+        
+        # fig.clf()
         
     def plot_success_curve(self, curve, tag, plot_prefix):
         iteration = range(1, len(curve)+1)
-        data = pd.DataFrame(curve, iteration)
+        # smooth
+        curve_hat = savgol_filter(curve, 3, 2)
+        data = pd.DataFrame(curve_hat, iteration)
         ax=sns.lineplot(data=data)
         ax.set_xlabel("Iteration")
         ax.set_ylabel(tag + " success")

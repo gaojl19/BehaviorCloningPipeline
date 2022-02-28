@@ -291,7 +291,7 @@ def main():
     parser.add_argument('--size', type=int, default=400)  # width of each layer, of policy to be learned
     parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)  # LR for supervised learning
     parser.add_argument('--l1_regularization', type=bool, default=False)
-    parser.add_argument('--l1_lambda', type=float, default=0.001)
+    parser.add_argument('--l1_lambda', type=float, default=0.01)
 
     parser.add_argument('--video_log_freq', type=int, default=5)
     parser.add_argument('--scalar_log_freq', type=int, default=1)

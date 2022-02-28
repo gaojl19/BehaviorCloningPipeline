@@ -209,6 +209,7 @@ class SoftModuleAgent(BaseAgent):
             # add L1 regularization
             if self.agent_params["l1_regularization"]:
                 l1_lambda = self.agent_params["l1_lambda"]  # 0.001
+                # l1_lambda = 1e-7
                 l1_norm = 0.0
                 
                 # separate routing networks from the whole policy networks
@@ -224,12 +225,22 @@ class SoftModuleAgent(BaseAgent):
                 #   gating_weight_last.weight
                 #   gating_weight_last.bias
                 for name, p in self.actor.policy.named_parameters():
-                    if "gating" in name:
+                    if "gating" in name and "bias" not in name:
                         # print(name)
-                        l1_norm += p.abs().sum()       
+                        l1_norm += p.abs().sum() 
+                        # print(name, ": max->", p.abs().max(), "sum->", p.abs().sum()) 
+                # print("l1 norm:", l1_norm)
+                # print("prediction loss: ", loss)
                 loss = loss + l1_lambda * l1_norm
 
             loss.backward()
+            
+            # for name, p in self.actor.policy.named_parameters():
+            #     if "gating" in name and "bias" not in name:
+            #         print(p.grad)
+            #         print(p)
+            #         print(name, ": max->", p.abs().max(), "sum->", p.abs().sum()) 
+            
             self.optimizer.step()
 
         log = {
