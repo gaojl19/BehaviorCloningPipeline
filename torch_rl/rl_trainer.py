@@ -511,6 +511,16 @@ class RL_Trainer(object):
         
     def plot_success_curve(self, curve, tag, plot_prefix):
         iteration = range(1, len(curve)+1)
+        
+        # log success_rate for future usage
+        import json
+        success_dict = {}
+        for i in range(len(curve)):
+            success_dict[i] = curve[i]
+        success_json = json.dumps(success_dict, sort_keys=False, indent=4)
+        f = open(self.plot_prefix + "_success.json", 'w')
+        f.write(success_json)
+        
         # smooth
         curve_hat = savgol_filter(curve, 3, 2)
         data = pd.DataFrame(curve_hat, iteration)
