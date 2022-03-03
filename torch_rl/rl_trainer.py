@@ -77,6 +77,10 @@ class RL_Trainer(object):
             if self.args["l1_regularization"]:
                 plot_prefix += "_L1Norm"
         
+        if "regularize_weights" in self.args.keys():
+            if self.args["regularize_weights"]:
+                plot_prefix += "_regWeights"
+        
         if "shared_base" in self.params["net"].keys():
             if self.params["net"]["shared_base"]:
                 plot_prefix += "_sharedBase"

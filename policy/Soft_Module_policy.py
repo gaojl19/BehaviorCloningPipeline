@@ -24,10 +24,10 @@ class SoftModulePolicy(nn.Module):
         if embedding_input == None:
             raise Error
         
-        mean, std, log_std = self.policy.forward(x, embedding_input)
+        mean, std, log_std, general_weights = self.policy.forward(x, embedding_input, return_weights=True)
         dis = TanhNormal(mean, std)
         action = dis.rsample( return_pretanh_value = False )
-        return action
+        return action, general_weights
     
     
     def get_action(self, obs: np.ndarray, embedding_input):

@@ -187,7 +187,7 @@ class SoftModuleAgent(BaseAgent):
 
     def train(self, ob_no, ac_na, embedding_input_n, alternate=-1):
         self.actor.train()
-        pred_acs = self.actor(ob_no, embedding_input_n.squeeze())
+        pred_acs, weights = self.actor(ob_no, embedding_input_n.squeeze())
         loss = self.loss(pred_acs, ac_na)
         
         if alternate == 0:  # train base policy
@@ -231,6 +231,14 @@ class SoftModuleAgent(BaseAgent):
                         # print(name, ": max->", p.abs().max(), "sum->", p.abs().sum()) 
                 # print("l1 norm:", l1_norm)
                 # print("prediction loss: ", loss)
+                loss = loss + l1_lambda * l1_norm
+            
+            elif self.agent_params["regularize_weights"]:
+                l1_lambda = self.agent_params["l1_lambda"]  # 0.001
+                l1_norm = 0
+                for w in weights:
+                    l1_norm += w.abs().sum()
+                
                 loss = loss + l1_lambda * l1_norm
 
             loss.backward()
