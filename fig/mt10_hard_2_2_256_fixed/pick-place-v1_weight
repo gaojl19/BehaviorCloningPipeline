@@ -1,0 +1,13 @@
+// network
+digraph "pick-place-v1" {
+	edge [arrowsize=0.8]
+	rankdir=LR
+	"0_0" [shape=square]
+	"0_1" [shape=square]
+	"1_0" [shape=square]
+	"1_1" [shape=square]
+	"0_0" -> "1_0" [color="0.010 0.0100 0.0" style=bold]
+	"0_0" -> "1_1" [color="0.010 0.0100 0.9962951592177078" style=bold]
+	"0_1" -> "1_0" [color="0.010 0.0100 0.2252936817305402" style=bold]
+	"0_1" -> "1_1" [color="0.010 0.0100 0.7710014615960274" style=bold]
+}

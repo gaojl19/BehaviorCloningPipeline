@@ -87,8 +87,9 @@ class ModularGatedCascadeCondNet(nn.Module):
             gating_hidden, num_gating_layers,
 
             # gated_hidden
-            add_bn = True,
+            add_bn = False,
             add_ln = False,
+            dropout = 0,
             pre_softmax = False,
             cond_ob = True,
             module_hidden_init_func = init.basic_init,
@@ -148,6 +149,11 @@ class ModularGatedCascadeCondNet(nn.Module):
                         nn.LayerNorm(module_input_shape),
                         fc,
                         nn.LayerNorm(module_hidden)
+                    )
+                elif dropout>0:
+                    module = nn.Sequential(
+                        fc,
+                        nn.Dropout(dropout)
                     )
                 else:
                     module = fc

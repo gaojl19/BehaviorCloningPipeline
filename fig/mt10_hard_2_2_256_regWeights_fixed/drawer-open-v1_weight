@@ -1,0 +1,13 @@
+// network
+digraph "drawer-open-v1" {
+	edge [arrowsize=0.8]
+	rankdir=LR
+	"0_0" [shape=square]
+	"0_1" [shape=square]
+	"1_0" [shape=square]
+	"1_1" [shape=square]
+	"0_0" -> "1_0" [color="0.010 0.0100 0.15854993929473282" style=bold]
+	"0_0" -> "1_1" [color="0.010 0.0100 0.21450846188756534" style=bold]
+	"0_1" -> "1_0" [color="0.010 0.0100 0.0" style=bold]
+	"0_1" -> "1_1" [color="0.010 0.0100 0.37305849815556835" style=bold]
+}

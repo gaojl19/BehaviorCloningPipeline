@@ -238,8 +238,9 @@ class SoftModuleAgent(BaseAgent):
                 l1_norm = 0
                 for w in weights:
                     l1_norm += w.abs().sum()
-                
+
                 loss = loss + l1_lambda * l1_norm
+                print(l1_lambda*l1_norm)
 
             loss.backward()
             
