@@ -412,7 +412,7 @@ class RL_Trainer(object):
                 print("evaluation time: ", eval_time)
                 print("epoch time: ", time.time() - start)
                 for log in training_logs:
-                    print("loss: ", log["Training Loss"])
+                    print("loss: ", log["Training Loss"], " variance: ", log["Variance"])
             
             if min_loss < 0.0001:
                 print("\n\n-------------------------------- Training stopped due to early stopping -------------------------------- ")

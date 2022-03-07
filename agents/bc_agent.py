@@ -266,6 +266,7 @@ class SoftModuleAgent(BaseAgent):
         log = {
             # You can add extra logging information here, but keep this line
             'Training Loss': loss.to('cpu').detach().numpy(),
+            'Variance': variance
         } 
         return log
 
