@@ -244,6 +244,17 @@ class SoftModuleAgent(BaseAgent):
 
             loss.backward()
             
+            # add conditional dropout
+            variance = 0
+            weight_vector = []
+            for w in weights:
+                w = torch.reshape(w,(w.shape[0], w.shape[1]*w.shape[2]))
+                w = w.T
+            
+            for i in range(w.shape[0]):
+                variance += torch.var(w[i])
+            
+            print(variance)
             # for name, p in self.actor.policy.named_parameters():
             #     if "gating" in name and "bias" not in name:
             #         print(p.grad)

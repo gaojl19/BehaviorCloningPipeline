@@ -151,6 +151,7 @@ class ModularGatedCascadeCondNet(nn.Module):
                         nn.LayerNorm(module_hidden)
                     )
                 elif dropout>0:
+                    print("with dropout!")
                     module = nn.Sequential(
                         fc,
                         nn.Dropout(dropout)

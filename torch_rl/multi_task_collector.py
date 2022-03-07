@@ -560,7 +560,7 @@ class MTEnvCollector():
                 
         if plot_weights:
             # self.plot_TSNE(weights=weights)
-            self.visualize_weights(weights=weights)
+            self.visualize_single_weights(weights=weights, agent_policy=agent_policy)
     
         tasks_result.sort()
         dic = OrderedDict()
@@ -884,6 +884,32 @@ class MTEnvCollector():
         weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)
         f = open(self.plot_prefix + "_weight.json", 'w')
         f.write(weight_json)
+        
+    
+    def visualize_single_weights(self, weights, agent_policy):
+        '''
+            visualize weights between modules
+        '''
+        # import json
+        # for task_name in weights.keys():
+        #     cnt = 0
+        #     weight_dict = {}
+        #     for w in weights[task_name]:
+        #         new_value = torch.reshape(w[0], (-1,))
+
+        #         weight_dict[cnt] = new_value.tolist()
+        #         cnt += 1
+                
+        #     weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)
+        #     f = open(self.plot_prefix + task_name + "_weight.json", 'w')
+        #     f.write(weight_json)
+    
+
+        # save model
+        import os.path as osp
+        model_file_name="model.pth"
+        model_path=osp.join(self.plot_prefix, model_file_name)
+        torch.save(agent_policy.state_dict(), model_path)
     
    
     
