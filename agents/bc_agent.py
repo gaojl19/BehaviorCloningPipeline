@@ -146,6 +146,8 @@ class SoftModuleAgent(BaseAgent):
         # init vars
         self.env = env
         self.agent_params = agent_params
+        self.dropout = True if params["net"]["dropout"]>0 else False
+        self.variance_bar = params["net"]["num_modules"] / 5
 
         # actor/policy
         self.actor = SoftModulePolicy(
@@ -187,7 +189,8 @@ class SoftModuleAgent(BaseAgent):
 
     def train(self, ob_no, ac_na, embedding_input_n, alternate=-1):
         self.actor.train()
-        pred_acs, weights = self.actor(ob_no, embedding_input_n.squeeze())
+        print("Dropout: {}".format(self.dropout))
+        pred_acs, weights = self.actor(ob_no, embedding_input_n.squeeze(), self.dropout)
         loss = self.loss(pred_acs, ac_na)
         
         if alternate == 0:  # train base policy
@@ -246,7 +249,6 @@ class SoftModuleAgent(BaseAgent):
             
             # add conditional dropout
             variance = 0
-            weight_vector = []
             for w in weights:
                 w = torch.reshape(w,(w.shape[0], w.shape[1]*w.shape[2]))
                 w = w.T
@@ -254,7 +256,13 @@ class SoftModuleAgent(BaseAgent):
             for i in range(w.shape[0]):
                 variance += torch.var(w[i])
             
-            print(variance)
+            if variance > self.variance_bar:
+                self.dropout = False
+            
+            # enable dropout later
+            # else:
+                # self.dropout = True
+                
             # for name, p in self.actor.policy.named_parameters():
             #     if "gating" in name and "bias" not in name:
             #         print(p.grad)

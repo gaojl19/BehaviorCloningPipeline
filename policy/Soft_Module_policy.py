@@ -20,11 +20,11 @@ class SoftModulePolicy(nn.Module):
         self.input_shape = env.observation_space.shape[0]
         # print(env.observation_space.shape[0])
         
-    def forward(self, x, embedding_input = None):
+    def forward(self, x, embedding_input = None, dropout = False):
         if embedding_input == None:
             raise Error
         
-        mean, std, log_std, general_weights = self.policy.forward(x, embedding_input, return_weights=True)
+        mean, std, log_std, general_weights = self.policy.forward(x, embedding_input, return_weights=True, dropout = dropout)
         dis = TanhNormal(mean, std)
         action = dis.rsample( return_pretanh_value = False )
         return action, general_weights

@@ -124,6 +124,8 @@ class ModularGatedCascadeCondNet(nn.Module):
                 **kwargs )
 
         self.activation_func = activation_func
+        if dropout>0:
+            self.dropout_p = dropout
 
         module_input_shape = self.base.output_shape
         self.layer_modules = []
@@ -150,12 +152,12 @@ class ModularGatedCascadeCondNet(nn.Module):
                         fc,
                         nn.LayerNorm(module_hidden)
                     )
-                elif dropout>0:
-                    print("with dropout!")
-                    module = nn.Sequential(
-                        fc,
-                        nn.Dropout(dropout)
-                    )
+                # elif dropout>0:
+                #     print("with dropout!")
+                #     module = nn.Sequential(
+                #         fc,
+                #         nn.Dropout(dropout)
+                #     )
                 else:
                     module = fc
 
@@ -219,7 +221,7 @@ class ModularGatedCascadeCondNet(nn.Module):
         self.pre_softmax = pre_softmax
         self.cond_ob = cond_ob
 
-    def forward(self, x, embedding_input, return_weights = False):
+    def forward(self, x, embedding_input, return_weights = False, dropout=False):
         # Return weights for visualization
         out = self.base(x)
         embedding = self.em_base(embedding_input)
@@ -289,10 +291,17 @@ class ModularGatedCascadeCondNet(nn.Module):
         # go through shared base if there is any
         if self.shared_base_flag:
             out = self.shared_base(out)
-            
-        module_outputs = [(layer_module(out)).unsqueeze(-2) \
-                for layer_module in self.layer_modules[0]]
-
+        
+        module_outputs = []
+        for layer_module in self.layer_modules[0]:
+            module_out = layer_module(out)
+            if dropout:
+                module_out = torch.nn.functional.dropout(module_out, self.dropout_p, True)
+            module_outputs.append(module_out.unsqueeze(-2))
+        
+        # module_outputs = [(layer_module(out)).unsqueeze(-2) \
+        #         for layer_module in self.layer_modules[0]]
+        
         module_outputs = torch.cat(module_outputs, dim = -2 )
 
         # [TODO] Optimize using 1 * 1 convolution.
@@ -304,10 +313,16 @@ class ModularGatedCascadeCondNet(nn.Module):
                     weights[i][..., j, :].unsqueeze(-1)).sum(dim=-2)
 
                 module_input = self.activation_func(module_input)
-                new_module_outputs.append((
-                        layer_module(module_input)
+                if dropout:
+                    new_module_outputs.append((
+                        torch.nn.functional.dropout(layer_module(module_input), self.dropout_p)
                 ).unsqueeze(-2))
-
+                
+                else:
+                    new_module_outputs.append((
+                        layer_module(module_input)
+                    ).unsqueeze(-2))
+            
             module_outputs = torch.cat(new_module_outputs, dim = -2)
 
         out = (module_outputs * last_weight.unsqueeze(-1)).sum(-2)
