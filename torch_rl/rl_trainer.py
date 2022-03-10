@@ -84,6 +84,14 @@ class RL_Trainer(object):
         if "shared_base" in self.params["net"].keys():
             if self.params["net"]["shared_base"]:
                 plot_prefix += "_sharedBase"
+        
+        if "dropout_neuron" in self.params["net"].keys():
+            if self.params["net"]["dropout_neuron"]>0:
+                plot_prefix += "_dpNeuron"
+                
+        if "dropout_module" in self.params["net"].keys():
+            if self.params["net"]["dropout_module"]>0:
+                plot_prefix += "_dpModule"
             
         if self.params["meta_env"]["random_init"] == False:
             plot_prefix += "_fixed/"

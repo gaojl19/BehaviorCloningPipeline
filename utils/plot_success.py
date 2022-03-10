@@ -95,11 +95,11 @@ def plot_all_curve(paths, labels, tag, plot_prefix):
     
     
 if __name__ == "__main__":
-    path1 = "./fig/mt10_hard_2_20_32_fixed/"
-    path2 = "./fig/mt10_hard_2_20_32_dp0.5_fixed/"
+    path1 = "./fig/mt10_hard_2_10_64_fixed/"
+    path2 = "./fig/mt10_hard_2_10_64_dpModule_fixed/"
     label1 = "SM baseline"
-    label2 = "SM with random dropout"
-    task_name = "SoftModule_2_20_32_0.5dp"
+    label2 = "SM with hybrid dropout on modules"
+    task_name = "SoftModule_2_10_64_dpModule"
     plot_prefix = "./fig/MT10_Hard_Result/"
     
     plot_success_curve(path1=path1, path2=path2, label1=label1, label2=label2, tag=task_name, plot_prefix=plot_prefix)
