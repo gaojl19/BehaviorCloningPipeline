@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import networks.init as init
+import copy
 
 
 class ZeroNet(nn.Module):
@@ -288,11 +289,15 @@ class ModularGatedCascadeCondNet(nn.Module):
         raw_last_weight = self.gating_weight_last(cond)
         last_weight = F.softmax(raw_last_weight, dim = -1)
 
+        original_weights = []
+        for w in weights:
+            original_weights.append(w.detach())
         # dropout entire module
         if dropout:
             for i in range(len(weights)):
+                # create a binary mask
                 weights[i] = torch.nn.functional.dropout(weights[i], self.dropout_module, True)
-
+        
         # go through shared base if there is any
         if self.shared_base_flag:
             out = self.shared_base(out)
@@ -319,15 +324,16 @@ class ModularGatedCascadeCondNet(nn.Module):
                     weights[i][..., j, :].unsqueeze(-1)).sum(dim=-2)
 
                 module_input = self.activation_func(module_input)
-                if dropout:
-                    new_module_outputs.append((
-                        torch.nn.functional.dropout(layer_module(module_input), self.dropout_p)
-                ).unsqueeze(-2))
+                # if dropout:
+                # #     new_module_outputs.append((
+                # #         torch.nn.functional.dropout(layer_module(module_input), self.dropout_neuron)
+                # # ).unsqueeze(-2))
+                #     pass
                 
-                else:
-                    new_module_outputs.append((
-                        layer_module(module_input)
-                    ).unsqueeze(-2))
+                # else:
+                new_module_outputs.append((
+                    layer_module(module_input)
+                ).unsqueeze(-2))
             
             module_outputs = torch.cat(new_module_outputs, dim = -2)
 
@@ -336,7 +342,7 @@ class ModularGatedCascadeCondNet(nn.Module):
         out = self.last(out)
 
         if return_weights:
-            return out, weights, last_weight
+            return out, original_weights, last_weight
         return out
 
 

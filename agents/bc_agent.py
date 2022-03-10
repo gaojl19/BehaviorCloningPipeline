@@ -147,7 +147,7 @@ class SoftModuleAgent(BaseAgent):
         # init vars
         self.env = env
         self.agent_params = agent_params
-        self.dropout = True if params["net"]["dropout"]>0 else False
+        self.dropout = True if params["net"]["dropout_neuron"]>0 or params["net"]["dropout_module"]>0 else False
         self.variance_bar = params["net"]["num_modules"] / 5
 
         # actor/policy
@@ -217,24 +217,11 @@ class SoftModuleAgent(BaseAgent):
                 l1_norm = 0.0
                 
                 # separate routing networks from the whole policy networks
-                # includes:
-                #   gating_fc_0.weight
-                #   gating_fc_0.bias
-                #   gating_fc_1.weight
-                #   gating_fc_1.bias
-                #   gating_weight_fc_0.weight
-                #   gating_weight_fc_0.bias
-                #   gating_weight_cond_last.weight
-                #   gating_weight_cond_last.bias
-                #   gating_weight_last.weight
-                #   gating_weight_last.bias
                 for name, p in self.actor.policy.named_parameters():
                     if "gating" in name and "bias" not in name:
                         # print(name)
                         l1_norm += p.abs().sum() 
                         # print(name, ": max->", p.abs().max(), "sum->", p.abs().sum()) 
-                # print("l1 norm:", l1_norm)
-                # print("prediction loss: ", loss)
                 loss = loss + l1_lambda * l1_norm
             
             elif self.agent_params["regularize_weights"]:
@@ -289,9 +276,10 @@ class SoftModuleAgent(BaseAgent):
             
             if task_variance > self.variance_bar:
                 self.dropout = False
+                
             # enable dropout later
-            # else:
-                # self.dropout = True
+            else:
+                self.dropout = True
                 
             # for name, p in self.actor.policy.named_parameters():
             #     if "gating" in name and "bias" not in name:
