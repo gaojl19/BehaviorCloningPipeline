@@ -1,3 +1,4 @@
+from statistics import variance
 from torch_rl.replay_buffer import ReplayBuffer
 from policy.MLP_policy import MLPPolicy
 from policy.Soft_Module_policy import SoftModulePolicy
@@ -248,7 +249,37 @@ class SoftModuleAgent(BaseAgent):
             loss.backward()
             
             # add conditional dropout
+            task_variance = 0
             variance = 0
+            
+            # create a dict
+            task_weights_dict = {}
+            sample_cnt_dict = {}
+            mask = torch.arange(1,embedding_input_n.shape[2]+1, 1).reshape(1, embedding_input_n.shape[2])
+            label_n = []
+            for i in range(embedding_input_n.shape[0]):
+                label = int(torch.mm(mask, embedding_input_n[i].reshape(embedding_input_n.shape[2], 1).long()))
+                label_n.append(label)
+                task_weights_dict[label] = torch.zeros(weights[0].shape[1], weights[0].shape[2])
+                sample_cnt_dict[label] = 0
+            
+            for i in range(len(label_n)):
+                task_weights_dict[label_n[i]] += weights[0][i]
+                sample_cnt_dict[label_n[i]] += 1
+            
+            for key in task_weights_dict.keys():
+                task_weights_dict[key] /= sample_cnt_dict[key]
+                
+            
+            # calculate variance of each task group
+            w = torch.stack(list(task_weights_dict.values()))
+            w = torch.reshape(w, (w.shape[0], w.shape[1]*w.shape[2]))
+            w = w.T
+           
+            for i in range(w.shape[0]):
+                task_variance += torch.var(w[i])
+            
+        
             for w in weights:
                 w = torch.reshape(w,(w.shape[0], w.shape[1]*w.shape[2]))
                 w = w.T
@@ -256,9 +287,8 @@ class SoftModuleAgent(BaseAgent):
             for i in range(w.shape[0]):
                 variance += torch.var(w[i])
             
-            if variance > self.variance_bar:
+            if task_variance > self.variance_bar:
                 self.dropout = False
-            
             # enable dropout later
             # else:
                 # self.dropout = True
@@ -274,7 +304,8 @@ class SoftModuleAgent(BaseAgent):
         log = {
             # You can add extra logging information here, but keep this line
             'Training Loss': loss.to('cpu').detach().numpy(),
-            'Variance': variance
+            'Variance': variance,
+            'Task variance': task_variance
         } 
         return log
 

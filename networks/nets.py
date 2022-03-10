@@ -89,7 +89,8 @@ class ModularGatedCascadeCondNet(nn.Module):
             # gated_hidden
             add_bn = False,
             add_ln = False,
-            dropout = 0,
+            dropout_neuron = 0,
+            dropout_module = 0,
             pre_softmax = False,
             cond_ob = True,
             module_hidden_init_func = init.basic_init,
@@ -124,8 +125,8 @@ class ModularGatedCascadeCondNet(nn.Module):
                 **kwargs )
 
         self.activation_func = activation_func
-        if dropout>0:
-            self.dropout_p = dropout
+        self.dropout_neuron = dropout_neuron
+        self.dropout_module = dropout_module
 
         module_input_shape = self.base.output_shape
         self.layer_modules = []
@@ -287,7 +288,11 @@ class ModularGatedCascadeCondNet(nn.Module):
         raw_last_weight = self.gating_weight_last(cond)
         last_weight = F.softmax(raw_last_weight, dim = -1)
 
-        
+        # dropout entire module
+        if dropout:
+            for i in range(len(weights)):
+                weights[i] = torch.nn.functional.dropout(weights[i], self.dropout_module, True)
+
         # go through shared base if there is any
         if self.shared_base_flag:
             out = self.shared_base(out)
@@ -295,8 +300,9 @@ class ModularGatedCascadeCondNet(nn.Module):
         module_outputs = []
         for layer_module in self.layer_modules[0]:
             module_out = layer_module(out)
-            if dropout:
-                module_out = torch.nn.functional.dropout(module_out, self.dropout_p, True)
+            # dropout neurons
+            # if dropout:
+                # module_out = torch.nn.functional.dropout(module_out, self.dropout_neuron, True)
             module_outputs.append(module_out.unsqueeze(-2))
         
         # module_outputs = [(layer_module(out)).unsqueeze(-2) \

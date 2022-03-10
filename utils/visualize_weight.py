@@ -47,4 +47,4 @@ def plot_network(n_modules, n_layers, path):
         
     
 if __name__ == "__main__":
-    plot_network(n_modules=20, n_layers=2, path="./fig/mt10_hard_2_20_32_dp0.5_fixed/")
+    plot_network(n_modules=10, n_layers=2, path="./fig/mt10_hard_2_10_64_dp0.5_fixed/")
