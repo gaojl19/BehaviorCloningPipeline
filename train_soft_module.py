@@ -1,3 +1,4 @@
+from email.policy import default
 from inspect import ArgSpec
 from xml.dom import NotFoundErr
 import os
@@ -164,6 +165,12 @@ class BC_Trainer(object):
             input_shape = ob_dim,
             example_embedding=example_embedding
         )
+        
+        # LOAD FROM CHECKPOINT
+        print(self.args["load_from_checkpoint"])
+        if self.args["load_from_checkpoint"]!=None:
+            self.rl_trainer.agent.actor.policy.load_state_dict(torch.load(self.args["load_from_checkpoint"], map_location='cpu'))
+            self.rl_trainer.agent.actor.policy.eval()
 
     
     def run_training_loop(self):
@@ -310,6 +317,7 @@ def main():
     parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument("--random_init", type=bool, default=False, help="whether use random init when collecting data & evaluating", )
     parser.add_argument("--device", type=int, default=0, help="gpu secification", )
+    parser.add_argument("--load_from_checkpoint", type=str, default=None)
     
     # tensorboard
     parser.add_argument("--id", type=str,   default=None, help="id for tensorboard", )

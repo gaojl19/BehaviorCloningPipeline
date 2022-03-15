@@ -4,6 +4,7 @@ from policy.MLP_policy import MLPPolicy
 from policy.Soft_Module_policy import SoftModulePolicy
 from policy.MH_SAC_policy import MHSACPolicy
 from policy.IQ_learn_policy import *
+from policy.Disentanglement_policy import DisentanglementPolicy
 from .base_agent import BaseAgent
 import torch.nn as nn
 import torch.optim as optim
@@ -361,6 +362,142 @@ class MHSACAgent(BaseAgent):
         return self.actor.save(path)
     
     
+
+class DisentanglementAgent(BaseAgent):
+    def __init__(self, env, example_embedding, agent_params, params):
+        super(DisentanglementAgent, self).__init__()
+
+        # init vars
+        self.env = env
+        self.agent_params = agent_params
+        self.sel_lambda = params["net"]["sel_lambda"]
+        self.num_tasks = example_embedding.shape[0]
+
+        # actor/policy
+        self.actor = DisentanglementPolicy(
+            state_shape = self.agent_params['ob_dim'],
+            output_shape = self.agent_params['ac_dim'],
+            hidden_shape = params["net"]["hidden_shapes"],
+            example_embedding = example_embedding
+        )
+        
+        print("actor: \n", self.actor)
+
+        # update
+        self.loss = nn.MSELoss()
+        self.learning_rate = self.agent_params['learning_rate']
+        self.optimizer = optim.Adam(
+            self.actor.parameters(),
+            lr=self.learning_rate,
+        )
+
+        # replay buffer
+        self.replay_buffer = ReplayBuffer(self.agent_params['max_replay_buffer_size'])
+        
+
+    def train(self, ob_no, ac_na, embedding_input_n, env):
+        self.actor.train()
+        
+        self.optimizer.zero_grad()
+        
+        pred_acs, feature = self.actor(ob_no, embedding_input_n)
+        
+        # print(feature.shape) [batch_size, task_num]
+
+        # prediction loss
+        loss = self.loss(pred_acs, ac_na)
+        
+        # selection loss: This is a on-line training method
+        # create a dict
+        task_action_dict = {}
+        ob_dict = {}
+        mask = torch.arange(1, embedding_input_n.shape[2]+1, 1).reshape(1, embedding_input_n.shape[2])
+        label_n = []
+        
+        for i in range(1, self.num_tasks+1):
+            task_action_dict[i] = []
+            ob_dict[i] = []
+            
+        for i in range(embedding_input_n.shape[0]):
+            label = int(torch.mm(mask, embedding_input_n[i].reshape(embedding_input_n.shape[2], 1).long()))
+            label_n.append(label)
+
+        for i in range(len(label_n)):
+            task_action_dict[label_n[i]].append(pred_acs[i])
+            ob_dict[label_n[i]].append(ob_no[i])
+            
+        # collect next_obs
+        next_obs = env.collect_next_state(task_action_dict, input_shape=self.actor.input_shape)
+        
+        # with torch no grad, get new features
+        sel = self.calculate_sel(state_dict=ob_dict, next_state_dict=next_obs, num_tasks=self.num_tasks)
+        loss -= sel[0]*self.sel_lambda
+        
+        loss.backward()
+        self.optimizer.step()
+        
+        log = {
+            # You can add extra logging information here, but keep this line
+            'Training Loss': loss.to('cpu').detach().numpy(),
+        } 
+        return log
+    
+    def calculate_sel(self, state_dict, next_state_dict, num_tasks):
+        sel_loss = 0
+        
+        for i in range(num_tasks):
+            next_ob_i = next_state_dict[i+1]
+            ob_i = state_dict[i+1]
+            sel_i = 0
+
+            # create embeddings
+            embedding_input = torch.zeros(num_tasks)
+            embedding_input[i] = 1
+            embedding_input = embedding_input.unsqueeze(0)
+                        
+            # actions taken by policy_i
+            with torch.no_grad():
+                feature = []
+                feature_next = []
+                for s in next_ob_i:
+                    # print(torch.Tensor(s).unsqueeze(0).shape)
+                    pred_ac, f = self.actor(torch.Tensor(s).unsqueeze(0), embedding_input.unsqueeze(0))
+                    
+                    feature_next.append(f.T)
+                
+                for s in ob_i:
+                    # print(torch.Tensor(s).shape)
+                    pred_ac, f = self.actor(torch.Tensor(s).unsqueeze(0), embedding_input.unsqueeze(0))
+                    feature.append(f.T)
+                
+                assert len(feature) == len(feature_next)
+            
+                for n in range(len(feature)):
+                    sums = 0
+                    for k in range(num_tasks):
+                        sums += abs(feature[n][k]-feature_next[n][k])
+                    sel_i += abs(feature[n][i]-feature_next[n][i]) / sums
+                    
+            sel_loss += sel_i
+        
+        print(sel_loss)
+        return sel_loss
+            
+
+    def add_to_replay_buffer(self, paths):
+        self.replay_buffer.add_rollouts(paths)
+        
+    def add_mt_to_replay_buffer(self, paths):
+        self.replay_buffer.add_embedding_rollouts(paths)
+
+    def sample(self, batch_size):
+        return self.replay_buffer.sample_random_data(batch_size) 
+
+    def mt_sample(self, batch_size):
+        return self.replay_buffer.sample_random_data_embedding(batch_size) 
+
+    def save(self, path):
+        return self.actor.save(path)
 
 
 # class IQLearnAgent(BaseAgent):

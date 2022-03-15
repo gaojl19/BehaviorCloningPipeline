@@ -3,7 +3,7 @@ from metaworld_utils.meta_env import generate_single_mt_env
 from torch_rl.replay_buffer import EnvInfo
 from policy.continuous_policy import MultiHeadGuassianContPolicy, EmbeddingGuassianContPolicyBase
 from utils.utils import Path
-from agents.bc_agent import MHSACAgent, MLPAgent, MLPEmbeddingAgent, SoftModuleAgent
+from agents.bc_agent import DisentanglementAgent, MHSACAgent, MLPAgent, MLPEmbeddingAgent, SoftModuleAgent
 from torch_rl.multi_task_collector import *
 
 import torch
@@ -51,6 +51,9 @@ class RL_Trainer(object):
         elif agent_class == MHSACAgent:
             self.agent = agent_class(self.env, self.args['agent_params'], self.params)
             self.index_flag = True
+        elif agent_class == DisentanglementAgent:
+            self.agent = agent_class(self.env, example_embedding, self.args['agent_params'], self.params)
+            self.online_flag = True
         else:
             raise NotImplementedError(agent_class)
             
@@ -60,7 +63,11 @@ class RL_Trainer(object):
         
         
         # build log dir
-        plot_prefix = "./fig/"+ self.env_name
+        if args["load_from_checkpoint"]!= None:
+            plot_prefix = "./test/" + self.env_name
+        else:
+            plot_prefix = "./fig/" + self.env_name
+            
         if baseline:
             plot_prefix += "_baseline"
         if self.index_flag:
@@ -371,7 +378,7 @@ class RL_Trainer(object):
                     self.agent.add_to_replay_buffer(paths)
             
             # train agent (using sampled data from replay buffer)
-            training_logs = self.train_agent(alternate_flag = self.args["alternate_train"])  # whether or not do alternate training
+            training_logs = self.train_agent(alternate_flag = self.args["alternate_train"], env = self.agent_env)  # whether or not do alternate training
             self.alternate = 0 if self.alternate==1 else 1
             
             min_loss = 1000
@@ -429,7 +436,7 @@ class RL_Trainer(object):
         
         # TEST
         print("\n\n-------------------------------- Test Results -------------------------------- ")
-        render = False
+        render = True
         if self.mt_flag == False:
             eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
             print("mean_success_rate: ", eval_success_rate)
@@ -451,36 +458,36 @@ class RL_Trainer(object):
         
         # PLOT CURVE
         # plot overall loss curve
-        iteration = range(len(loss_curve)-1)
-        data = pd.DataFrame(loss_curve[1:], iteration)
-        ax=sns.lineplot(data=data)
-        ax.set_xlabel("Iteration")
-        ax.set_ylabel("Loss")
-        ax.set_title("BC--Loss Curve")
+        # iteration = range(len(loss_curve)-1)
+        # data = pd.DataFrame(loss_curve[1:], iteration)
+        # ax=sns.lineplot(data=data)
+        # ax.set_xlabel("Iteration")
+        # ax.set_ylabel("Loss")
+        # ax.set_title("BC--Loss Curve")
         
-        fig = ax.get_figure()
-        fig.savefig(self.plot_prefix + "Loss_lr_"+str(self.args['learning_rate']*10000)+".png")
-        fig.clf()
+        # fig = ax.get_figure()
+        # fig.savefig(self.plot_prefix + "Loss_lr_"+str(self.args['learning_rate']*10000)+".png")
+        # fig.clf()
         
-        # plot expert success curve
-        self.plot_success_curve(expert_success_curve, "expert", self.plot_prefix)
+        # # plot expert success curve
+        # self.plot_success_curve(expert_success_curve, "expert", self.plot_prefix)
         
-        # plot agent success curve
-        self.plot_success_curve(agent_success_curve, "agent", self.plot_prefix)
+        # # plot agent success curve
+        # self.plot_success_curve(agent_success_curve, "agent", self.plot_prefix)
         
-        # for multi-task, plot single-task curve
-        if self.mt_flag:
-            # expert
-            for task_name in expert_task_curve.keys():
-                self.plot_single_curve(expert_task_curve[task_name], "expert", self.plot_prefix, task_name)
+        # # for multi-task, plot single-task curve
+        # if self.mt_flag:
+        #     # expert
+        #     for task_name in expert_task_curve.keys():
+        #         self.plot_single_curve(expert_task_curve[task_name], "expert", self.plot_prefix, task_name)
             
-            # agent
-            for task_name in agent_task_curve.keys():
-                self.plot_single_curve(agent_task_curve[task_name], "agent", self.plot_prefix, task_name)
+        #     # agent
+        #     for task_name in agent_task_curve.keys():
+        #         self.plot_single_curve(agent_task_curve[task_name], "agent", self.plot_prefix, task_name)
    
         return agent_success_curve
    
-    def train_agent(self, alternate_flag):
+    def train_agent(self, alternate_flag, env=None):
         all_logs = []
  
         for _ in range(self.args['gradient_steps']):
@@ -490,6 +497,9 @@ class RL_Trainer(object):
                 if self.index_flag:
                     ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, index_batch = self.agent.mt_sample(self.args['train_batch_size'])
                     train_log = self.agent.train(ob_batch, ac_batch, index_batch)
+                elif self.online_flag:
+                    ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
+                    train_log = self.agent.train(ob_batch, ac_batch, embedding_batch, env)
                 else:  
                     ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
                     if alternate_flag:

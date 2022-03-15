@@ -537,15 +537,6 @@ class MTEnvCollector():
         images = {}
         weights = {}
         
-        # for _ in range(self.eval_worker_nums):
-        #     worker_rst = self.eval_shared_que.get()
-        #     if worker_rst["mean_success_rate"] is not None:
-        #         active_task_counts += 1
-        #         mean_success_rate += worker_rst["mean_success_rate"]
-        #         tasks_result.append((worker_rst["task_name"], worker_rst["mean_success_rate"]))
-        #         if len(worker_rst["image_obs"]) > 0:
-        #             images[worker_rst["task_name"]] = worker_rst["image_obs"]
-        
         for res in self.results:
             active_task_counts += 1
             mean_success_rate += res["mean_success_rate"]
@@ -576,7 +567,66 @@ class MTEnvCollector():
         dic['mean_success_rate'] = mean_success_rate / active_task_counts       
         return dic
     
-    
+    def collect_next_state(self, action_dict, input_shape):
+        
+        self.eval_workers = []
+        self.eval_worker_nums = self.env.num_tasks
+        self.eval_shared_que = self.manager.Queue(self.eval_worker_nums)
+        self.eval_start_barrier = mp.Barrier(self.eval_worker_nums)
+        
+        tasks = list(self.env_cls.keys())
+        self.shared_dict = self.manager.dict()
+                
+        self.env_info.env = None
+        self.env_info.num_tasks = self.env.num_tasks
+        # print(self.env.num_tasks)
+        self.env_info.env_cls = generate_single_mt_env
+        single_mt_env_args = {
+            "task_cls": None,
+            "task_args": None,
+            "env_rank": 0,
+            "num_tasks": self.env.num_tasks,
+            "max_obs_dim": np.prod(self.env.observation_space.shape),
+            "env_params": self.env_args[0],
+            "meta_env_params": self.env_args[2],
+            "env_name": self.params["env_name"],
+        }
+        
+        self.next_obs = {}
+        for i, task in enumerate(tasks):
+            self.next_obs[i+1] = []
+
+        for i, task in enumerate(tasks):
+            env_cls = self.env_cls[task]
+
+            self.env_info.env_rank = i
+            
+            # create task_embeddings
+            embedding_input = torch.zeros(self.env_info.num_tasks)
+            embedding_input[self.env_info.env_rank] = 1
+            embedding_input = embedding_input.unsqueeze(0).to(self.env_info.device)
+            
+            self.env_info.env_args = single_mt_env_args
+            self.env_info.env_args["task_cls"] = env_cls
+            self.env_info.env_args["task_args"] = copy.deepcopy(self.env_args[1][task])
+            self.env_info.env_args["env_rank"] = i
+
+            # Rebuild Env
+            self.env_info.env = self.env_info.env_cls(**self.env_info.env_args)
+            norm_obs_flag = self.env_info.env_args["env_params"]["obs_norm"]
+            # print("normalize observation: ", norm_obs_flag)
+            
+            actions = action_dict[i+1]
+            
+            for act in actions:
+                next_ob, r, done, info = self.env_info.env.step(act.detach().numpy())
+                # mask out the last 3 dimensions
+                if len(next_ob) != input_shape:
+                    next_ob = next_ob[:input_shape]
+                self.next_obs[i+1].append(next_ob)
+        
+        return self.next_obs
+
 
     def build_Multi_task_env(self, agent_policy, input_shape, render=False, return_weights=False):
     
@@ -633,13 +683,6 @@ class MTEnvCollector():
                           return_weights=return_weights)
             
             self.results.append(result)
-            # eval_p = mp.Process(
-            #     target=self.__class__.eval_worker_process,
-            #     args=(agent_policy,
-            #         self.env_info, self.eval_shared_que, self.eval_start_barrier,
-            #         self.params["general_setting"]["eval_episodes"], start_epoch, self.params["general_setting"]["max_episode_frames"], task, self.shared_dict))
-            # eval_p.start()
-            # self.eval_workers.append(eval_p)
             
     
     def evaluate(self, agent_policy, env_info, eval_episode, max_frame, task_name, shared_dict, render, input_shape, return_weights=False):
@@ -890,19 +933,19 @@ class MTEnvCollector():
         '''
             visualize weights between modules
         '''
-        # import json
-        # for task_name in weights.keys():
-        #     cnt = 0
-        #     weight_dict = {}
-        #     for w in weights[task_name]:
-        #         new_value = torch.reshape(w[0], (-1,))
+        import json
+        for task_name in weights.keys():
+            cnt = 0
+            weight_dict = {}
+            for w in weights[task_name]:
+                new_value = torch.reshape(w[0], (-1,))
 
-        #         weight_dict[cnt] = new_value.tolist()
-        #         cnt += 1
+                weight_dict[cnt] = new_value.tolist()
+                cnt += 1
                 
-        #     weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)
-        #     f = open(self.plot_prefix + task_name + "_weight.json", 'w')
-        #     f.write(weight_json)
+            weight_json = json.dumps(weight_dict,sort_keys=False, indent=4)
+            f = open(self.plot_prefix + task_name + "_weight.json", 'w')
+            f.write(weight_json)
     
 
         # save model
