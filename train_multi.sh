@@ -20,7 +20,7 @@
 
 
 # python train_mt_baseline.py \
-#     --expert_policy_file policy/expert/MT10_Similar/ \
+#     --expert_policy_file policy/expert/MT10_Hard/ \
 # 	--exp_name bc_reach \
 #     --n_iter 2000 \
 #     --eval_interval 1000 \
@@ -30,20 +30,19 @@
 #     --ep_len 200 \
 #     --batch_size 64 \
 #     --train_batch_size 32 \
-#     --config config/soft_module_fixed_mt10_similar.json \
+#     --config config/soft_module_fixed_mt10_hard.json \
 #     --id MT50_Single_Task \
 #     --seed 32 \
 #     --worker_nums 1 \
 #     --eval_worker_nums 1 \
 #     --task_env MT50_task_env \
-#     --no_cuda \
-#     --multiple_runs True
+#     --no_cuda
 
 
 # python train_mh_sac.py \
-#     --expert_policy_file policy/expert/MT10_Medium/ \
+#     --expert_policy_file policy/expert/MT10_Hard/ \
 # 	--exp_name bc_reach \
-#     --n_iter 4000 \
+#     --n_iter 2000 \
 #     --eval_interval 1000 \
 #     --render_interval 40 \
 #     --learning_rate 1e-4 \
@@ -51,7 +50,7 @@
 #     --ep_len 200 \
 #     --batch_size 64 \
 #     --train_batch_size 32 \
-#     --config config/mtmh_sac_fixed_mt10_medium.json \
+#     --config config/mtmh_sac_fixed_mt10_hard.json \
 #     --id MT50_Single_Task \
 #     --seed 1920 \
 #     --worker_nums 1 \
@@ -108,7 +107,7 @@ python train_disentanglement.py \
     --learning_rate 1e-4 \
 	--video_log_freq -1 \
     --ep_len 200 \
-    --batch_size 64 \
+    --batch_size 32 \
     --train_batch_size 32 \
     --config config/disentanglement_fixed_mt10_hard.json \
     --id MT50_Single_Task \

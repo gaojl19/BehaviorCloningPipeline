@@ -306,6 +306,10 @@ def main():
     parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument("--random_init", type=bool, default=False, help="whether use random init when collecting data & evaluating", )
     parser.add_argument("--device", type=int, default=0, help="gpu secification", )
+    
+    parser.add_argument('--alternate_train', type=bool, default=False) # train base policy for alternate_train epochs, and train routing networks for another alternate_train epochs
+    parser.add_argument("--load_from_checkpoint", type=str, default=None)
+    
 
 
     # tensorboard

@@ -395,12 +395,13 @@ class DisentanglementAgent(BaseAgent):
         self.replay_buffer = ReplayBuffer(self.agent_params['max_replay_buffer_size'])
         
 
-    def train(self, ob_no, ac_na, embedding_input_n, env):
+    def train(self, ob_no, ac_na, embedding_input_n, env, next_ob_batch):
         self.actor.train()
         
         self.optimizer.zero_grad()
         
-        pred_acs, feature = self.actor(ob_no, embedding_input_n)
+        input = torch.Tensor(np.concatenate((ob_no, embedding_input_n.squeeze(1)), axis=1))
+        pred_acs, feature = self.actor(input)
         
         # print(feature.shape) [batch_size, task_num]
 
@@ -410,12 +411,14 @@ class DisentanglementAgent(BaseAgent):
         # selection loss: This is a on-line training method
         # create a dict
         task_action_dict = {}
+        next_ob_dict = {}
         ob_dict = {}
         mask = torch.arange(1, embedding_input_n.shape[2]+1, 1).reshape(1, embedding_input_n.shape[2])
         label_n = []
         
         for i in range(1, self.num_tasks+1):
             task_action_dict[i] = []
+            next_ob_dict[i] = []
             ob_dict[i] = []
             
         for i in range(embedding_input_n.shape[0]):
@@ -424,13 +427,14 @@ class DisentanglementAgent(BaseAgent):
 
         for i in range(len(label_n)):
             task_action_dict[label_n[i]].append(pred_acs[i])
+            next_ob_dict[label_n[i]].append(next_ob_batch[i])
             ob_dict[label_n[i]].append(ob_no[i])
             
         # collect next_obs
-        next_obs = env.collect_next_state(task_action_dict, input_shape=self.actor.input_shape)
+        # next_obs = env.collect_next_state(task_action_dict, input_shape=self.actor.input_shape-self.num_tasks)
         
         # with torch no grad, get new features
-        sel = self.calculate_sel(state_dict=ob_dict, next_state_dict=next_obs, num_tasks=self.num_tasks)
+        sel = self.calculate_sel(state_dict=ob_dict, next_state_dict=next_ob_dict, num_tasks=self.num_tasks)
         loss -= sel[0]*self.sel_lambda
         
         loss.backward()
@@ -444,7 +448,8 @@ class DisentanglementAgent(BaseAgent):
     
     def calculate_sel(self, state_dict, next_state_dict, num_tasks):
         sel_loss = 0
-        
+        cnt_n = 0
+
         for i in range(num_tasks):
             next_ob_i = next_state_dict[i+1]
             ob_i = state_dict[i+1]
@@ -456,30 +461,38 @@ class DisentanglementAgent(BaseAgent):
             embedding_input = embedding_input.unsqueeze(0)
                         
             # actions taken by policy_i
-            with torch.no_grad():
-                feature = []
-                feature_next = []
-                for s in next_ob_i:
-                    # print(torch.Tensor(s).unsqueeze(0).shape)
-                    pred_ac, f = self.actor(torch.Tensor(s).unsqueeze(0), embedding_input.unsqueeze(0))
-                    
-                    feature_next.append(f.T)
-                
-                for s in ob_i:
-                    # print(torch.Tensor(s).shape)
-                    pred_ac, f = self.actor(torch.Tensor(s).unsqueeze(0), embedding_input.unsqueeze(0))
-                    feature.append(f.T)
-                
-                assert len(feature) == len(feature_next)
             
-                for n in range(len(feature)):
-                    sums = 0
-                    for k in range(num_tasks):
-                        sums += abs(feature[n][k]-feature_next[n][k])
-                    sel_i += abs(feature[n][i]-feature_next[n][i]) / sums
-                    
-            sel_loss += sel_i
+            feature = []
+            feature_next = []
+            for s in next_ob_i:
+                # print(torch.Tensor(s).unsqueeze(0).shape)
+                input = torch.Tensor(np.concatenate((torch.Tensor(s).unsqueeze(0), embedding_input), axis=1))
+                pred_ac, f = self.actor(input)
+                
+                feature_next.append(f.T)
+            
+            for s in ob_i:
+                # print(torch.Tensor(s).shape)
+                input = torch.Tensor(np.concatenate((torch.Tensor(s).unsqueeze(0), embedding_input), axis=1))
+                pred_ac, f = self.actor(input)
+                feature.append(f.T)
+            
+            assert len(feature) == len(feature_next)
         
+            for n in range(len(feature)):
+                sums = 0
+                for k in range(num_tasks):
+                    sums += abs(feature[n][k]-feature_next[n][k])
+                    
+                if sums == 0: # why there is a situation where sums=0?
+                    continue
+                sel_i += abs(feature[n][i]-feature_next[n][i]) / sums
+                cnt_n += 1
+            
+            sel_loss += sel_i
+            
+        sel_loss /= cnt_n
+            
         print(sel_loss)
         return sel_loss
             

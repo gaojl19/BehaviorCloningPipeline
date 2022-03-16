@@ -24,7 +24,7 @@ class DisentanglementPolicy(nn.Module):
         # init_func(self.embedding2)
         # self.__setattr__("embedding1", self.embedding1)
         # self.__setattr__("embedding2", self.embedding2)
-        self.input_shape = state_shape
+        self.input_shape = state_shape + example_embedding.shape[0]
         
         self.embedding = nn.Linear(state_shape+example_embedding.shape[0], hidden_shape)
         init_func(self.embedding)
@@ -46,13 +46,12 @@ class DisentanglementPolicy(nn.Module):
         
         
     
-    def forward(self, x, embedding_input_n, return_feature = True):
+    def forward(self, x, return_feature = True):
 
-        input = torch.Tensor(np.concatenate((x, embedding_input_n.squeeze(1)), axis=1))
-        input = self.activation_func(self.embedding(input))
+        input = self.activation_func(self.embedding(x))
         
         feature = self.activation_func(self.encoder(input))
-        out = self.activation_func(self.decoder(feature))
+        out = self.decoder(feature)
         
         if return_feature:
             return out, feature
@@ -67,4 +66,4 @@ class DisentanglementPolicy(nn.Module):
             observation = obs[None]
 
         # return the action that the policy prescribes
-        return self.forward(observation)
+        return self.forward(observation, return_feature=False)

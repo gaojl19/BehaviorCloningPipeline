@@ -17,7 +17,7 @@
     },
     "net":{ 
         "hidden_shapes": 400,
-        "sel_lambda": 0.01
+        "sel_lambda": 0.0001
     },
     "general_setting": {
         "discount" : 0.99,

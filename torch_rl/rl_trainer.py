@@ -42,6 +42,7 @@ class RL_Trainer(object):
         self.params = params
         
         self.index_flag = False
+        self.online_flag = False
         
         agent_class = self.args['agent_class']
         if agent_class == MLPAgent :
@@ -72,6 +73,9 @@ class RL_Trainer(object):
             plot_prefix += "_baseline"
         if self.index_flag:
             plot_prefix += "_mhsac"
+        if self.online_flag:
+            plot_prefix += "_disentanglement"
+            
         if "num_layers" in self.params["net"].keys(): # for Soft-Module with different module architectures
             plot_prefix += "_"
             plot_prefix += str(self.params["net"]["num_layers"])
@@ -414,6 +418,8 @@ class RL_Trainer(object):
                 else:
                     if self.baseline:
                         eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter=itr)
+                    elif self.online_flag:
+                        eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter=itr)
                     else:
                         eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
                     for name in eval_infos.keys():
@@ -427,7 +433,7 @@ class RL_Trainer(object):
                 print("evaluation time: ", eval_time)
                 print("epoch time: ", time.time() - start)
                 for log in training_logs:
-                    print("loss: ", log["Training Loss"], " variance: ", log["Variance"], " Task variance: ", log["Task variance"])
+                    print("loss: ", log["Training Loss"])
             
             if min_loss < 0.0001:
                 print("\n\n-------------------------------- Training stopped due to early stopping -------------------------------- ")
@@ -441,7 +447,7 @@ class RL_Trainer(object):
             eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
             print("mean_success_rate: ", eval_success_rate)
         else:
-            if self.baseline:
+            if self.baseline or self.online_flag:
                 eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
             else:
                 if self.index_flag:
@@ -458,22 +464,22 @@ class RL_Trainer(object):
         
         # PLOT CURVE
         # plot overall loss curve
-        # iteration = range(len(loss_curve)-1)
-        # data = pd.DataFrame(loss_curve[1:], iteration)
-        # ax=sns.lineplot(data=data)
-        # ax.set_xlabel("Iteration")
-        # ax.set_ylabel("Loss")
-        # ax.set_title("BC--Loss Curve")
+        iteration = range(len(loss_curve)-1)
+        data = pd.DataFrame(loss_curve[1:], iteration)
+        ax=sns.lineplot(data=data)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("Loss")
+        ax.set_title("BC--Loss Curve")
         
-        # fig = ax.get_figure()
-        # fig.savefig(self.plot_prefix + "Loss_lr_"+str(self.args['learning_rate']*10000)+".png")
-        # fig.clf()
+        fig = ax.get_figure()
+        fig.savefig(self.plot_prefix + "Loss_lr_"+str(self.args['learning_rate']*10000)+".png")
+        fig.clf()
         
-        # # plot expert success curve
-        # self.plot_success_curve(expert_success_curve, "expert", self.plot_prefix)
+        # plot expert success curve
+        self.plot_success_curve(expert_success_curve, "expert", self.plot_prefix)
         
-        # # plot agent success curve
-        # self.plot_success_curve(agent_success_curve, "agent", self.plot_prefix)
+        # plot agent success curve
+        self.plot_success_curve(agent_success_curve, "agent", self.plot_prefix)
         
         # # for multi-task, plot single-task curve
         # if self.mt_flag:
@@ -499,7 +505,7 @@ class RL_Trainer(object):
                     train_log = self.agent.train(ob_batch, ac_batch, index_batch)
                 elif self.online_flag:
                     ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
-                    train_log = self.agent.train(ob_batch, ac_batch, embedding_batch, env)
+                    train_log = self.agent.train(ob_batch, ac_batch, embedding_batch, env, next_ob_batch)
                 else:  
                     ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch, embedding_batch = self.agent.mt_sample(self.args['train_batch_size'])
                     if alternate_flag:
