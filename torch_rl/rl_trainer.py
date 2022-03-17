@@ -355,6 +355,7 @@ class RL_Trainer(object):
         expert_success_curve = []
         agent_success_curve = []
         self.alternate = 0 # start with base policy training
+        agent_selectivity = []
     
         # TRAIN
         for itr in range(n_iter):
@@ -403,6 +404,10 @@ class RL_Trainer(object):
                         expert_success_curve.append(infos["mean_success_rate"])
                     else:
                         expert_task_curve[name].append(infos[name])
+            
+            # disentanglement
+            if self.online_flag:
+                agent_selectivity.append(log["selectivity_loss"])
 
             train_time = time.time() - train_start_time
             
@@ -490,6 +495,10 @@ class RL_Trainer(object):
         # plot agent success curve
         self.plot_success_curve(agent_success_curve, "agent", self.plot_prefix)
         
+        # plot selectivity curve
+        if self.online_flag:
+            self.plot_curve(agent_selectivity, "agent_selectivity", self.plot_prefix)
+        
         # # for multi-task, plot single-task curve
         # if self.mt_flag:
         #     # expert
@@ -569,5 +578,24 @@ class RL_Trainer(object):
         
         fig = ax.get_figure()
         fig.savefig(plot_prefix + tag + "_success_curve.png")
+        
+        fig.clf()
+        
+    
+    
+    def plot_curve(self, curve, tag, plot_prefix):
+        iteration = range(1, len(curve)+1)
+        
+        # smooth
+        curve_hat = savgol_filter(curve, 3, 2)
+        data = pd.DataFrame(curve_hat, iteration)
+        ax=sns.lineplot(data=data)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel(tag)
+        ax.set_title(tag)
+        ax.set(ylim=(-0.1, 1.1))
+        
+        fig = ax.get_figure()
+        fig.savefig(plot_prefix + tag + "_curve.png")
         
         fig.clf()

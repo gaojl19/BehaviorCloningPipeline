@@ -36,7 +36,7 @@ class BC_Trainer(object):
             }
 
         self.args = args
-        self.args['agent_class'] = DisentangleMultiHeadAgent
+        self.args['agent_class'] = DisentanglementAgent
         self.args['agent_params'] = agent_params
         
         # BUILD ENV

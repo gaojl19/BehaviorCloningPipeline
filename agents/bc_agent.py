@@ -433,8 +433,8 @@ class DisentanglementAgent(BaseAgent):
         # collect next_obs
         # next_obs = env.collect_next_state(task_action_dict, input_shape=self.actor.input_shape-self.num_tasks)
         
-        # with torch no grad, get new features
         sel = self.calculate_sel(state_dict=ob_dict, next_state_dict=next_ob_dict, num_tasks=self.num_tasks)
+        # print(sel[0]*self.sel_lambda)
         loss -= sel[0]*self.sel_lambda
         
         loss.backward()
@@ -443,6 +443,7 @@ class DisentanglementAgent(BaseAgent):
         log = {
             # You can add extra logging information here, but keep this line
             'Training Loss': loss.to('cpu').detach().numpy(),
+            "selectivity_loss": sel[0].detach()*self.sel_lambda
         } 
         return log
     

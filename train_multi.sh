@@ -101,7 +101,7 @@
 python train_disentanglement.py \
     --expert_policy_file policy/expert/MT10_Hard/ \
 	--exp_name bc_reach \
-    --n_iter 20 \
+    --n_iter 1 \
     --eval_interval 1 \
     --render_interval 40 \
     --learning_rate 1e-4 \
