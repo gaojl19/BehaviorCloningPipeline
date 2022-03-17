@@ -10,7 +10,7 @@ import numpy as np
 import gym
 
 from torch_rl.rl_trainer import RL_Trainer
-from agents.bc_agent import SoftModuleAgent, MLPAgent, MLPEmbeddingAgent, MHSACAgent, DisentanglementAgent
+from agents.bc_agent import DisentangleMultiHeadAgent, SoftModuleAgent, MLPAgent, MLPEmbeddingAgent, MHSACAgent, DisentanglementAgent, DisentangleMultiHeadPolicy
 from policy.loaded_gaussian_policy import LoadedGaussianPolicy
 from utils.args import get_params
 from utils.logger import Logger
@@ -36,7 +36,7 @@ class BC_Trainer(object):
             }
 
         self.args = args
-        self.args['agent_class'] = DisentanglementAgent
+        self.args['agent_class'] = DisentangleMultiHeadAgent
         self.args['agent_params'] = agent_params
         
         # BUILD ENV

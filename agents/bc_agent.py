@@ -4,7 +4,7 @@ from policy.MLP_policy import MLPPolicy
 from policy.Soft_Module_policy import SoftModulePolicy
 from policy.MH_SAC_policy import MHSACPolicy
 from policy.IQ_learn_policy import *
-from policy.Disentanglement_policy import DisentanglementPolicy
+from policy.Disentanglement_policy import DisentanglementPolicy, DisentangleMultiHeadPolicy
 from .base_agent import BaseAgent
 import torch.nn as nn
 import torch.optim as optim
@@ -513,6 +513,36 @@ class DisentanglementAgent(BaseAgent):
         return self.actor.save(path)
 
 
+class DisentangleMultiHeadAgent(DisentanglementAgent):
+    def __init__(self, env, example_embedding, agent_params, params):
+        super(DisentangleMultiHeadAgent).__init__()
+        # init vars
+        self.env = env
+        self.agent_params = agent_params
+        self.sel_lambda = params["net"]["sel_lambda"]
+        self.num_tasks = example_embedding.shape[0]
+
+        # actor/policy
+        self.actor = DisentangleMultiHeadPolicy(
+            state_shape = self.agent_params['ob_dim'],
+            output_shape = self.agent_params['ac_dim'],
+            hidden_shape = params["net"]["hidden_shapes"],
+            example_embedding = example_embedding
+        )
+        
+        print("actor: \n", self.actor)
+
+        # update
+        self.loss = nn.MSELoss()
+        self.learning_rate = self.agent_params['learning_rate']
+        self.optimizer = optim.Adam(
+            self.actor.parameters(),
+            lr=self.learning_rate,
+        )
+
+        # replay buffer
+        self.replay_buffer = ReplayBuffer(self.agent_params['max_replay_buffer_size'])
+        
 # class IQLearnAgent(BaseAgent):
 #     def __init__(self, obs_dim, action_dim, action_range, batch_size, args):
 #         self.gamma = args.gamma

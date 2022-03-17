@@ -948,11 +948,11 @@ class MTEnvCollector():
             f.write(weight_json)
     
 
-        # save model
-        import os.path as osp
-        model_file_name="model.pth"
-        model_path=osp.join(self.plot_prefix, model_file_name)
-        torch.save(agent_policy.state_dict(), model_path)
+        # # save model
+        # import os.path as osp
+        # model_file_name="model.pth"
+        # model_path=osp.join(self.plot_prefix, model_file_name)
+        # torch.save(agent_policy.state_dict(), model_path)
     
    
     

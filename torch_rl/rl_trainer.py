@@ -3,7 +3,7 @@ from metaworld_utils.meta_env import generate_single_mt_env
 from torch_rl.replay_buffer import EnvInfo
 from policy.continuous_policy import MultiHeadGuassianContPolicy, EmbeddingGuassianContPolicyBase
 from utils.utils import Path
-from agents.bc_agent import DisentanglementAgent, MHSACAgent, MLPAgent, MLPEmbeddingAgent, SoftModuleAgent
+from agents.bc_agent import DisentangleMultiHeadAgent, DisentanglementAgent, MHSACAgent, MLPAgent, MLPEmbeddingAgent, SoftModuleAgent
 from torch_rl.multi_task_collector import *
 
 import torch
@@ -52,7 +52,7 @@ class RL_Trainer(object):
         elif agent_class == MHSACAgent:
             self.agent = agent_class(self.env, self.args['agent_params'], self.params)
             self.index_flag = True
-        elif agent_class == DisentanglementAgent:
+        elif agent_class == DisentanglementAgent or agent_class == DisentangleMultiHeadAgent:
             self.agent = agent_class(self.env, example_embedding, self.args['agent_params'], self.params)
             self.online_flag = True
         else:
@@ -442,19 +442,28 @@ class RL_Trainer(object):
         
         # TEST
         print("\n\n-------------------------------- Test Results -------------------------------- ")
-        render = True
+        render = False
+        
+        # prepare to save model
+        import os.path as osp
+        model_file_name="model.pth"
+        model_path=osp.join(self.plot_prefix, model_file_name)
+        
         if self.mt_flag == False:
             eval_success_rate = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
             print("mean_success_rate: ", eval_success_rate)
+            torch.save(self.agent.actor.state_dict(), model_path)
         else:
             if self.baseline or self.online_flag:
                 eval_infos = self.expert_env.sample_agent(agent_policy=self.agent.actor, n_sample=self.params["general_setting"]["eval_episodes"], render=render, render_mode="rgb_array", log=True, log_prefix = self.plot_prefix, n_iter="final")
+                torch.save(self.agent.actor.state_dict(), model_path)
             else:
                 if self.index_flag:
                     eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render)
                 else:
                     eval_infos = self.agent_env.sample_agent(log_prefix=self.plot_prefix, agent_policy=self.agent.actor.policy, input_shape = self.agent.actor.input_shape, render=render, plot_weights=True)
-            
+                torch.save(self.agent.actor.policy.state_dict(), model_path)
+
             for name in eval_infos.keys():
                 if name == "mean_success_rate":
                     agent_success_curve.append(eval_infos["mean_success_rate"])
