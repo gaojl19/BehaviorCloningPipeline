@@ -435,7 +435,7 @@ class DisentanglementAgent(BaseAgent):
         
         sel = self.calculate_sel(state_dict=ob_dict, next_state_dict=next_ob_dict, num_tasks=self.num_tasks)
         # print(sel[0]*self.sel_lambda)
-        loss -= sel[0]*self.sel_lambda
+        # loss -= sel[0]*self.sel_lambda
         
         loss.backward()
         self.optimizer.step()

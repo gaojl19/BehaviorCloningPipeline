@@ -36,7 +36,7 @@ class BC_Trainer(object):
             }
 
         self.args = args
-        self.args['agent_class'] = DisentanglementAgent
+        self.args['agent_class'] = DisentangleMultiHeadAgent
         self.args['agent_params'] = agent_params
         
         # BUILD ENV
@@ -292,7 +292,7 @@ def main():
 
     parser.add_argument('--n_layers', type=int, default=2)  # depth, of policy to be learned
     parser.add_argument('--size', type=int, default=400)  # width of each layer, of policy to be learned
-    parser.add_argument('--learning_rate', '-lr', type=float, default=1e-4)  # LR for supervised learning
+    parser.add_argument('--learning_rate', '-lr', type=float, default=1e-5)  # LR for supervised learning
     parser.add_argument('--l1_regularization', type=bool, default=False)
     parser.add_argument('--l1_lambda', type=float, default=1e-7)
     parser.add_argument('--regularize_weights', type=bool, default=False)

@@ -125,16 +125,16 @@ class DisentangleMultiHeadPolicy(nn.Module):
             out = self.last_activation_func(out)
         
         # get mean and std from the output
-        
         task_embedding = x[:, self.state_dim:]
-        print(task_embedding)
-        # mask = torch.arange(1, self.embed_dim+1, 1).reshape(1, self.embed_dim)
-        # label = torch.mm(task_embedding.long(), mask)
-        label = task_embedding.repeat(1, 8)
-        print(label.shape)
-        print(label)
-        exit(0)
-        out = out[(label-1)*self.act_dim*2 : label*self.act_dim*2]
+        
+        mask = torch.arange(0, task_embedding.shape[1], 1).reshape(task_embedding.shape[1], 1).float()
+        label = torch.mm(task_embedding, mask).long()
+        label = label.reshape(label.shape[0], 1, 1)
+        label = label.repeat(1, 1, self.act_dim*2)
+       
+        out = out.reshape(out.shape[0], -1, self.act_dim*2)
+        out = out.gather(1, label)
+        
         mean, log_std= out.chunk(2, dim=-1)
         log_std = torch.clamp(log_std, LOG_SIG_MIN, LOG_SIG_MAX)
 
